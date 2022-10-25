@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:record/record.dart';
+
+import 'package:record/record.dart' as rcd;
+import 'package:audioplayers/audioplayers.dart' as ap;
 
 class VoiceInputComponent extends StatefulWidget {
   final String label;
@@ -16,14 +20,26 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
   bool _hasRecord = false;
   final String label;
   VoiceInputComponentState({Key? key, required this.label});
+  final _audioPlayer = ap.AudioPlayer();
+  final _audioRecorder = rcd.Record();
+  // 录音文件的临时地址.
+  String _recordPath = '';
 
   @override
   void initState() {
     super.initState();
   }
 
+  // 析构函数
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
   final TextStyle _testStyle = const TextStyle(
-    color: Colors.white,
+    color: Colors.black87,
     fontSize: 32.0,
   );
 
@@ -35,7 +51,7 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
-      size: 48.0,
+      size: 32.0,
     );
   }
 
@@ -43,7 +59,7 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
     return Icon(
       Icons.restart_alt_sharp,
       color: _hasRecord ? Colors.amber : Colors.grey,
-      size: 48.0,
+      size: 32.0,
     );
   }
 
@@ -65,15 +81,37 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
     }
   }
 
-  void _startRecording() {
+  Future<void> _startRecording() async {
     if (_isRecording) return;
-    setState(() {
-      _isRecording = true;
-    });
+    try {
+      if (!await _audioRecorder.hasPermission()) {
+        return;
+      }
+      await _audioRecorder.start(
+        // FIXME 注意, 格式可能和平台相异.
+        encoder: rcd.AudioEncoder.wav,
+        bitRate: 128000,
+        samplingRate: 44100,
+        numChannels: 2,
+      );
+      setState(() {
+        _isRecording = true;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
-  void _stopRecording() {
+  Future<void> _stopRecording() async {
     if (!_isRecording) return;
+    final recordRet = await _audioRecorder.stop();
+    if (recordRet != null) {
+      _recordPath = recordRet;
+    } else {
+      if (kDebugMode) print('Record returns a null path');
+    }
     setState(() {
       _hasRecord = true;
       _isRecording = false;
@@ -83,6 +121,7 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
   void _retryRecording() {
     if (!_hasRecord) return;
     if (_isRecording) return;
+    _audioPlayer.stop();
     setState(() {
       _hasRecord = false;
     });
@@ -90,6 +129,7 @@ class VoiceInputComponentState extends State<VoiceInputComponent> {
 
   void _playRecord() {
     if (!_hasRecord) return;
+    _audioPlayer.play(ap.DeviceFileSource(_recordPath));
   }
 
   @override

@@ -23,7 +23,7 @@ class ProjectSOE extends StatelessWidget {
       ),
       home: VoiceInputComponent(label: 'TestLabel'),
     );
-
+    // return MyApp();
     // return MaterialApp(
     //   title: 'Project SoE Demo',
     //   theme: ThemeData(
