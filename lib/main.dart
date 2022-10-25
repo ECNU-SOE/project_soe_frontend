@@ -6,12 +6,23 @@ import 'src/full_exam/full_exam.dart';
 import 'src/components/voice_input.dart';
 
 void main() {
-  runApp(const ProjectSOE());
+  runApp(ProjectSOE());
 }
 
 class ProjectSOE extends StatelessWidget {
-  const ProjectSOE({super.key});
-
+  ProjectSOE({super.key});
+  List<String> words1 = ['a', 'b', 'c'];
+  List<String> words2 = [
+    'ab',
+    'aab',
+    'aaaab',
+    'aaaaaab',
+    'aaaaaaaaab',
+  ];
+  List<String> words3 = [
+    'aaaaaaaaaaaaaaaaaaaaaa',
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaa1'
+  ];
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -20,15 +31,11 @@ class ProjectSOE extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: VoiceInputComponent(label: 'TestLabel'),
+      home: FullExamination(
+        singleWords: words1,
+        doubleWords: words2,
+        sentances: words3,
+      ),
     );
-    // return MyApp();
-    // return MaterialApp(
-    //   title: 'Project SoE Demo',
-    //   theme: ThemeData(
-    //     primarySwatch: Colors.blue,
-    //   ),
-    //   home: NativeLanguageChoice(),
-    // );
   }
 }

@@ -11,14 +11,14 @@ class VoiceInputComponent extends StatefulWidget {
   const VoiceInputComponent({Key? key, required this.label}) : super(key: key);
   @override
   State<VoiceInputComponent> createState() =>
-      VoiceInputComponentState(label: label);
+      _VoiceInputComponentState(label: label);
 }
 
-class VoiceInputComponentState extends State<VoiceInputComponent> {
+class _VoiceInputComponentState extends State<VoiceInputComponent> {
   bool _isRecording = false;
   bool _hasRecord = false;
   final String label;
-  VoiceInputComponentState({Key? key, required this.label});
+  _VoiceInputComponentState({Key? key, required this.label});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
   // 录音文件的临时地址.
