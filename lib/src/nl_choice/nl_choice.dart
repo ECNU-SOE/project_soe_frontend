@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import '../fullExam/fullExam.dart';
+import '../full_exam/full_exam.dart';
 
 class NativeLanguageChoice extends StatelessWidget {
   NativeLanguageChoice({super.key});

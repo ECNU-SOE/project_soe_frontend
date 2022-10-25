@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'src/nlchoice/nlchoice.dart';
-import 'src/fullExam/fullExam.dart';
-import 'src/recorderExample.dart';
+import 'src/nl_choice/nl_choice.dart';
+import 'src/full_exam/full_exam.dart';
 
-import 'src/components/voiceInput.dart';
+import 'src/components/voice_input.dart';
 
 void main() {
   runApp(const ProjectSOE());
