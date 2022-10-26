@@ -17,15 +17,15 @@ class FullExamination extends StatelessWidget {
       List<Row> children, List<String> wordLists, int columnCount) {
     int count = 0;
     List<Row> rows = [];
-    List<Column> voiceInputs = [];
+    List<VoiceInputComponent> voiceInputs = [];
     for (var word in wordLists) {
-      voiceInputs.add(
-        Column(children: [VoiceInputComponent(label: word)]),
-      );
+      voiceInputs.add(VoiceInputComponent(label: word));
       count++;
       if (count == columnCount) {
         rows.add(Row(
-          children: voiceInputs,
+          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisSize: MainAxisSize.min,
+          children: List<VoiceInputComponent>.from(voiceInputs),
         ));
         voiceInputs.clear();
         count = 0;

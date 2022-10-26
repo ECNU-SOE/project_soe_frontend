@@ -133,25 +133,28 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.baseline,
-        children: <Widget>[
-          Text(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      // mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(12),
+          child: Text(
             label,
             style: _testStyle,
+            softWrap: true,
           ),
-          IconButton(
-            icon: _recordIcon(),
-            onPressed: _cbkRecordStopPlay,
-          ),
-          IconButton(
-            icon: _retryIcon(),
-            onPressed: _cbkRetry,
-          ),
-        ],
-      ),
+        ),
+        IconButton(
+          icon: _recordIcon(),
+          onPressed: _cbkRecordStopPlay,
+        ),
+        IconButton(
+          icon: _retryIcon(),
+          onPressed: _cbkRetry,
+        ),
+      ],
     );
   }
 }
