@@ -4,6 +4,7 @@ import '../full_exam/full_exam.dart';
 
 class NativeLanguageChoice extends StatelessWidget {
   NativeLanguageChoice({super.key});
+  static const String routeName = 'nlchoice';
   // styles
   final _languageStyle = const TextStyle(fontSize: 18);
   final _titleStyle = const TextStyle(

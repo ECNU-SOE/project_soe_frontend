@@ -11,18 +11,11 @@ void main() {
 
 class ProjectSOE extends StatelessWidget {
   ProjectSOE({super.key});
-  List<String> words1 = ['a', 'b', 'c'];
-  List<String> words2 = [
-    'ab',
-    'aab',
-    'aaaab',
-    'aaaaaab',
-    'aaaaaaaaab',
-  ];
-  List<String> words3 = [
-    'aaaaaaaaaaaaaaaaaaaaaa',
-    'aaaaaaaaaaaaaaaaaaaaaaaaaaaa1'
-  ];
+  // FIXME 22.11.1 实现它
+  Future<bool> _queryFirstTimeUse() async {
+    return true;
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -31,11 +24,9 @@ class ProjectSOE extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FullExamination(
-        singleWords: words1,
-        doubleWords: words2,
-        sentances: words3,
-      ),
+      // FIXME 22.11.1
+      // initialRoute : _queryFirstTimeUse()? NativeLanguageChoice.routeName : ApplicationHome.routeName;
+      initialRoute: NativeLanguageChoice.routeName,
     );
   }
 }

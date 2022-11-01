@@ -7,6 +7,7 @@ class FullExamination extends StatelessWidget {
   final List<String> singleWords;
   final List<String> doubleWords;
   final List<String> sentances;
+  static const String routeName = 'fullexam';
   FullExamination(
       {super.key,
       required this.singleWords,
