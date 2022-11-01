@@ -4,6 +4,7 @@ import 'src/nl_choice/nl_choice.dart';
 import 'src/full_exam/full_exam.dart';
 
 import 'src/components/voice_input.dart';
+import 'src/navigation/navigation_routes.dart';
 
 void main() {
   runApp(ProjectSOE());
@@ -27,6 +28,7 @@ class ProjectSOE extends StatelessWidget {
       // FIXME 22.11.1
       // initialRoute : _queryFirstTimeUse()? NativeLanguageChoice.routeName : ApplicationHome.routeName;
       initialRoute: NativeLanguageChoice.routeName,
+      routes: sNavigationRoutes,
     );
   }
 }

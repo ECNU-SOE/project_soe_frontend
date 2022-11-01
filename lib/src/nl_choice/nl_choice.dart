@@ -64,7 +64,9 @@ class NativeLanguageChoice extends StatelessWidget {
               color: Colors.red,
             ),
             onTap: () {
-              log('Lanuage chose ${_languageList[index]}');
+              // FIXME 11.1 network request
+              // log('Lanuage chose ${_languagList[index]}');
+              Navigator.pushNamed(context, FullExamination.routeName);
             });
       },
     );
