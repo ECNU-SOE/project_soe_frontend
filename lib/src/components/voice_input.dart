@@ -6,23 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:audioplayers/audioplayers.dart' as ap;
 
-class VoiceInputComponent extends StatefulWidget {
+class VoiceInputComponent extends StatefulWidget with ChangeNotifier {
   final String label;
-  const VoiceInputComponent({Key? key, required this.label}) : super(key: key);
+  // 录音文件的临时地址.
+  String recordPath = '';
+  VoiceInputComponent({Key? key, required this.label}) : super(key: key);
   @override
   State<VoiceInputComponent> createState() =>
       _VoiceInputComponentState(label: label);
 }
 
-class _VoiceInputComponentState extends State<VoiceInputComponent> {
+class _VoiceInputComponentState extends State<VoiceInputComponent>
+    with ChangeNotifier {
   bool _isRecording = false;
   bool _hasRecord = false;
   final String label;
   _VoiceInputComponentState({Key? key, required this.label});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
-  // 录音文件的临时地址.
-  String _recordPath = '';
 
   @override
   void initState() {
@@ -107,7 +108,7 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
     if (!_isRecording) return;
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
-      _recordPath = recordRet;
+      widget.recordPath = recordRet;
     } else {
       if (kDebugMode) print('Record returns a null path');
     }
@@ -115,6 +116,7 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
       _hasRecord = true;
       _isRecording = false;
     });
+    notifyListeners();
   }
 
   void _retryRecording() {
@@ -124,11 +126,12 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
     setState(() {
       _hasRecord = false;
     });
+    notifyListeners();
   }
 
   void _playRecord() {
     if (!_hasRecord) return;
-    _audioPlayer.play(ap.DeviceFileSource(_recordPath));
+    _audioPlayer.play(ap.DeviceFileSource(widget.recordPath));
   }
 
   @override
