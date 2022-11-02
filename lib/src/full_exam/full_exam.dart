@@ -1,15 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/app_home/app_home.dart';
 import '../components/voice_input.dart';
-
-const TextStyle gFullExaminationSubTitleStyle = TextStyle(
-  color: Colors.amber,
-  fontSize: 55.0,
-);
-const int gFullExaminationWeightSingleWords = 1;
-const int gFullExaminationWeightDoubleWords = 2;
-const int gFullExaminationWeightSentances = 3;
+import '../data/params.dart';
+import '../data/styles.dart';
 
 class FullExaminationProcess extends StatelessWidget {
   final ValueNotifier<double> finishValue;
@@ -126,11 +119,15 @@ class FullExamination extends StatelessWidget {
     return true;
   }
 
-  // 弹出SnackBar 提示尚未完成测试.
-  void _showUnfinishedTip() {}
+  // TODO 弹出SnackBar 提示尚未完成测试.
+  void _showUnfinishedTip(BuildContext context) {
+    Navigator.pushNamed(context, ApplicationHome.routeName);
+  }
 
-  // 提交测试
-  void _submitFullExam() {}
+  // TODO 提交测试
+  void _submitFullExam(BuildContext context) {
+    Navigator.pushNamed(context, ApplicationHome.routeName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +154,9 @@ class FullExamination extends StatelessWidget {
       ),
       onPressed: () {
         if (_checkFinishAll()) {
-          _submitFullExam();
+          _submitFullExam(context);
         } else {
-          _showUnfinishedTip();
+          _showUnfinishedTip(context);
         }
       },
     ));
