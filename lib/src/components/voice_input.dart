@@ -16,8 +16,7 @@ class VoiceInputComponent extends StatefulWidget with ChangeNotifier {
       _VoiceInputComponentState(label: label);
 }
 
-class _VoiceInputComponentState extends State<VoiceInputComponent>
-    with ChangeNotifier {
+class _VoiceInputComponentState extends State<VoiceInputComponent> {
   bool _isRecording = false;
   bool _hasRecord = false;
   final String label;
@@ -116,7 +115,7 @@ class _VoiceInputComponentState extends State<VoiceInputComponent>
       _hasRecord = true;
       _isRecording = false;
     });
-    notifyListeners();
+    widget.notifyListeners();
   }
 
   void _retryRecording() {
@@ -125,8 +124,9 @@ class _VoiceInputComponentState extends State<VoiceInputComponent>
     _audioPlayer.stop();
     setState(() {
       _hasRecord = false;
+      widget.recordPath = '';
     });
-    notifyListeners();
+    widget.notifyListeners();
   }
 
   void _playRecord() {

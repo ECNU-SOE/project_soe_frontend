@@ -11,39 +11,82 @@ const int gFullExaminationWeightSingleWords = 1;
 const int gFullExaminationWeightDoubleWords = 2;
 const int gFullExaminationWeightSentances = 3;
 
-class _FullExaminationState extends State<FullExamination> {
-  List<VoiceInputComponent> singleComponents = [];
-  List<VoiceInputComponent> doubleComponents = [];
-  List<VoiceInputComponent> sentanceComponents = [];
-  double finishValue = 0.0;
-  LinearProgressIndicator? _processBar;
-  void _calculateFinishValue() {
+class FullExaminationProcess extends StatelessWidget {
+  final ValueNotifier<double> finishValue;
+  const FullExaminationProcess({
+    super.key,
+    required this.finishValue,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: finishValue,
+      builder: (context, child) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: LinearProgressIndicator(value: finishValue.value),
+        );
+      },
+    );
+  }
+}
+
+class FullExamination extends StatelessWidget {
+  final List<String>? singleWords;
+  final List<String>? doubleWords;
+  final List<String>? sentances;
+  static const String routeName = 'fullexam';
+  FullExamination(
+      {super.key,
+      required this.singleWords,
+      required this.doubleWords,
+      required this.sentances});
+  // private variables
+  final List<VoiceInputComponent> _singleComponents = [];
+  final List<VoiceInputComponent> _doubleComponents = [];
+  final List<VoiceInputComponent> _sentanceComponents = [];
+  bool _isFirstBuild = true;
+  final ValueNotifier<double> _finishValueNotifier = ValueNotifier<double>(0.0);
+  // 计算完成度, 用于ProcessBar的显示.
+  double _calculateFinishValue() {
     int process = 0;
     int total = 0;
-    for (VoiceInputComponent compo in singleComponents) {
+    for (VoiceInputComponent compo in _singleComponents) {
       total += gFullExaminationWeightSingleWords;
-      if (compo.recordPath != '') process += gFullExaminationWeightSingleWords;
+      if (compo.recordPath != '') {
+        process += gFullExaminationWeightSingleWords;
+      }
     }
-    for (VoiceInputComponent compo in doubleComponents) {
+    for (VoiceInputComponent compo in _doubleComponents) {
       total += gFullExaminationWeightDoubleWords;
-      if (compo.recordPath != '') process += gFullExaminationWeightDoubleWords;
+      if (compo.recordPath != '') {
+        process += gFullExaminationWeightDoubleWords;
+      }
     }
-    for (VoiceInputComponent compo in sentanceComponents) {
+    for (VoiceInputComponent compo in _sentanceComponents) {
       total += gFullExaminationWeightSentances;
-      if (compo.recordPath != '') process += gFullExaminationWeightSentances;
+      if (compo.recordPath != '') {
+        process += gFullExaminationWeightSentances;
+      }
     }
-    finishValue = process.toDouble() / total.toDouble();
+    return process.toDouble() / total.toDouble();
   }
 
+  // 构造VoiceInputComponent的函数, 第一次构造时将其加入List
   void _buildVoiceInputs(List<Widget> children, List<String> wordLists,
-      int columnCount, List<VoiceInputComponent>? ret) {
+      int columnCount, List<VoiceInputComponent>? ret, bool isFirst) {
     int count = 0;
     List<Widget> rows = [];
     List<VoiceInputComponent> voiceInputs = [];
     for (var word in wordLists) {
       VoiceInputComponent component = VoiceInputComponent(label: word);
       voiceInputs.add(component);
-      ret!.add(component);
+      if (isFirst) {
+        ret!.add(component);
+        component.addListener(() {
+          _finishValueNotifier.value = _calculateFinishValue();
+        });
+      }
       count++;
       if (count == columnCount) {
         rows.add(Row(
@@ -63,54 +106,65 @@ class _FullExaminationState extends State<FullExamination> {
     children.addAll(rows);
   }
 
+  // 检查是否完成所有的试题
+  bool _checkFinishAll() {
+    for (VoiceInputComponent compo in _singleComponents) {
+      if (compo.recordPath == '') {
+        return false;
+      }
+    }
+    for (VoiceInputComponent compo in _doubleComponents) {
+      if (compo.recordPath == '') {
+        return false;
+      }
+    }
+    for (VoiceInputComponent compo in _sentanceComponents) {
+      if (compo.recordPath == '') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // 弹出SnackBar 提示尚未完成测试.
+  void _showUnfinishedTip() {}
+
+  // 提交测试
+  void _submitFullExam() {}
+
   @override
   Widget build(BuildContext context) {
     List<Widget> rows = [];
-    _processBar = LinearProgressIndicator(value: finishValue);
-    rows.add(
-      Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: _processBar,
-      ),
-    );
-    rows.add(Row(children: [
+    rows.add(FullExaminationProcess(finishValue: _finishValueNotifier));
+    rows.add(Row(children: const [
       Text("Single Words", style: gFullExaminationSubTitleStyle)
     ]));
-    _buildVoiceInputs(rows, widget.singleWords!, 4, singleComponents);
-    rows.add(Row(children: [
+    _buildVoiceInputs(rows, singleWords!, 4, _singleComponents, _isFirstBuild);
+    rows.add(Row(children: const [
       Text("Double Words", style: gFullExaminationSubTitleStyle)
     ]));
-    _buildVoiceInputs(rows, widget.doubleWords!, 2, doubleComponents);
-    rows.add(Row(
-        children: [Text("Sentances", style: gFullExaminationSubTitleStyle)]));
-    _buildVoiceInputs(rows, widget.sentances!, 1, sentanceComponents);
+    _buildVoiceInputs(rows, doubleWords!, 2, _doubleComponents, _isFirstBuild);
+    rows.add(Row(children: const [
+      Text("Sentances", style: gFullExaminationSubTitleStyle)
+    ]));
+    _buildVoiceInputs(rows, sentances!, 1, _sentanceComponents, _isFirstBuild);
     _calculateFinishValue();
+    _isFirstBuild = false;
     rows.add(ElevatedButton(
       child: const Text(
         'Submit',
         style: gFullExaminationSubTitleStyle,
       ),
       onPressed: () {
-        // FIXME 22.11.1
-        int k = 1;
+        if (_checkFinishAll()) {
+          _submitFullExam();
+        } else {
+          _showUnfinishedTip();
+        }
       },
     ));
     return Scaffold(
       body: ListView(children: rows),
     );
   }
-}
-
-class FullExamination extends StatefulWidget {
-  List<String>? singleWords;
-  List<String>? doubleWords;
-  List<String>? sentances;
-  static const String routeName = 'fullexam';
-  FullExamination(
-      {super.key,
-      required this.singleWords,
-      required this.doubleWords,
-      required this.sentances});
-  @override
-  State<FullExamination> createState() => _FullExaminationState();
 }
