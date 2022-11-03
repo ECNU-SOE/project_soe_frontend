@@ -1,43 +1,67 @@
-import 'dart:developer';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../full_exam/full_exam.dart';
+import 'package:http/http.dart' as http;
 
-class NativeLanguageChoice extends StatelessWidget {
-  NativeLanguageChoice({super.key});
-  static const String routeName = 'nlchoice';
-  // styles
-  final _languageStyle = const TextStyle(fontSize: 18);
-  final _titleStyle = const TextStyle(
-    fontSize: 32,
-    // backgroundColor: Colors.yellow,
-    color: Colors.teal,
+import '../data/styles.dart';
+
+class NativeLanguageData {
+  final int id;
+  final String label;
+  const NativeLanguageData({
+    required this.id,
+    required this.label,
+  });
+  factory NativeLanguageData.fromJson(Map<String, dynamic> json) {
+    return NativeLanguageData(
+      id: json['id'] as int,
+      label: json['motherTongue'] as String,
+    );
+  }
+}
+
+List<NativeLanguageData> parseNativeLanguageData(http.Response response) {
+  final u8decoded = utf8.decode(response.bodyBytes);
+  final decoded = jsonDecode(u8decoded);
+  final parsed = decoded['data']['languages'].cast<Map<String, dynamic>>();
+  return parsed
+      .map<NativeLanguageData>((json) => NativeLanguageData.fromJson(json))
+      .toList();
+}
+
+Future<List<NativeLanguageData>> fetchNativeLanguages(
+    http.Client client) async {
+  final response = await client.get(
+    Uri.parse('http://47.101.58.72:8002/api/common/v1/languages'),
   );
-  final _infoStyle = const TextStyle(
-    fontSize: 24,
-    // backgroundColor: Colors.red,
-    color: Colors.blue,
-  );
-  // data
-  final _languageList = [
-    'English',
-    'Franch',
-    'Spanish',
-  ];
-  final String _title = 'Title';
-  final String _info =
-      'Choose your native language.\nPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholderPlaceholder';
-  // view
-  ListView _nlChoiceListViewBuilder() {
+  return compute(parseNativeLanguageData, response);
+}
+
+class NativeLanguageList extends StatelessWidget {
+  const NativeLanguageList({
+    super.key,
+    required this.nativeLanguages,
+  });
+  final List<NativeLanguageData> nativeLanguages;
+
+  final String _title = '标题';
+  final String _info = '选择你的母语';
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(8.0),
-      itemCount: _languageList.length * 2 + 3,
+      itemCount: nativeLanguages.length * 2 + 3,
       itemBuilder: (context, ib) {
         if (ib == 0) {
           return ListTile(
             title: Text(
               _title,
               textAlign: TextAlign.center,
-              style: _titleStyle,
+              style: gNativeLanguageChooseTitleStyle,
             ),
           );
         }
@@ -46,7 +70,7 @@ class NativeLanguageChoice extends StatelessWidget {
             title: Text(
               _info,
               textAlign: TextAlign.center,
-              style: _infoStyle,
+              style: gNativeLanguageChooseInfoStyle,
             ),
           );
         }
@@ -54,28 +78,48 @@ class NativeLanguageChoice extends StatelessWidget {
         if (!i.isOdd) return const Divider();
         final index = i ~/ 2;
         return ListTile(
-            title: Text(
-              _languageList[index],
-              style: _languageStyle,
-              textAlign: TextAlign.center,
-            ),
-            trailing: const Icon(
-              Icons.flag,
-              color: Colors.red,
-            ),
-            onTap: () {
-              // FIXME 11.1 network request
-              // log('Lanuage chose ${_languagList[index]}');
-              Navigator.pushNamed(context, FullExamination.routeName);
-            });
+          title: Text(
+            nativeLanguages[index].label,
+            style: gNativeLanguageChooseListStyle,
+            textAlign: TextAlign.center,
+          ),
+          trailing: const Icon(
+            Icons.flag,
+            color: Colors.red,
+          ),
+          onTap: () {
+            // FIXME 11.1 network request
+            // log('Lanuage chose ${_languagList[index]}');
+            Navigator.pushNamed(context, FullExamination.routeName);
+          },
+        );
       },
     );
   }
+}
+
+class NativeLanguageChoice extends StatelessWidget {
+  const NativeLanguageChoice({super.key});
+  static const String routeName = 'nlchoice';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _nlChoiceListViewBuilder(),
-    );
+        body: FutureBuilder<List<NativeLanguageData>>(
+      future: fetchNativeLanguages(http.Client()),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('An error has occurred!'),
+          );
+        } else if (snapshot.hasData) {
+          return NativeLanguageList(nativeLanguages: snapshot.data!);
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    ));
   }
 }
