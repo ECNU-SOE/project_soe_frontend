@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class PracticePage extends StatelessWidget {
   const PracticePage({super.key});
+  static const String routeName = 'practice';
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

@@ -1,9 +1,9 @@
-// TODO 11.2 实现此类.
+// TODO 11.3 实现此类.
 import 'package:flutter/material.dart';
 
-class PersonalPage extends StatelessWidget {
-  const PersonalPage({super.key});
-  static const String routeName = 'personal';
+class ClassPage extends StatelessWidget {
+  const ClassPage({super.key});
+  static const String routeName = 'class';
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
