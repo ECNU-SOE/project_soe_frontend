@@ -40,6 +40,17 @@ Future<List<NativeLanguageData>> fetchNativeLanguages(
   return compute(parseNativeLanguageData, response);
 }
 
+Future<void> onChooseNativeLanguage(
+    BuildContext context, http.Client client, int id) async {
+  final response = await client.get(Uri.parse(
+      'http://47.101.58.72:8002/api/common/v1/paper?token=xxx&languageId=$id'));
+  final u8decoded = utf8.decode(response.bodyBytes);
+  final decoded = jsonDecode(u8decoded);
+  final parsedId = decoded['data'];
+  Navigator.pushNamed(context, FullExamination.routeName,
+      arguments: (parsedId));
+}
+
 class NativeLanguageList extends StatelessWidget {
   const NativeLanguageList({
     super.key,
@@ -88,9 +99,8 @@ class NativeLanguageList extends StatelessWidget {
             color: Colors.red,
           ),
           onTap: () {
-            // FIXME 11.1 network request
-            // log('Lanuage chose ${_languagList[index]}');
-            Navigator.pushNamed(context, FullExamination.routeName);
+            onChooseNativeLanguage(
+                context, http.Client(), nativeLanguages[index].id);
           },
         );
       },
@@ -105,21 +115,22 @@ class NativeLanguageChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: FutureBuilder<List<NativeLanguageData>>(
-      future: fetchNativeLanguages(http.Client()),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text('An error has occurred!'),
-          );
-        } else if (snapshot.hasData) {
-          return NativeLanguageList(nativeLanguages: snapshot.data!);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    ));
+      body: FutureBuilder<List<NativeLanguageData>>(
+        future: fetchNativeLanguages(http.Client()),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text('An error has occurred!'),
+            );
+          } else if (snapshot.hasData) {
+            return NativeLanguageList(nativeLanguages: snapshot.data!);
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
   }
 }

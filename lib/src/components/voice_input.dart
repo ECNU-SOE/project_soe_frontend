@@ -6,20 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:audioplayers/audioplayers.dart' as ap;
 
-import '../data/styles.dart';
+import 'package:project_soe/src/data/styles.dart';
+import 'package:project_soe/src/data/exam_data.dart';
 
-class VoiceInputComponent extends StatefulWidget with ChangeNotifier {
+class VoiceInputPage extends StatefulWidget with ChangeNotifier {
   // 录音文件的临时地址.
   String recordPath = '';
-  VoiceInputComponent({super.key});
-  @override
-  State<VoiceInputComponent> createState() => _VoiceInputComponentState();
-}
-
-class _VoiceInputComponentState extends State<VoiceInputComponent> {
+  final List<QuestionData> wordList;
   bool _isRecording = false;
   bool _hasRecord = false;
-  _VoiceInputComponentState({Key? key});
+  VoiceInputPage({super.key, required this.wordList});
+  @override
+  State<VoiceInputPage> createState() => _VoiceInputPageState();
+}
+
+class _VoiceInputPageState extends State<VoiceInputPage> {
+  _VoiceInputPageState({Key? key});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
 
@@ -35,9 +37,9 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
 
   Icon _recordIcon() {
     return Icon(
-      _hasRecord
+      widget._hasRecord
           ? Icons.play_arrow
-          : _isRecording
+          : widget._isRecording
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
@@ -48,21 +50,21 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: _hasRecord ? Colors.amber : Colors.grey,
+      color: widget._hasRecord ? Colors.amber : Colors.grey,
       size: 32.0,
     );
   }
 
   Icon _submitIcon() {
     return const Icon(
-      Icons.subscriptions,
+      Icons.check,
       color: Colors.brown,
       size: 32.0,
     );
   }
 
   void _cbkRetry() {
-    if (_isRecording) {
+    if (widget._isRecording) {
       return;
     } else {
       _retryRecording();
@@ -70,9 +72,9 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
   }
 
   void _cbkRecordStopPlay() {
-    if (_hasRecord) {
+    if (widget._hasRecord) {
       _playRecord();
-    } else if (_isRecording) {
+    } else if (widget._isRecording) {
       _stopRecording();
     } else {
       _startRecording();
@@ -80,11 +82,11 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
   }
 
   void _cbkSubmit() {
-    if (!_hasRecord) return;
+    if (!widget._hasRecord) return;
   }
 
   Future<void> _startRecording() async {
-    if (_isRecording) return;
+    if (widget._isRecording) return;
     try {
       if (!await _audioRecorder.hasPermission()) {
         return;
@@ -97,7 +99,7 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
         numChannels: 2,
       );
       setState(() {
-        _isRecording = true;
+        widget._isRecording = true;
       });
     } catch (e) {
       if (kDebugMode) {
@@ -107,7 +109,7 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
   }
 
   Future<void> _stopRecording() async {
-    if (!_isRecording) return;
+    if (!widget._isRecording) return;
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
       widget.recordPath = recordRet;
@@ -115,80 +117,57 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
       if (kDebugMode) print('Record returns a null path');
     }
     setState(() {
-      _hasRecord = true;
-      _isRecording = false;
+      widget._hasRecord = true;
+      widget._isRecording = false;
     });
-    widget.notifyListeners();
   }
 
   void _retryRecording() {
-    if (!_hasRecord) return;
-    if (_isRecording) return;
+    if (!widget._hasRecord) return;
+    if (widget._isRecording) return;
     _audioPlayer.stop();
     setState(() {
-      _hasRecord = false;
+      widget._hasRecord = false;
       widget.recordPath = '';
     });
-    widget.notifyListeners();
   }
 
   void _playRecord() {
-    if (!_hasRecord) return;
+    if (!widget._hasRecord) return;
     _audioPlayer.play(ap.DeviceFileSource(widget.recordPath));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      // mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        IconButton(
-          icon: _recordIcon(),
-          onPressed: _cbkRecordStopPlay,
-        ),
-        IconButton(
-          icon: _retryIcon(),
-          onPressed: _cbkRetry,
-        ),
-        IconButton(
-          icon: _submitIcon(),
-          onPressed: _cbkSubmit,
-        ),
-      ],
-    );
-  }
-}
-
-// enum VoiceInputMode {
-//   single,
-//   word,
-//   article,
-//   sentance,
-// }
-
-class VoiceInputPage extends StatelessWidget {
-  final List<String> wordList;
-  // final VoiceInputMode inputMode;
-  const VoiceInputPage({
-    super.key,
-    required this.wordList,
-    // required this.inputMode,
-  });
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Wrap(
         spacing: 12.0,
         runSpacing: 8.0,
-        children: wordList
+        children: widget.wordList
             .map((e) => Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Text(e, style: gVoiceInputWordStyle)))
+                child: Text(e.label, style: gVoiceInputWordStyle)))
             .toList(),
       ),
-      bottomNavigationBar: VoiceInputComponent(),
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        // mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          IconButton(
+            icon: _recordIcon(),
+            onPressed: _cbkRecordStopPlay,
+          ),
+          IconButton(
+            icon: _retryIcon(),
+            onPressed: _cbkRetry,
+          ),
+          IconButton(
+            icon: _submitIcon(),
+            onPressed: _cbkSubmit,
+          ),
+        ],
+      ),
     );
   }
 }

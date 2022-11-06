@@ -1,8 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:project_soe/src/app_home/app_home.dart';
-import '../components/voice_input.dart';
-import '../data/params.dart';
-import '../data/styles.dart';
+import 'package:project_soe/src/nl_choice/nl_choice.dart';
+import 'package:project_soe/src/components/voice_input.dart';
+import 'package:project_soe/src/data/params.dart';
+import 'package:project_soe/src/data/styles.dart';
+import 'package:project_soe/src/data/exam_data.dart';
 /*
 class FullExaminationProcess extends StatelessWidget {
   final ValueNotifier<double> finishValue;
@@ -167,36 +175,60 @@ class FullExamination extends StatelessWidget {
 }
 */
 
-// FIXME 22.11.6 这个应该从服务器获取
-final wordList = [
-  ['a', 'b', 'c', 'd', 'e'],
-  ['aa', 'bb', 'cc', 'dd'],
-  ['aaaaaaaaaaaaaaaaaaaaaaaaaa'],
-];
+List<List<QuestionData>> parseWordMap(http.Response response) {
+  final u8decoded = utf8.decode(response.bodyBytes);
+  final decoded = jsonDecode(u8decoded);
+  final parsed = decoded['data']['cpsrcdList']
+      .cast<Map<String, dynamic>>()
+      .map<QuestionData>((json) => QuestionData.fromJson(json))
+      .toList();
+  Map<int, List<QuestionData>> map = Map<int, List<QuestionData>>.identity();
+  for (QuestionData questionData in parsed) {
+    if (map.containsKey(questionData.type)) {
+      map[questionData.type]!.add(questionData);
+    } else {
+      map[questionData.type] = List<QuestionData>.empty(growable: true);
+      map[questionData.type]!.add(questionData);
+    }
+  }
+  return map.entries.map((entry) => entry.value).toList();
+}
+
+Future<List<List<QuestionData>>> fetchWordMap(
+    http.Client client, String id) async {
+  final response = await client.get(
+    Uri.parse('http://47.101.58.72:8002/api/cpsgrp/v1/detail?cpsgrpId=$id'),
+  );
+  return compute(parseWordMap, response);
+}
 
 class _FullExaminationState extends State<FullExamination> {
   _FullExaminationState();
   int _index = 0;
-  final _listSize = wordList.length;
+  int _mapSize = 0;
+  VoiceInputPage? _inputPage;
+  List<String>? _recordList;
 
   void _forward() {
     if (_index <= 0) {
       return;
     } else {
+      _recordList![_index] = _inputPage!.recordPath;
       setState(() {
         _index = _index - 1;
-        _process.value = _index.toDouble() / _listSize.toDouble();
+        _process.value = _index.toDouble() / _mapSize.toDouble();
       });
     }
   }
 
   void _next() {
-    if (_index >= (_listSize - 1)) {
+    if (_index >= (_mapSize - 1)) {
       return;
     } else {
+      _recordList![_index] = _inputPage!.recordPath;
       setState(() {
         _index = _index + 1;
-        _process.value = _index.toDouble() / _listSize.toDouble();
+        _process.value = _index.toDouble() / _mapSize.toDouble();
       });
     }
   }
@@ -205,46 +237,65 @@ class _FullExaminationState extends State<FullExamination> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        toolbarHeight: 60.0,
-        title: Column(
-          children: [
-            AnimatedBuilder(
-              animation: _process,
-              builder: (context, child) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: LinearProgressIndicator(
-                      color: Colors.red, value: _process.value),
-                );
-              },
+    final examId = ModalRoute.of(context)!.settings.arguments as String;
+    return FutureBuilder<List<List<QuestionData>>>(
+      future: fetchWordMap(http.Client(), examId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('An error has occurred!'),
+          );
+        } else if (snapshot.hasData) {
+          _inputPage = VoiceInputPage(wordList: snapshot.data![_index]);
+          _mapSize = snapshot.data!.length;
+          _recordList = List<String>.generate(_mapSize, (index) => '');
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 60.0,
+              title: Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: _process,
+                    builder: (context, child) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: LinearProgressIndicator(
+                            color: Colors.red, value: _process.value),
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _forward,
+                        child: Icon(Icons.arrow_left),
+                        style: gFullExaminationNavButtonStyle,
+                      ),
+                      const Text(
+                        'Full Examination',
+                        style: gFullExaminationTitleStyle,
+                      ),
+                      ElevatedButton(
+                        onPressed: _next,
+                        child: Icon(Icons.arrow_right),
+                        style: gFullExaminationNavButtonStyle,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _forward,
-                  child: Icon(Icons.arrow_left),
-                  style: gFullExaminationNavButtonStyle,
-                ),
-                const Text(
-                  'Full Examination',
-                  style: gFullExaminationTitleStyle,
-                ),
-                ElevatedButton(
-                  onPressed: _next,
-                  child: Icon(Icons.arrow_right),
-                  style: gFullExaminationNavButtonStyle,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      body: VoiceInputPage(wordList: wordList[_index]),
+            body: _inputPage,
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
