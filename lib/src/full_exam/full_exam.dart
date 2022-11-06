@@ -3,7 +3,7 @@ import 'package:project_soe/src/app_home/app_home.dart';
 import '../components/voice_input.dart';
 import '../data/params.dart';
 import '../data/styles.dart';
-
+/*
 class FullExaminationProcess extends StatelessWidget {
   final ValueNotifier<double> finishValue;
   const FullExaminationProcess({
@@ -164,4 +164,94 @@ class FullExamination extends StatelessWidget {
       body: ListView(children: rows),
     );
   }
+}
+*/
+
+// FIXME 22.11.6 这个应该从服务器获取
+final wordList = [
+  ['a', 'b', 'c', 'd', 'e'],
+  ['aa', 'bb', 'cc', 'dd'],
+  ['aaaaaaaaaaaaaaaaaaaaaaaaaa'],
+];
+
+class _FullExaminationState extends State<FullExamination> {
+  _FullExaminationState();
+  int _index = 0;
+  final _listSize = wordList.length;
+
+  void _forward() {
+    if (_index <= 0) {
+      return;
+    } else {
+      setState(() {
+        _index = _index - 1;
+        _process.value = _index.toDouble() / _listSize.toDouble();
+      });
+    }
+  }
+
+  void _next() {
+    if (_index >= (_listSize - 1)) {
+      return;
+    } else {
+      setState(() {
+        _index = _index + 1;
+        _process.value = _index.toDouble() / _listSize.toDouble();
+      });
+    }
+  }
+
+  final ValueNotifier<double> _process = ValueNotifier<double>(0.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        toolbarHeight: 60.0,
+        title: Column(
+          children: [
+            AnimatedBuilder(
+              animation: _process,
+              builder: (context, child) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: LinearProgressIndicator(
+                      color: Colors.red, value: _process.value),
+                );
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _forward,
+                  child: Icon(Icons.arrow_left),
+                  style: gFullExaminationNavButtonStyle,
+                ),
+                const Text(
+                  'Full Examination',
+                  style: gFullExaminationTitleStyle,
+                ),
+                ElevatedButton(
+                  onPressed: _next,
+                  child: Icon(Icons.arrow_right),
+                  style: gFullExaminationNavButtonStyle,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      body: VoiceInputPage(wordList: wordList[_index]),
+    );
+  }
+}
+
+class FullExamination extends StatefulWidget {
+  const FullExamination({super.key});
+  static const String routeName = 'fullExam';
+  @override
+  State<StatefulWidget> createState() => _FullExaminationState();
 }

@@ -18,6 +18,13 @@ class ProjectSOE extends StatelessWidget {
     return true;
   }
 
+  final wordList = [
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+  ];
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

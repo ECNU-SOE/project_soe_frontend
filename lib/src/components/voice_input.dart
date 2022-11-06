@@ -6,41 +6,32 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:audioplayers/audioplayers.dart' as ap;
 
+import '../data/styles.dart';
+
 class VoiceInputComponent extends StatefulWidget with ChangeNotifier {
-  final String label;
   // 录音文件的临时地址.
   String recordPath = '';
-  VoiceInputComponent({Key? key, required this.label}) : super(key: key);
+  VoiceInputComponent({super.key});
   @override
-  State<VoiceInputComponent> createState() =>
-      _VoiceInputComponentState(label: label);
+  State<VoiceInputComponent> createState() => _VoiceInputComponentState();
 }
 
 class _VoiceInputComponentState extends State<VoiceInputComponent> {
   bool _isRecording = false;
   bool _hasRecord = false;
-  final String label;
-  _VoiceInputComponentState({Key? key, required this.label});
+  _VoiceInputComponentState({Key? key});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   // 析构函数
   @override
   void dispose() {
     _audioPlayer.stop();
     _audioPlayer.dispose();
+    _audioRecorder.stop();
+    _audioRecorder.dispose();
     super.dispose();
   }
-
-  final TextStyle _testStyle = const TextStyle(
-    color: Colors.black87,
-    fontSize: 32.0,
-  );
 
   Icon _recordIcon() {
     return Icon(
@@ -62,6 +53,14 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
     );
   }
 
+  Icon _submitIcon() {
+    return const Icon(
+      Icons.subscriptions,
+      color: Colors.brown,
+      size: 32.0,
+    );
+  }
+
   void _cbkRetry() {
     if (_isRecording) {
       return;
@@ -78,6 +77,10 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
     } else {
       _startRecording();
     }
+  }
+
+  void _cbkSubmit() {
+    if (!_hasRecord) return;
   }
 
   Future<void> _startRecording() async {
@@ -137,18 +140,10 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       // mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(12),
-          child: Text(
-            label,
-            style: _testStyle,
-            softWrap: true,
-          ),
-        ),
         IconButton(
           icon: _recordIcon(),
           onPressed: _cbkRecordStopPlay,
@@ -157,7 +152,43 @@ class _VoiceInputComponentState extends State<VoiceInputComponent> {
           icon: _retryIcon(),
           onPressed: _cbkRetry,
         ),
+        IconButton(
+          icon: _submitIcon(),
+          onPressed: _cbkSubmit,
+        ),
       ],
+    );
+  }
+}
+
+// enum VoiceInputMode {
+//   single,
+//   word,
+//   article,
+//   sentance,
+// }
+
+class VoiceInputPage extends StatelessWidget {
+  final List<String> wordList;
+  // final VoiceInputMode inputMode;
+  const VoiceInputPage({
+    super.key,
+    required this.wordList,
+    // required this.inputMode,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Wrap(
+        spacing: 12.0,
+        runSpacing: 8.0,
+        children: wordList
+            .map((e) => Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(e, style: gVoiceInputWordStyle)))
+            .toList(),
+      ),
+      bottomNavigationBar: VoiceInputComponent(),
     );
   }
 }
