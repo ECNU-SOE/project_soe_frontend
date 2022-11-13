@@ -9,28 +9,51 @@ class FullExamData {
   );
 }
 
+enum QuestionType {
+  word,
+  sentance,
+  poem,
+  article,
+}
+
+QuestionType questionTypeFromInt(int x) {
+  switch (x) {
+    case 1:
+      return QuestionType.word;
+    case 2:
+      return QuestionType.sentance;
+    case 5:
+      return QuestionType.poem;
+    case 3:
+      return QuestionType.article;
+    default:
+      throw ("No Such Question Type");
+  }
+}
+
+class QuestionPageData {
+  final QuestionType type;
+  final List<QuestionData> questionList;
+  const QuestionPageData({
+    required this.type,
+    required this.questionList,
+  });
+}
+
 class QuestionData {
   final String id;
-  final int type;
+  final int order;
   final String label;
   const QuestionData({
     required this.id,
-    required this.type,
+    required this.order,
     required this.label,
   });
   factory QuestionData.fromJson(Map<String, dynamic> json) {
     return QuestionData(
       id: json['id'] as String,
-      type: json['type'] as int,
+      order: json['order'] as int,
       label: json['refText'] as String,
     );
   }
 }
-
-//   factory FullExamData.fromJson(Map<String, dynamic> json) {
-//     return FullExamData(
-//       singleWords: json['singleWords'],
-//       doubleWords: json['doubleWords'],
-//       sentances: json['sentances'],
-//     );
-//   }

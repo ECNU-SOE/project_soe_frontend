@@ -12,10 +12,10 @@ import 'package:project_soe/src/data/exam_data.dart';
 class VoiceInputPage extends StatefulWidget with ChangeNotifier {
   // 录音文件的临时地址.
   String recordPath = '';
-  final List<QuestionData> wordList;
+  final QuestionPageData questionPageData;
   bool _isRecording = false;
   bool _hasRecord = false;
-  VoiceInputPage({super.key, required this.wordList});
+  VoiceInputPage({super.key, required this.questionPageData});
   @override
   State<VoiceInputPage> createState() => _VoiceInputPageState();
 }
@@ -143,11 +143,38 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
       body: Wrap(
         spacing: 12.0,
         runSpacing: 8.0,
-        children: widget.wordList
-            .map((e) => Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(e.label, style: gVoiceInputWordStyle)))
-            .toList(),
+        children: widget.questionPageData.questionList.map((e) {
+          if (widget.questionPageData.type == QuestionType.article) {
+            return Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(e.label, style: gVoiceInputWordStyle),
+            );
+          } else if (widget.questionPageData.type == QuestionType.poem) {
+            List<String> lines = e.label.split('\\n');
+            return Column(
+                children: lines
+                    .map(
+                      (line) => Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(line, style: gVoiceInputWordStyle),
+                          )
+                        ],
+                      ),
+                    )
+                    .toList());
+          } else {
+            return Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(e.label, style: gVoiceInputWordStyle),
+                ),
+              ],
+            );
+          }
+        }).toList(),
       ),
       bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
