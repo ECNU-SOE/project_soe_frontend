@@ -1,3 +1,10 @@
+import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:collection';
+
+import 'package:http/http.dart' as http;
+
 class FullExamData {
   final List<String> singleWords;
   final List<String> doubleWords;
@@ -12,8 +19,8 @@ class FullExamData {
 enum QuestionType {
   word,
   sentance,
-  poem,
   article,
+  poem,
 }
 
 QuestionType questionTypeFromInt(int x) {
@@ -22,10 +29,25 @@ QuestionType questionTypeFromInt(int x) {
       return QuestionType.word;
     case 2:
       return QuestionType.sentance;
-    case 5:
-      return QuestionType.poem;
     case 3:
       return QuestionType.article;
+    case 5:
+      return QuestionType.poem;
+    default:
+      throw ("No Such Question Type");
+  }
+}
+
+int questionTypeToInt(QuestionType t) {
+  switch (t) {
+    case QuestionType.word:
+      return 1;
+    case QuestionType.sentance:
+      return 2;
+    case QuestionType.article:
+      return 3;
+    case QuestionType.poem:
+      return 5;
     default:
       throw ("No Such Question Type");
   }
@@ -34,10 +56,40 @@ QuestionType questionTypeFromInt(int x) {
 class QuestionPageData {
   final QuestionType type;
   final List<QuestionData> questionList;
-  const QuestionPageData({
+  String filePath;
+  QuestionPageData({
     required this.type,
     required this.questionList,
+    this.filePath = '',
   });
+
+  Future<http.MultipartFile> getMultiPartFileAudio() async {
+    dynamic httpAudio;
+    if (filePath != '') {
+      final bytes = await File(filePath).readAsBytes();
+      final fileSplit = filePath.split('\\');
+      final String fileName = fileSplit[fileSplit.length - 1];
+      httpAudio =
+          http.MultipartFile.fromBytes(fileName, bytes, filename: fileName);
+    }
+    return httpAudio;
+  }
+
+  Future<Map<String, dynamic>> toDynamicMap() async {
+    List<Map<String, dynamic>> wordList = [];
+    for (QuestionData questionData in questionList) {
+      wordList.add(questionData.toDynamicMap());
+    }
+
+    Map<String, dynamic> json = {
+      'type': questionTypeToInt(type).toString(),
+      'audioName': filePath == ''
+          ? ''
+          : filePath.split('\\')[filePath.split('\\').length - 1],
+      'refText': wordList,
+    };
+    return json;
+  }
 }
 
 class QuestionData {
@@ -55,5 +107,11 @@ class QuestionData {
       order: json['order'] as int,
       label: json['refText'] as String,
     );
+  }
+  Map<String, dynamic> toDynamicMap() {
+    Map<String, dynamic> json = {};
+    json['word'] = label;
+    json['pinyin'] = '';
+    return json;
   }
 }

@@ -10,8 +10,7 @@ import 'package:project_soe/src/data/styles.dart';
 import 'package:project_soe/src/data/exam_data.dart';
 
 class VoiceInputPage extends StatefulWidget with ChangeNotifier {
-  // 录音文件的临时地址.
-  String recordPath = '';
+  // 文件数据, 包括录音地址.
   final QuestionPageData questionPageData;
   bool _isRecording = false;
   bool _hasRecord = false;
@@ -112,7 +111,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     if (!widget._isRecording) return;
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
-      widget.recordPath = recordRet;
+      widget.questionPageData.filePath = recordRet;
     } else {
       if (kDebugMode) print('Record returns a null path');
     }
@@ -128,13 +127,13 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     _audioPlayer.stop();
     setState(() {
       widget._hasRecord = false;
-      widget.recordPath = '';
+      widget.questionPageData.filePath = '';
     });
   }
 
   void _playRecord() {
     if (!widget._hasRecord) return;
-    _audioPlayer.play(ap.DeviceFileSource(widget.recordPath));
+    _audioPlayer.play(ap.DeviceFileSource(widget.questionPageData.filePath));
   }
 
   @override

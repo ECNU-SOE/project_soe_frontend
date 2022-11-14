@@ -44,14 +44,12 @@ class _FullExaminationState extends State<FullExamination> {
   int _listSize = 0;
   VoiceInputPage? _inputPage;
   List<VoiceInputPage>? _voiceInputs;
-  List<String>? _recordList;
   final ValueNotifier<double> _process = ValueNotifier<double>(0.0);
 
   void _forward() {
     if (_index <= 0) {
       return;
     } else {
-      _recordList![_index] = _inputPage!.recordPath;
       setState(() {
         _index = _index - 1;
         _process.value = _index.toDouble() / _listSize.toDouble();
@@ -63,7 +61,6 @@ class _FullExaminationState extends State<FullExamination> {
     if (_index >= (_listSize - 1)) {
       return;
     } else {
-      _recordList![_index] = _inputPage!.recordPath;
       setState(() {
         _index = _index + 1;
         _process.value = _index.toDouble() / _listSize.toDouble();
@@ -122,7 +119,6 @@ class _FullExaminationState extends State<FullExamination> {
             _voiceInputs!.add(_inputPage!);
           }
           _listSize = snapshot.data!.length;
-          _recordList = List<String>.generate(_listSize, (index) => '');
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,

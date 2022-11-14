@@ -43,7 +43,6 @@ dependencies:
   adaptive_navigation: ^0.0.3
   quiver: ^3.1.0
   path_to_regexp: ^0.4.0
-  dio: ^4.0.6
   
 dev_dependencies:
   flutter_test:

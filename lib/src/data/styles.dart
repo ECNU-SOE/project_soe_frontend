@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 const TextStyle gFullExaminationSubTitleStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 40.0,
+  fontSize: 20.0,
 );
 
 const TextStyle gFullExaminationTitleStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 55.0,
+  fontSize: 30.0,
 );
 
 const ButtonStyle gFullExaminationNavButtonStyle = ButtonStyle();
 
 const TextStyle gNativeLanguageChooseTitleStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 55.0,
+  fontSize: 30.0,
 );
 const TextStyle gNativeLanguageChooseListStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 55.0,
+  fontSize: 20.0,
 );
 const TextStyle gNativeLanguageChooseInfoStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 55.0,
+  fontSize: 30.0,
 );
 
 const TextStyle gVoiceInputSentanceStyle = TextStyle(
