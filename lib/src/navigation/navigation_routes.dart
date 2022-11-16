@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:project_soe/src/app_home/app_home.dart';
 import 'package:project_soe/src/full_exam/full_exam.dart';
 import 'package:project_soe/src/full_exam/full_exam_results.dart';
-import 'package:project_soe/src/login/login_view.dart';
+import 'package:project_soe/src/login/login_screen.dart';
 import 'package:project_soe/src/nl_choice/nl_choice.dart';
 
 Map<String, WidgetBuilder> sNavigationRoutes = {
@@ -12,5 +12,5 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   FullExamination.routeName: (context) => FullExamination(),
   ApplicationHome.routeName: (context) => ApplicationHome(),
   FullExaminationResult.routeName: (context) => FullExaminationResult(),
-  LoginView.routeName: (context) => LoginView(),
+  LoginScreen.routeName: (context) => LoginScreen(),
 };
