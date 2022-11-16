@@ -15,12 +15,14 @@ class LoginScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2000);
   Future<String?> _authUser(LoginData data) async {
     final client = http.Client();
+    final bodyMap = {
+      'phone': data.name,
+      'pwd': data.password,
+    };
     final response = await client.post(
       Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/login'),
-      body: {
-        'phone': data.name,
-        'pwd': data.password,
-      },
+      body: jsonEncode(bodyMap),
+      headers: {"Content-Type": "application/json"},
       encoding: Encoding.getByName('utf-8'),
     );
     final u8decoded = utf8.decode(response.bodyBytes);
@@ -35,13 +37,15 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signupUser(SignupData data) async {
     final client = http.Client();
+    final bodyMap = {
+      'phone': data.name,
+      'pwd': data.password,
+      'code': '',
+    };
     final response = await client.post(
       Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/register'),
-      body: {
-        'phone': data.name,
-        'pwd': data.password,
-        'code': '',
-      },
+      body: jsonEncode(bodyMap),
+      headers: {"Content-Type": "application/json"},
       encoding: Encoding.getByName('utf-8'),
     );
     final u8decoded = utf8.decode(response.bodyBytes);
