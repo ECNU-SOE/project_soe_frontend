@@ -40,7 +40,8 @@ class LoginScreen extends StatelessWidget {
     final bodyMap = {
       'phone': data.name,
       'pwd': data.password,
-      'code': '',
+      // TODO 22.11.17 目前不实现验证码
+      'code': 'TODO',
     };
     final response = await client.post(
       Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/register'),

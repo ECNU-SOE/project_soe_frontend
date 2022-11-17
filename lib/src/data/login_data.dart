@@ -48,11 +48,11 @@ final inputBorder = BorderRadius.vertical(
 );
 
 final sLoginTheme = LoginTheme(
-  primaryColor: Colors.teal,
-  accentColor: Colors.yellow,
+  primaryColor: Colors.blue[50],
+  accentColor: Colors.white60,
   errorColor: Colors.deepOrange,
   titleStyle: TextStyle(
-    color: Colors.greenAccent,
+    color: Colors.black87,
     fontFamily: 'Quicksand',
     letterSpacing: 4,
   ),

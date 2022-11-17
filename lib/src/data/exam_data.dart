@@ -57,11 +57,32 @@ class QuestionPageData {
   final QuestionType type;
   final List<QuestionData> questionList;
   String filePath;
+  String? resultJson;
   QuestionPageData({
     required this.type,
     required this.questionList,
     this.filePath = '',
   });
+
+  Future<void> postAndGetResult() async {
+    final client = http.Client();
+    final uri =
+        Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload');
+    final response = await client.post(
+      uri,
+      body: jsonEncode(toDynamicMap()),
+      encoding: Encoding.getByName('utf-8'),
+    );
+    final u8decoded = utf8.decode(response.bodyBytes);
+    resultJson = jsonDecode(u8decoded);
+  }
+
+  String getResultJson() {
+    if (resultJson == null) {
+      return '';
+    }
+    return resultJson!;
+  }
 
   Future<http.MultipartFile> getMultiPartFileAudio() async {
     dynamic httpAudio;

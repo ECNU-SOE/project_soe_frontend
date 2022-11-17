@@ -112,6 +112,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
       widget.questionPageData.filePath = recordRet;
+      widget.questionPageData.postAndGetResult();
     } else {
       if (kDebugMode) print('Record returns a null path');
     }

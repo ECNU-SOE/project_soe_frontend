@@ -50,8 +50,8 @@ class ProjectSOE extends StatelessWidget {
       ),
       // FIXME 22.11.1
       // initialRoute : _queryFirstTimeUse()? NativeLanguageChoice.routeName : ApplicationHome.routeName;
-      // initialRoute: NativeLanguageChoice.routeName,
-      initialRoute: LoginScreen.routeName,
+      initialRoute: NativeLanguageChoice.routeName,
+      // initialRoute: LoginScreen.routeName,
 
       routes: sNavigationRoutes,
     );
