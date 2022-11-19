@@ -209,7 +209,7 @@ class QuestionPageResultData {
     required this.pronFluency,
   });
 
-  String getJsonString(int id) {
+  Map<String, dynamic> getJsonMap(int id) {
     final retMap = {
       'subTopic': id,
       // FIXME 22.11.19
@@ -220,7 +220,7 @@ class QuestionPageResultData {
       'pronAccuracy': pronAccuracy,
       'pronFluency': pronFluency,
     };
-    return jsonEncode(retMap).toString();
+    return retMap;
   }
 
   factory QuestionPageResultData.fromJson(Map<String, dynamic> json) {

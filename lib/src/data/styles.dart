@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 const TextStyle gFullExaminationSubTitleStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 20.0,
+  fontSize: 18.0,
 );
 
 const TextStyle gFullExaminationTitleStyle = TextStyle(
   color: Colors.amber,
-  fontSize: 30.0,
+  fontSize: 18.0,
 );
 
 const ButtonStyle gFullExaminationNavButtonStyle = ButtonStyle();

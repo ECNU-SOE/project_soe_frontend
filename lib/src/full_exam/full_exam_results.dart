@@ -7,37 +7,39 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/app_home/app_home.dart';
 
 import 'package:project_soe/src/data/exam_data.dart';
 import 'package:project_soe/src/components/voice_input.dart';
 import 'package:project_soe/src/login/authorition.dart';
 
-List<String> parseExamResults(http.Response response) {
+Future<String> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
+  final retStr = decoded['data'].toString();
   // TODO 22.11.13 实现解析数据
-  List<String> list = List<String>.empty(growable: true);
-  return list;
+  return retStr;
 }
 
-Future<List<String>> submitAndGetResults(
+Future<String> submitAndGetResults(
     List<VoiceInputPage> inputPages, String id) async {
-  List<String> dataList = [];
+  List<Map<String, dynamic>> dataList = [];
   int index = 0;
   for (VoiceInputPage inputPage in inputPages) {
     if (inputPage.questionPageData.resultData == null) {
       continue;
     }
-    dataList.add(inputPage.questionPageData.resultData!.getJsonString(index));
+    dataList.add(inputPage.questionPageData.resultData!.getJsonMap(index));
     index++;
   }
+  final bodyMap = {
+    'cpsgrpId': id,
+    'scores': dataList,
+  };
   final client = http.Client();
   final response = await client.post(
-    Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload'),
-    body: {
-      'cpsgrpId': id,
-      'scores': jsonEncode(dataList).toString(),
-    },
+    Uri.parse('http://47.101.58.72:8002/api/cpsgrp/v1/transcript'),
+    body: jsonEncode(bodyMap).toString(),
     headers: {
       "Content-Type": "application/json",
       // FIXME 22.11.19 这里用的是临时Token
@@ -55,7 +57,7 @@ class FullExaminationResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments
         as FullExamResultScreenArguments;
-    return FutureBuilder<List<String>>(
+    return FutureBuilder<String>(
       future: submitAndGetResults(args.inputPages, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -63,7 +65,17 @@ class FullExaminationResult extends StatelessWidget {
             child: Text('An error has occurred!'),
           );
         } else if (snapshot.hasData) {
-          return Scaffold();
+          return Scaffold(
+            body: Text(snapshot.data!),
+            bottomNavigationBar: Container(
+              child: ElevatedButton(
+                child: Text("进入APP"),
+                onPressed: () {
+                  Navigator.pushNamed(context, ApplicationHome.routeName);
+                },
+              ),
+            ),
+          );
         } else {
           return const Center(
             child: CircularProgressIndicator(),

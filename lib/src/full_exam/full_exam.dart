@@ -134,7 +134,7 @@ class _FullExaminationState extends State<FullExamination> {
                     style: gFullExaminationNavButtonStyle,
                   ),
                   const Text(
-                    'Full Examination',
+                    '全面测试',
                     style: gFullExaminationTitleStyle,
                   ),
                   ElevatedButton(
