@@ -1,3 +1,8 @@
+# Audio Test
+*.mp3
+*.m4a
+*.wav
+
 # Miscellaneous
 *.class
 *.log
