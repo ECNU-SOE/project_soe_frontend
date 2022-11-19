@@ -1,5 +1,7 @@
 // TODO 11.2 实现此类.
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/login/login_screen.dart';
+import 'package:project_soe/src/login/authorition.dart';
 
 class PersonalPage extends StatelessWidget {
   const PersonalPage({super.key});
@@ -7,9 +9,13 @@ class PersonalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Icon(
-      Icons.dangerous,
-      color: Colors.blue,
+    return ElevatedButton(
+      onPressed: () {
+        if (gAuthorithionToken == '') {
+          Navigator.pushNamed(context, LoginScreen.routeName);
+        }
+      },
+      child: Text('点击登录'),
     );
   }
 }

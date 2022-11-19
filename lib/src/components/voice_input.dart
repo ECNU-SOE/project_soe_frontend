@@ -54,14 +54,6 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     );
   }
 
-  Icon _submitIcon() {
-    return const Icon(
-      Icons.check,
-      color: Colors.brown,
-      size: 32.0,
-    );
-  }
-
   void _cbkRetry() {
     if (widget._isRecording) {
       return;
@@ -78,10 +70,6 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     } else {
       _startRecording();
     }
-  }
-
-  void _cbkSubmit() {
-    if (!widget._hasRecord) return;
   }
 
   Future<void> _startRecording() async {
@@ -110,9 +98,11 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   Future<void> _stopRecording() async {
     if (!widget._isRecording) return;
     final recordRet = await _audioRecorder.stop();
+    // HAX 22.11.19 避免录音未完成
+    await Future.delayed(const Duration(milliseconds: 100));
     if (recordRet != null) {
       widget.questionPageData.filePath = recordRet;
-      widget.questionPageData.postAndGetResult();
+      await widget.questionPageData.postAndGetResult();
     } else {
       if (kDebugMode) print('Record returns a null path');
     }
@@ -140,60 +130,41 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Wrap(
-        spacing: 12.0,
-        runSpacing: 8.0,
-        children: widget.questionPageData.questionList.map((e) {
-          if (widget.questionPageData.type == QuestionType.article) {
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(e.label, style: gVoiceInputWordStyle),
-            );
-          } else if (widget.questionPageData.type == QuestionType.poem) {
-            List<String> lines = e.label.split('\\n');
-            return Column(
-                children: lines
-                    .map(
-                      (line) => Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(line, style: gVoiceInputWordStyle),
-                          )
-                        ],
-                      ),
-                    )
-                    .toList());
-          } else {
-            return Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(e.label, style: gVoiceInputWordStyle),
-                ),
-              ],
-            );
-          }
-        }).toList(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        title: Text(
+          getQuestionTypeInfo(widget.questionPageData.type),
+          style: gFullExaminationSubTitleStyle,
+        ),
       ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        // mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: _recordIcon(),
-            onPressed: _cbkRecordStopPlay,
-          ),
-          IconButton(
-            icon: _retryIcon(),
-            onPressed: _cbkRetry,
-          ),
-          IconButton(
-            icon: _submitIcon(),
-            onPressed: _cbkSubmit,
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (BuildContext context, _) {
+          return ListTile(
+            title: Text(
+              widget.questionPageData.toSingleString(),
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              icon: _recordIcon(),
+              onPressed: _cbkRecordStopPlay,
+            ),
+            IconButton(
+              icon: _retryIcon(),
+              onPressed: _cbkRetry,
+            ),
+          ],
+        ),
       ),
     );
   }

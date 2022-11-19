@@ -40,6 +40,7 @@ Future<List<QuestionPageData>> fetchWordMap(
 
 class _FullExaminationState extends State<FullExamination> {
   _FullExaminationState();
+  String examId = '';
   int _index = 0;
   int _listSize = 0;
   VoiceInputPage? _inputPage;
@@ -70,7 +71,7 @@ class _FullExaminationState extends State<FullExamination> {
 
   void onSubmitButtonPressed() {
     Navigator.pushNamed(context, FullExaminationResult.routeName,
-        arguments: (_voiceInputs));
+        arguments: (FullExamResultScreenArguments(examId, _voiceInputs!)));
     return;
   }
 
@@ -103,7 +104,7 @@ class _FullExaminationState extends State<FullExamination> {
 
   @override
   Widget build(BuildContext context) {
-    final examId = ModalRoute.of(context)!.settings.arguments as String;
+    examId = ModalRoute.of(context)!.settings.arguments as String;
     return FutureBuilder<List<QuestionPageData>>(
       future: fetchWordMap(http.Client(), examId),
       builder: (context, snapshot) {

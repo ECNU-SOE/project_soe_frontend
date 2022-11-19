@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/data/exam_data.dart';
 import 'package:project_soe/src/components/voice_input.dart';
+import 'package:project_soe/src/login/authorition.dart';
 
 List<String> parseExamResults(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
@@ -20,24 +21,30 @@ List<String> parseExamResults(http.Response response) {
 }
 
 Future<List<String>> submitAndGetResults(
-    List<VoiceInputPage> inputPages) async {
-  var dataList = <Map<String, dynamic>>[];
-  var fileList = <http.MultipartFile>[];
+    List<VoiceInputPage> inputPages, String id) async {
+  List<String> dataList = [];
+  int index = 0;
   for (VoiceInputPage inputPage in inputPages) {
-    dataList.add(await inputPage.questionPageData.toDynamicMap());
-    if (inputPage.questionPageData.filePath != '') {
-      fileList.add(await inputPage.questionPageData.getMultiPartFileAudio());
+    if (inputPage.questionPageData.resultData == null) {
+      continue;
     }
+    dataList.add(inputPage.questionPageData.resultData!.getJsonString(index));
+    index++;
   }
-  var json = jsonEncode(dataList).toString();
-  var request = http.MultipartRequest(
-    'POST',
+  final client = http.Client();
+  final response = await client.post(
     Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload'),
-  )
-    ..fields.addAll({'data': json})
-    ..files.addAll(fileList);
-  var streamResponse = await request.send();
-  var response = await http.Response.fromStream(streamResponse);
+    body: {
+      'cpsgrpId': id,
+      'scores': jsonEncode(dataList).toString(),
+    },
+    headers: {
+      "Content-Type": "application/json",
+      // FIXME 22.11.19 这里用的是临时Token
+      HttpHeaders.authorizationHeader: gTempToken,
+    },
+    encoding: Encoding.getByName('utf-8'),
+  );
   return compute(parseExamResults, response);
 }
 
@@ -46,10 +53,10 @@ class FullExaminationResult extends StatelessWidget {
   const FullExaminationResult({super.key});
   @override
   Widget build(BuildContext context) {
-    final inputPages =
-        ModalRoute.of(context)!.settings.arguments as List<VoiceInputPage>;
+    final args = ModalRoute.of(context)!.settings.arguments
+        as FullExamResultScreenArguments;
     return FutureBuilder<List<String>>(
-      future: submitAndGetResults(inputPages),
+      future: submitAndGetResults(args.inputPages, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(

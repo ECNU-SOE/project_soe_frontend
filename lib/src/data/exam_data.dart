@@ -3,7 +3,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:mime/mime.dart' as mime;
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
+import 'package:http_parser/http_parser.dart' as http_parser;
+import 'package:project_soe/src/components/voice_input.dart';
+
+class FullExamResultScreenArguments {
+  final String id;
+  final List<VoiceInputPage> inputPages;
+  FullExamResultScreenArguments(this.id, this.inputPages);
+}
 
 class FullExamData {
   final List<String> singleWords;
@@ -21,6 +32,21 @@ enum QuestionType {
   sentance,
   article,
   poem,
+}
+
+String getQuestionTypeInfo(QuestionType x) {
+  switch (x) {
+    case QuestionType.word:
+      return '本题是单词问题';
+    case QuestionType.sentance:
+      return '本题是句子题';
+    case QuestionType.article:
+      return '本题是文章题';
+    case QuestionType.poem:
+      return '本题是读古诗';
+    default:
+      throw ('不支持的格式');
+  }
 }
 
 QuestionType questionTypeFromInt(int x) {
@@ -57,7 +83,7 @@ class QuestionPageData {
   final QuestionType type;
   final List<QuestionData> questionList;
   String filePath;
-  String? resultJson;
+  QuestionPageResultData? resultData;
   QuestionPageData({
     required this.type,
     required this.questionList,
@@ -65,23 +91,27 @@ class QuestionPageData {
   });
 
   Future<void> postAndGetResult() async {
-    final client = http.Client();
-    final uri =
-        Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload');
-    final response = await client.post(
-      uri,
-      body: jsonEncode(toDynamicMap()),
-      encoding: Encoding.getByName('utf-8'),
-    );
-    final u8decoded = utf8.decode(response.bodyBytes);
-    resultJson = jsonDecode(u8decoded);
-  }
-
-  String getResultJson() {
-    if (resultJson == null) {
-      return '';
+    if (filePath == '') {
+      return;
     }
-    return resultJson!;
+    String mimeLook = mime.lookupMimeType(filePath)!;
+    final mimeSplit = mimeLook.split('/');
+    var mimeString = mimeSplit[0];
+    var mimeType = mimeSplit[1];
+    final formData = dio.FormData.fromMap({
+      'audio': await dio.MultipartFile.fromFile(
+        filePath,
+        contentType: http_parser.MediaType(mimeString, mimeType),
+      ),
+      'text': toSingleString(),
+      'mode': questionTypeToInt(type),
+      'pinyin': '',
+    });
+    final response = await dio.Dio().postUri(
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload'),
+      data: formData,
+    );
+    resultData = QuestionPageResultData.fromJson(response.data);
   }
 
   Future<http.MultipartFile> getMultiPartFileAudio() async {
@@ -90,12 +120,39 @@ class QuestionPageData {
       final bytes = await File(filePath).readAsBytes();
       final fileSplit = filePath.split('\\');
       final String fileName = fileSplit[fileSplit.length - 1];
-      httpAudio =
-          http.MultipartFile.fromBytes(fileName, bytes, filename: fileName);
+      httpAudio = http.MultipartFile.fromBytes(fileName, bytes,
+          filename: fileName,
+          contentType: http_parser.MediaType('audio', 'wav'));
     }
     return httpAudio;
   }
 
+  String toSingleString() {
+    if (questionList.isEmpty) {
+      throw ('Invalid QuestionList size');
+    }
+    if (type == QuestionType.poem) {
+      List<String> lines = questionList[0].label.split('\\n');
+      var ret = '';
+      for (String line in lines) {
+        ret += line;
+        ret += '\n';
+      }
+      return ret;
+    }
+    if (questionList.length == 1) {
+      return questionList[0].label;
+    }
+    String single = questionList[0].label;
+    single += '\n';
+    for (int i = 1; i < questionList.length; ++i) {
+      single += questionList[i].label;
+      single += '\n';
+    }
+    return single;
+  }
+
+  // 22.11.19 此函数弃用, 只适用于之前的接口.
   Future<Map<String, dynamic>> toDynamicMap() async {
     List<Map<String, dynamic>> wordList = [];
     for (QuestionData questionData in questionList) {
@@ -134,5 +191,53 @@ class QuestionData {
     json['word'] = label;
     json['pinyin'] = '';
     return json;
+  }
+}
+
+class QuestionPageResultData {
+  final int totalWords;
+  final int wrongWords;
+  final double proportion = 0.2;
+  final double pronCompletion;
+  final double pronAccuracy;
+  final double pronFluency;
+  const QuestionPageResultData({
+    required this.totalWords,
+    required this.wrongWords,
+    required this.pronCompletion,
+    required this.pronAccuracy,
+    required this.pronFluency,
+  });
+
+  String getJsonString(int id) {
+    final retMap = {
+      'subTopic': id,
+      // FIXME 22.11.19
+      'proportion': 0.0,
+      'totalWords': totalWords,
+      'wrongWords': wrongWords,
+      'pronCompletion': pronCompletion,
+      'pronAccuracy': pronAccuracy,
+      'pronFluency': pronFluency,
+    };
+    return jsonEncode(retMap).toString();
+  }
+
+  factory QuestionPageResultData.fromJson(Map<String, dynamic> json) {
+    return QuestionPageResultData(
+      totalWords: (json['total_words_count'] == null)
+          ? 0
+          : json['total_words_count'] as int,
+      wrongWords: (json['wrong_words_count'] == null)
+          ? 0
+          : json['wrong_words_count'] as int,
+      pronAccuracy:
+          (json['pronAccuracy'] == null) ? 0 : json['pronAccuracy'] as double,
+      pronFluency:
+          (json['pronFluency'] == null) ? 0 : json['pronFluency'] as double,
+      pronCompletion: (json['pronCompletion'] == null)
+          ? 0
+          : json['pronCompletion'] as double,
+    );
   }
 }
