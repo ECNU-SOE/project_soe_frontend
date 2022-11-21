@@ -10,6 +10,16 @@ const TextStyle gFullExaminationTitleStyle = TextStyle(
   fontSize: 18.0,
 );
 
+const TextStyle gExaminationResultTextStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 12.0,
+);
+
+const TextStyle gExaminationResultSubtitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 18.0,
+);
+
 const ButtonStyle gFullExaminationNavButtonStyle = ButtonStyle();
 
 const TextStyle gNativeLanguageChooseTitleStyle = TextStyle(

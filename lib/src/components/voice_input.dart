@@ -14,7 +14,9 @@ class VoiceInputPage extends StatefulWidget with ChangeNotifier {
   final QuestionPageData questionPageData;
   bool _isRecording = false;
   bool _hasRecord = false;
-  VoiceInputPage({super.key, required this.questionPageData});
+  VoiceInputPage({super.key, required this.questionPageData}) {
+    _hasRecord = questionPageData.filePath != '';
+  }
   @override
   State<VoiceInputPage> createState() => _VoiceInputPageState();
 }
@@ -98,18 +100,18 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   Future<void> _stopRecording() async {
     if (!widget._isRecording) return;
     final recordRet = await _audioRecorder.stop();
-    // HAX 22.11.19 避免录音未完成
-    await Future.delayed(const Duration(milliseconds: 100));
     if (recordRet != null) {
       widget.questionPageData.filePath = recordRet;
+      // HAX 22.11.19 避免录音未完成
+      await Future.delayed(const Duration(milliseconds: 100));
       await widget.questionPageData.postAndGetResult();
+      setState(() {
+        widget._hasRecord = true;
+        widget._isRecording = false;
+      });
     } else {
       if (kDebugMode) print('Record returns a null path');
     }
-    setState(() {
-      widget._hasRecord = true;
-      widget._isRecording = false;
-    });
   }
 
   void _retryRecording() {

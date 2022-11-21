@@ -38,9 +38,8 @@ Future<List<QuestionPageData>> fetchWordMap(
   return compute(parseWordMap, response);
 }
 
-class _FullExaminationState extends State<FullExamination> {
-  _FullExaminationState();
-  String examId = '';
+class _FullExaminationBodyState extends State<_FullExaminationBody> {
+  _FullExaminationBodyState();
   int _index = 0;
   int _listSize = 0;
   VoiceInputPage? _inputPage;
@@ -71,7 +70,8 @@ class _FullExaminationState extends State<FullExamination> {
 
   void onSubmitButtonPressed() {
     Navigator.pushNamed(context, FullExaminationResult.routeName,
-        arguments: (FullExamResultScreenArguments(examId, _voiceInputs!)));
+        arguments:
+            (FullExamResultScreenArguments(widget._examId, _voiceInputs!)));
     return;
   }
 
@@ -104,7 +104,59 @@ class _FullExaminationState extends State<FullExamination> {
 
   @override
   Widget build(BuildContext context) {
-    examId = ModalRoute.of(context)!.settings.arguments as String;
+    _inputPage = VoiceInputPage(questionPageData: widget._pageDatas[_index]);
+    try {
+      _voiceInputs![_index] = _inputPage!;
+    } catch (e) {
+      _voiceInputs!.add(_inputPage!);
+    }
+    _listSize = widget._pageDatas.length;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        toolbarHeight: 60.0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _forward,
+              child: Icon(Icons.arrow_left),
+              style: gFullExaminationNavButtonStyle,
+            ),
+            const Text(
+              '全面测试',
+              style: gFullExaminationTitleStyle,
+            ),
+            ElevatedButton(
+              onPressed: _next,
+              child: Icon(Icons.arrow_right),
+              style: gFullExaminationNavButtonStyle,
+            ),
+          ],
+        ),
+      ),
+      body: _inputPage,
+      bottomNavigationBar: _buildBottomWidget(),
+    );
+  }
+}
+
+class _FullExaminationBody extends StatefulWidget {
+  List<QuestionPageData> _pageDatas;
+  String _examId;
+  _FullExaminationBody(this._examId, this._pageDatas);
+  @override
+  State<StatefulWidget> createState() => _FullExaminationBodyState();
+}
+
+class FullExamination extends StatelessWidget {
+  FullExamination({super.key});
+  static const String routeName = 'fullExam';
+  String examId = '';
+  @override
+  Widget build(BuildContext context) {
+    String examId = ModalRoute.of(context)!.settings.arguments as String;
     return FutureBuilder<List<QuestionPageData>>(
       future: fetchWordMap(http.Client(), examId),
       builder: (context, snapshot) {
@@ -113,41 +165,7 @@ class _FullExaminationState extends State<FullExamination> {
             child: Text('An error has occurred!'),
           );
         } else if (snapshot.hasData) {
-          _inputPage = VoiceInputPage(questionPageData: snapshot.data![_index]);
-          try {
-            _voiceInputs![_index] = _inputPage!;
-          } catch (e) {
-            _voiceInputs!.add(_inputPage!);
-          }
-          _listSize = snapshot.data!.length;
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              automaticallyImplyLeading: false,
-              toolbarHeight: 60.0,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: _forward,
-                    child: Icon(Icons.arrow_left),
-                    style: gFullExaminationNavButtonStyle,
-                  ),
-                  const Text(
-                    '全面测试',
-                    style: gFullExaminationTitleStyle,
-                  ),
-                  ElevatedButton(
-                    onPressed: _next,
-                    child: Icon(Icons.arrow_right),
-                    style: gFullExaminationNavButtonStyle,
-                  ),
-                ],
-              ),
-            ),
-            body: _inputPage,
-            bottomNavigationBar: _buildBottomWidget(),
-          );
+          return _FullExaminationBody(examId, snapshot.data!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -156,11 +174,4 @@ class _FullExaminationState extends State<FullExamination> {
       },
     );
   }
-}
-
-class FullExamination extends StatefulWidget {
-  const FullExamination({super.key});
-  static const String routeName = 'fullExam';
-  @override
-  State<StatefulWidget> createState() => _FullExaminationState();
 }

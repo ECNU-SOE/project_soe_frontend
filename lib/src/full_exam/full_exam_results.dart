@@ -9,19 +9,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_soe/src/app_home/app_home.dart';
 
+import 'package:project_soe/src/data/styles.dart';
 import 'package:project_soe/src/data/exam_data.dart';
 import 'package:project_soe/src/components/voice_input.dart';
 import 'package:project_soe/src/login/authorition.dart';
 
-Future<String> parseExamResults(http.Response response) async {
+Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
-  final retStr = decoded['data'].toString();
-  // TODO 22.11.13 实现解析数据
-  return retStr;
+  final retMap = decoded['data'];
+  return retMap;
 }
 
-Future<String> submitAndGetResults(
+Future<Map<String, dynamic>> submitAndGetResults(
     List<VoiceInputPage> inputPages, String id) async {
   List<Map<String, dynamic>> dataList = [];
   int index = 0;
@@ -53,11 +53,41 @@ Future<String> submitAndGetResults(
 class FullExaminationResult extends StatelessWidget {
   static const String routeName = 'fullExamResult';
   const FullExaminationResult({super.key});
+
+  Widget _textWrap(String text, TextStyle textStyle) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, top: 10.0),
+        child: Text(text, style: textStyle),
+      ),
+    );
+  }
+
+  Widget _generateScaffoldBody(Map<String, dynamic> data) {
+    final score = data['suggestedScore'];
+    final completion = data['pronCompletion'];
+    final accuracy = data['pronAccuracy'];
+    final fluency = data['pronFluency'];
+    final scoreLabel = '建议得分: $score/100';
+    final completionLabel = '完整度: $completion/10.0';
+    final accuracyLabel = '准确度: $accuracy/10.0';
+    final fluencyLabel = '流畅度: $fluency/10.0';
+    final listView = ListView(
+      children: [
+        _textWrap(scoreLabel, gExaminationResultSubtitleStyle),
+        _textWrap(completionLabel, gExaminationResultTextStyle),
+        _textWrap(accuracyLabel, gExaminationResultTextStyle),
+        _textWrap(fluencyLabel, gExaminationResultTextStyle),
+      ],
+    );
+    return listView;
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments
         as FullExamResultScreenArguments;
-    return FutureBuilder<String>(
+    return FutureBuilder<Map<String, dynamic>>(
       future: submitAndGetResults(args.inputPages, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -66,10 +96,10 @@ class FullExaminationResult extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           return Scaffold(
-            body: Text(snapshot.data!),
+            body: _generateScaffoldBody(snapshot.data!),
             bottomNavigationBar: Container(
               child: ElevatedButton(
-                child: Text("进入APP"),
+                child: const Text("进入APP"),
                 onPressed: () {
                   Navigator.pushNamed(context, ApplicationHome.routeName);
                 },
