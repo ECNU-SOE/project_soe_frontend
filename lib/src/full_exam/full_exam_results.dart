@@ -43,7 +43,7 @@ Future<Map<String, dynamic>> submitAndGetResults(
     headers: {
       "Content-Type": "application/json",
       // FIXME 22.11.19 这里用的是临时Token
-      HttpHeaders.authorizationHeader: gTempToken,
+      'token': gTempToken,
     },
     encoding: Encoding.getByName('utf-8'),
   );
