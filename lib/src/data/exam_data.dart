@@ -16,17 +16,6 @@ class FullExamResultScreenArguments {
   FullExamResultScreenArguments(this.id, this.inputPages);
 }
 
-class FullExamData {
-  final List<String> singleWords;
-  final List<String> doubleWords;
-  final List<String> sentances;
-  const FullExamData(
-    this.singleWords,
-    this.doubleWords,
-    this.sentances,
-  );
-}
-
 enum QuestionType {
   word,
   sentance,
@@ -114,6 +103,7 @@ class QuestionPageData {
     resultData = QuestionPageResultData.fromJson(response.data);
   }
 
+  //  22.11.21 此函数弃用, 改用dio
   Future<http.MultipartFile> getMultiPartFileAudio() async {
     dynamic httpAudio;
     if (filePath != '') {
@@ -212,7 +202,7 @@ class QuestionPageResultData {
   Map<String, dynamic> getJsonMap(int id) {
     final retMap = {
       'subTopic': id,
-      // FIXME 22.11.19
+      // FIXME 22.11.19 这些数据目前保留
       'proportion': 0.0,
       'totalWords': totalWords,
       'wrongWords': wrongWords,
