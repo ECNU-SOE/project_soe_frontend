@@ -32,6 +32,9 @@ Future<Map<String, dynamic>> submitAndGetResults(
     dataList.add(inputPage.questionPageData.resultData!.getJsonMap(index));
     index++;
   }
+  if (dataList.isEmpty) {
+    return {};
+  }
   final bodyMap = {
     'cpsgrpId': id,
     'scores': dataList,
@@ -63,7 +66,21 @@ class FullExaminationResult extends StatelessWidget {
     );
   }
 
-  Widget _generateScaffoldBody(Map<String, dynamic> data) {
+  Widget? _generateScaffoldBody(Map<String, dynamic>? data) {
+    if (data == null) {
+      return null;
+    }
+    if (data.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(15.0),
+          child: Text(
+            '您没有进行测试，不生成报告。',
+            style: gExaminationResultSubtitleStyle,
+          ),
+        ),
+      );
+    }
     final score = data['suggestedScore'];
     final completion = data['pronCompletion'];
     final accuracy = data['pronAccuracy'];
@@ -96,7 +113,7 @@ class FullExaminationResult extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           return Scaffold(
-            body: _generateScaffoldBody(snapshot.data!),
+            body: _generateScaffoldBody(snapshot.data),
             bottomNavigationBar: Container(
               child: ElevatedButton(
                 child: const Text("进入APP"),
