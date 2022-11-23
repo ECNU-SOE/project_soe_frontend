@@ -107,7 +107,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         widget.isUploading = true;
       });
       // HAX 22.11.19 避免录音未完成
-      await Future.delayed(const Duration(milliseconds: 10000));
+      await Future.delayed(const Duration(milliseconds: 100));
       await widget.questionPageData.postAndGetResult();
       setState(() {
         widget.isUploading = false;
