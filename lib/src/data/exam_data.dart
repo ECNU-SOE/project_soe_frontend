@@ -93,7 +93,7 @@ class QuestionPageData {
         contentType: http_parser.MediaType(mimeString, mimeType),
       ),
       'text': toSingleString(),
-      'mode': questionTypeToInt(type),
+      'mode': questionTypeToInt(type).toString(),
       'pinyin': '',
     });
     final response = await dio.Dio().postUri(
