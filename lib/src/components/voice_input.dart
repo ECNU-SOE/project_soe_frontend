@@ -12,7 +12,8 @@ import 'package:project_soe/src/data/exam_data.dart';
 class VoiceInputPage extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
   final QuestionPageData questionPageData;
-  bool _isRecording = false;
+  bool isRecording = false;
+  bool isUploading = false;
   bool _hasRecord = false;
   VoiceInputPage({super.key, required this.questionPageData}) {
     _hasRecord = questionPageData.filePath != '';
@@ -40,7 +41,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     return Icon(
       widget._hasRecord
           ? Icons.play_arrow
-          : widget._isRecording
+          : widget.isRecording
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
@@ -57,7 +58,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   void _cbkRetry() {
-    if (widget._isRecording) {
+    if (widget.isRecording) {
       return;
     } else {
       _retryRecording();
@@ -67,7 +68,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   void _cbkRecordStopPlay() {
     if (widget._hasRecord) {
       _playRecord();
-    } else if (widget._isRecording) {
+    } else if (widget.isRecording) {
       _stopRecording();
     } else {
       _startRecording();
@@ -75,7 +76,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   Future<void> _startRecording() async {
-    if (widget._isRecording) return;
+    if (widget.isRecording) return;
     try {
       if (!await _audioRecorder.hasPermission()) {
         return;
@@ -88,7 +89,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         numChannels: 1,
       );
       setState(() {
-        widget._isRecording = true;
+        widget.isRecording = true;
       });
     } catch (e) {
       if (kDebugMode) {
@@ -98,16 +99,20 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   Future<void> _stopRecording() async {
-    if (!widget._isRecording) return;
+    if (!widget.isRecording) return;
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
       widget.questionPageData.filePath = recordRet;
+      setState(() {
+        widget.isUploading = true;
+      });
       // HAX 22.11.19 避免录音未完成
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 10000));
       await widget.questionPageData.postAndGetResult();
       setState(() {
+        widget.isUploading = false;
         widget._hasRecord = true;
-        widget._isRecording = false;
+        widget.isRecording = false;
       });
     } else {
       if (kDebugMode) print('Record returns a null path');
@@ -116,7 +121,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
 
   void _retryRecording() {
     if (!widget._hasRecord) return;
-    if (widget._isRecording) return;
+    if (widget.isRecording) return;
     _audioPlayer.stop();
     setState(() {
       widget._hasRecord = false;
@@ -151,22 +156,49 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         },
       ),
       bottomNavigationBar: Container(
+        height: 55.0,
         color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          // mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IconButton(
-              icon: _recordIcon(),
-              onPressed: _cbkRecordStopPlay,
-            ),
-            IconButton(
-              icon: _retryIcon(),
-              onPressed: _cbkRetry,
-            ),
-          ],
-        ),
+        child: widget.isUploading
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    strokeWidth: 1.0,
+                    // semanticsLabel: '',
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: (Text(
+                        '评测进行中, 请稍等...',
+                        style: gFullExaminationSubTitleStyle,
+                      )),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    (widget.questionPageData.filePath == '' ||
+                            widget.questionPageData.resultData == null)
+                        ? '点击开始录音'
+                        : '您的分数是${widget.questionPageData.resultData!.pronAccuracy}',
+                    style: gFullExaminationSubTitleStyle,
+                  ),
+                  IconButton(
+                    icon: _recordIcon(),
+                    onPressed: _cbkRecordStopPlay,
+                  ),
+                  IconButton(
+                    icon: _retryIcon(),
+                    onPressed: _cbkRetry,
+                  ),
+                ],
+              ),
       ),
     );
   }

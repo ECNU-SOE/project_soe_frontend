@@ -50,6 +50,13 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
     if (_index <= 0) {
       return;
     } else {
+      if (_voiceInputs == null) {
+        return;
+      }
+      if (_voiceInputs![_index].isRecording ||
+          _voiceInputs![_index].isUploading) {
+        return;
+      }
       setState(() {
         _index = _index - 1;
         _process.value = _index.toDouble() / _listSize.toDouble();
@@ -61,6 +68,13 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
     if (_index >= (_listSize - 1)) {
       return;
     } else {
+      if (_voiceInputs == null) {
+        return;
+      }
+      if (_voiceInputs![_index].isRecording ||
+          _voiceInputs![_index].isUploading) {
+        return;
+      }
       setState(() {
         _index = _index + 1;
         _process.value = _index.toDouble() / _listSize.toDouble();
