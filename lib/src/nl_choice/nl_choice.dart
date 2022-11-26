@@ -120,7 +120,7 @@ class NativeLanguageChoice extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
-              child: Text('An error has occurred!'),
+              child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
             return NativeLanguageList(nativeLanguages: snapshot.data!);

@@ -16,7 +16,7 @@ import 'package:project_soe/src/data/exam_data.dart';
 List<QuestionPageData> parseWordMap(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
-  final parsed = decoded['cpsrcdList'].cast<Map<String, dynamic>>();
+  final parsed = decoded['data']['cpsrcdList'].cast<Map<String, dynamic>>();
   List<QuestionPageData> list = List<QuestionPageData>.empty(growable: true);
   for (var item in parsed) {
     int type = item['type'] as int;
@@ -33,7 +33,7 @@ Future<List<QuestionPageData>> fetchWordMap(
     http.Client client, String id) async {
   final response = await client.get(
     Uri.parse(
-        "http://47.101.58.72:8888/corpus-server/api/test/v1/details?cpsgrpId=$id"),
+        "http://47.101.58.72:8888/corpus-server/api/evaluate/v1/details?cpsgrpId=$id"),
   );
   return compute(parseWordMap, response);
 }
@@ -176,7 +176,7 @@ class FullExamination extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
-            child: Text('An error has occurred!'),
+            child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasData) {
           return _FullExaminationBody(examId, snapshot.data!);

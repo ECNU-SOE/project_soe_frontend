@@ -84,9 +84,8 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
       await _audioRecorder.start(
         // FIXME 注意, 格式可能和平台相异.
         encoder: rcd.AudioEncoder.wav,
-        bitRate: 16000,
-        samplingRate: 4100,
         numChannels: 1,
+        samplingRate: 4000,
       );
       setState(() {
         widget.isRecording = true;
@@ -186,7 +185,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
                     (widget.questionPageData.filePath == '' ||
                             widget.questionPageData.resultData == null)
                         ? '点击开始录音'
-                        : '您的分数是${widget.questionPageData.resultData!.pronAccuracy}',
+                        : '您的分数是${widget.questionPageData.resultData!.suggestedScore}',
                     style: gFullExaminationSubTitleStyle,
                   ),
                   IconButton(

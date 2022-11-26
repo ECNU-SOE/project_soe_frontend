@@ -83,22 +83,37 @@ class QuestionPageData {
     if (filePath == '') {
       return;
     }
-    String mimeLook = mime.lookupMimeType(filePath)!;
-    final mimeSplit = mimeLook.split('/');
-    var mimeString = mimeSplit[0];
-    var mimeType = mimeSplit[1];
-    final formData = dio.FormData.fromMap({
+    // convert 32-bit-wav to 16-bit-wav using server posts
+    String convertMimeLook = mime.lookupMimeType(filePath)!;
+    final convertMimeSplit = convertMimeLook.split('/');
+    var convertMimeString = convertMimeSplit[0];
+    var convertMimeType = convertMimeSplit[1];
+    final convertFormData = dio.FormData.fromMap({
       'audio': await dio.MultipartFile.fromFile(
         filePath,
-        contentType: http_parser.MediaType(mimeString, mimeType),
+        contentType: http_parser.MediaType(convertMimeString, convertMimeType),
       ),
-      'text': toSingleString(),
-      'mode': questionTypeToInt(type).toString(),
-      'pinyin': '',
+    });
+    final convertResponse = await dio.Dio().postUri(
+      Uri.parse(
+          'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/convert'),
+      data: convertFormData,
+    );
+    // post converted 16-bit-wav
+    final fileSplit = filePath.split('\\');
+    final String fileName = fileSplit[fileSplit.length - 1];
+    final postFormData = dio.FormData.fromMap({
+      'audio': dio.MultipartFile.fromBytes(
+        utf8.encode(convertResponse.data),
+        filename: fileName,
+        contentType: http_parser.MediaType('audio', 'x-wav'),
+      ),
+      'refText': toSingleString(),
+      'evalMode': questionTypeToInt(type),
     });
     final response = await dio.Dio().postUri(
-      Uri.parse('http://47.101.58.72:8888/corpus-server/api/test/v1/upload'),
-      data: formData,
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval'),
+      data: postFormData,
     );
     resultData = QuestionPageResultData.fromJson(response.data);
   }
@@ -191,12 +206,14 @@ class QuestionPageResultData {
   final double pronCompletion;
   final double pronAccuracy;
   final double pronFluency;
+  final double suggestedScore;
   const QuestionPageResultData({
     required this.totalWords,
     required this.wrongWords,
     required this.pronCompletion,
     required this.pronAccuracy,
     required this.pronFluency,
+    required this.suggestedScore,
   });
 
   Map<String, dynamic> getJsonMap(int id) {
@@ -209,18 +226,19 @@ class QuestionPageResultData {
       'pronCompletion': pronCompletion,
       'pronAccuracy': pronAccuracy,
       'pronFluency': pronFluency,
+      'suggestedScore': suggestedScore,
     };
     return retMap;
   }
 
   factory QuestionPageResultData.fromJson(Map<String, dynamic> json) {
     return QuestionPageResultData(
-      totalWords: (json['total_words_count'] == null)
+      totalWords: (json['TotalWordscount'] == null)
           ? 0
-          : json['total_words_count'] as int,
-      wrongWords: (json['wrong_words_count'] == null)
+          : json['TotalWordscount'] as int,
+      wrongWords: (json['wrongWordsCount'] == null)
           ? 0
-          : json['wrong_words_count'] as int,
+          : json['wrongWordsCount'] as int,
       pronAccuracy:
           (json['pronAccuracy'] == null) ? 0 : json['pronAccuracy'] as double,
       pronFluency:
@@ -228,6 +246,9 @@ class QuestionPageResultData {
       pronCompletion: (json['pronCompletion'] == null)
           ? 0
           : json['pronCompletion'] as double,
+      suggestedScore: (json['suggestedScore'] == null)
+          ? 0.0
+          : json['suggestedScore'] as double,
     );
   }
 }
