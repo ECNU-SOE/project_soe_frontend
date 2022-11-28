@@ -25,9 +25,10 @@ class ProjectSOE extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Project SoE Demo',
-      initialRoute: _queryFirstTimeUse()
-          ? NativeLanguageChoice.routeName
-          : ApplicationHome.routeName,
+      initialRoute:
+          // _queryFirstTimeUse()
+          // ? NativeLanguageChoice.routeName :
+          ApplicationHome.routeName,
       routes: sNavigationRoutes,
     );
   }
