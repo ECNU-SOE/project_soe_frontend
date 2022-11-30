@@ -85,7 +85,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         // FIXME 注意, 格式可能和平台相异.
         encoder: rcd.AudioEncoder.wav,
         numChannels: 1,
-        samplingRate: 4000,
+        samplingRate: 16000,
       );
       setState(() {
         widget.isRecording = true;

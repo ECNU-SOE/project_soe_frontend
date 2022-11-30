@@ -27,8 +27,8 @@ class LoginScreen extends StatelessWidget {
     );
     final u8decoded = utf8.decode(response.bodyBytes);
     final decoded = jsonDecode(u8decoded);
-    if (decoded['code'] == '0') {
-      gAuthorithionToken = decoded['data'];
+    if (decoded['code'] == 0) {
+      AuthritionState.get().setToken(decoded['data']);
       return null;
     } else {
       return decoded['msg'];
