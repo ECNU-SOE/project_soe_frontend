@@ -44,3 +44,44 @@ const TextStyle gVoiceInputWordStyle = TextStyle(
   color: Colors.blue,
   fontSize: 30.0,
 );
+
+const TextStyle gPracticePageTabStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 20.0,
+);
+
+const TextStyle gPracticePageSubTitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 18.0,
+);
+
+const TextStyle gPracticePageListitemStyle = TextStyle(
+  color: Colors.black54,
+  fontSize: 18.0,
+);
+
+ButtonStyle gPracticePageArticleButtonStyle = ButtonStyle(padding:
+    MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
+  if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
+  if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
+  return EdgeInsets.all(2.0);
+}), overlayColor:
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+  // if (states.contains(MaterialState.focused)) return Colors.red;
+  if (states.contains(MaterialState.hovered)) return Colors.grey[400];
+  // if (states.contains(MaterialState.pressed)) return Colors.blue;
+  return null; // Defer to the widget's default.
+}));
+
+ButtonStyle gPracticePageSpeakingButtonStyle = ButtonStyle(padding:
+    MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
+  if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
+  if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
+  return EdgeInsets.all(2.0);
+}), overlayColor:
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+  // if (states.contains(MaterialState.focused)) return Colors.red;
+  if (states.contains(MaterialState.hovered)) return Colors.grey[400];
+  // if (states.contains(MaterialState.pressed)) return Colors.blue;
+  return null; // Defer to the widget's default.
+}));

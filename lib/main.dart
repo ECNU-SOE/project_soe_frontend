@@ -17,8 +17,8 @@ class ProjectSOE extends StatelessWidget {
   ProjectSOE({super.key});
   // FIXME 22.11.1 实现它
   bool _queryFirstTimeUse() {
-    return true;
-    // return false;
+    // return true;
+    return false;
   }
 
   // This widget is the root of your application.
