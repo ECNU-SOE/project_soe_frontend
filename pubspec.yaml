@@ -38,6 +38,7 @@ dependencies:
   adaptive_navigation: ^0.0.3
   audioplayers : ^1.1.1
   cupertino_icons: ^1.0.2
+  ffmpeg_kit_flutter_audio: ^5.1.0
   flutter_login: ^4.1.0
   get_it : ^7.2.0
   http : ^0.13.5

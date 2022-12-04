@@ -51,7 +51,7 @@ Future<PersonalData?> fetchPersonalData(String token) async {
   final client = http.Client();
   try {
     final response = await client.post(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/info'),
+      Uri.parse('http://47.101.58.72:8001/api/user/v1/info'),
       body: jsonEncode(
         {'token': token},
       ),

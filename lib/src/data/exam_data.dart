@@ -3,12 +3,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart' as dio;
 import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:project_soe/src/components/voice_input.dart';
+import 'package:project_soe/src/full_exam/full_exam_results.dart';
 
 class FullExamResultScreenArguments {
   final String id;
@@ -83,51 +84,40 @@ class QuestionPageData {
     if (filePath == '') {
       return;
     }
-    // convert 32-bit-wav to 16-bit-wav using server posts
-    String convertMimeLook = mime.lookupMimeType(filePath)!;
-    final convertMimeSplit = convertMimeLook.split('/');
-    var convertMimeString = convertMimeSplit[0];
-    var convertMimeType = convertMimeSplit[1];
-    final convertFormData = dio.FormData.fromMap({
-      'audio': await dio.MultipartFile.fromFile(
-        filePath,
-        contentType: http_parser.MediaType(convertMimeString, convertMimeType),
-      ),
-    });
-    final convertResponse = await dio.Dio().postUri(
-      Uri.parse(
-          'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/convert'),
-      data: convertFormData,
-    );
-    // post converted 16-bit-wav
-    final fileSplit = filePath.split('\\');
-    final String fileName = fileSplit[fileSplit.length - 1];
-    final postFormData = dio.FormData.fromMap({
-      'audio': dio.MultipartFile.fromBytes(
-        utf8.encode(convertResponse.data),
-        filename: fileName,
-        contentType: http_parser.MediaType('audio', 'x-wav'),
-      ),
-      'refText': toSingleString(),
-      'evalMode': questionTypeToInt(type),
-    });
-    final response = await dio.Dio().postUri(
-      Uri.parse('http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval'),
-      data: postFormData,
-    );
-    resultData = QuestionPageResultData.fromJson(response.data);
+    final uri = Uri.parse(
+        'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval');
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(await getMultiPartFileAudio());
+    request.fields['refText'] = toSingleString();
+    request.fields['evalMode'] = '2';
+    request.fields['pinyin'] = '';
+    request.headers['Content-Type'] = 'multipart/form-data';
+    final response = await request.send();
+    final responseBytes = await response.stream.toBytes();
+    final responseString = String.fromCharCodes(responseBytes);
+    final decoded = jsonDecode(responseString);
+    resultData = QuestionPageResultData.fromJson(decoded['data']);
   }
 
-  //  22.11.21 此函数弃用, 改用dio
   Future<http.MultipartFile> getMultiPartFileAudio() async {
     dynamic httpAudio;
     if (filePath != '') {
       final bytes = await File(filePath).readAsBytes();
       final fileSplit = filePath.split('\\');
       final String fileName = fileSplit[fileSplit.length - 1];
-      httpAudio = http.MultipartFile.fromBytes(fileName, bytes,
-          filename: fileName,
-          contentType: http_parser.MediaType('audio', 'wav'));
+      final String mimeLook = mime.lookupMimeType(filePath)!;
+      final mimeSplit = mimeLook.split('/');
+      final String mimeString = mimeSplit[0];
+      final String mimeType = mimeSplit[1];
+      httpAudio = http.MultipartFile.fromBytes(
+        'audio',
+        bytes,
+        filename: fileName,
+        contentType: http_parser.MediaType(
+          mimeString,
+          mimeType,
+        ),
+      );
     }
     return httpAudio;
   }
@@ -233,22 +223,36 @@ class QuestionPageResultData {
 
   factory QuestionPageResultData.fromJson(Map<String, dynamic> json) {
     return QuestionPageResultData(
-      totalWords: (json['TotalWordscount'] == null)
+      totalWords: (json['totalWordCount'] == null)
           ? 0
-          : json['TotalWordscount'] as int,
+          : json['totalWordCount'] as int > 0
+              ? json['totalWordCount'] as int
+              : 0,
       wrongWords: (json['wrongWordsCount'] == null)
           ? 0
-          : json['wrongWordsCount'] as int,
-      pronAccuracy:
-          (json['pronAccuracy'] == null) ? 0 : json['pronAccuracy'] as double,
-      pronFluency:
-          (json['pronFluency'] == null) ? 0 : json['pronFluency'] as double,
+          : json['wrongWordsCount'] as int > 0
+              ? json['wrongWordsCount'] as int
+              : 0,
+      pronAccuracy: (json['pronAccuracy'] == null)
+          ? 0.0
+          : json['pronAccuracy'] as double >= 0.0
+              ? json['pronAccuracy'] as double
+              : 0.0,
+      pronFluency: (json['pronFluency'] == null)
+          ? 0.0
+          : json['pronFluency'] as double >= 0.0
+              ? json['pronFluency'] as double
+              : 0.0,
       pronCompletion: (json['pronCompletion'] == null)
-          ? 0
-          : json['pronCompletion'] as double,
+          ? 0.0
+          : json['pronCompletion'] as double >= 0.0
+              ? json['pronCompletion'] as double
+              : 0.0,
       suggestedScore: (json['suggestedScore'] == null)
           ? 0.0
-          : json['suggestedScore'] as double,
+          : json['suggestedScore'] as double >= 0.0
+              ? json['suggestedScore'] as double
+              : 0.0,
     );
   }
 }

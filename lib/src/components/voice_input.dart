@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:record/record.dart' as rcd;
 import 'package:audioplayers/audioplayers.dart' as ap;
+import 'package:record/record.dart' as rcd;
+import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
 
 import 'package:project_soe/src/data/styles.dart';
 import 'package:project_soe/src/data/exam_data.dart';
@@ -83,8 +84,9 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
       }
       await _audioRecorder.start(
         // FIXME 注意, 格式可能和平台相异.
-        encoder: rcd.AudioEncoder.wav,
-        numChannels: 1,
+        encoder: rcd.AudioEncoder.aacLc,
+        // encoder: rcd.AudioEncoder.wav,
+        // numChannels: 1,
         samplingRate: 16000,
       );
       setState(() {
@@ -107,6 +109,16 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
       });
       // HAX 22.11.19 避免录音未完成
       await Future.delayed(const Duration(milliseconds: 100));
+
+      // if (Theme.of(context).platform != TargetPlatform.windows) {
+      //   final fileSplit = widget.questionPageData.filePath.split('\\');
+      //   final String fileName = fileSplit[fileSplit.length - 1];
+      //   final String nonFormatFilename = fileName.split('.')[0];
+      //   await ffmpeg.FFmpegKit.execute(
+      //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
+      //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
+      // }
+
       await widget.questionPageData.postAndGetResult();
       setState(() {
         widget.isUploading = false;
