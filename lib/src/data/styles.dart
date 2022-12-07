@@ -45,6 +45,21 @@ const TextStyle gVoiceInputWordStyle = TextStyle(
   fontSize: 30.0,
 );
 
+const TextStyle gClassPageAdsStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 20.0,
+);
+
+const TextStyle gClassPageListitemStyle = TextStyle(
+  color: Colors.black54,
+  fontSize: 18.0,
+);
+
+const TextStyle gClassPageSubTitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 18.0,
+);
+
 const TextStyle gPracticePageTabStyle = TextStyle(
   color: Colors.black87,
   fontSize: 20.0,

@@ -32,8 +32,7 @@ List<QuestionPageData> parseWordMap(http.Response response) {
 Future<List<QuestionPageData>> fetchWordMap(
     http.Client client, String id) async {
   final response = await client.get(
-    Uri.parse(
-        "http://47.101.58.72:8888/corpus-server/api/evaluate/v1/details?cpsgrpId=$id"),
+    Uri.parse("http://47.101.58.72:8002/api/evaluate/v1/details?cpsgrpId=$id"),
   );
   return compute(parseWordMap, response);
 }
