@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
       'pwd': data.password,
     };
     final response = await client.post(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/login'),
+      Uri.parse('http://47.101.58.72:8001/api/user/v1/login'),
       body: jsonEncode(bodyMap),
       headers: {"Content-Type": "application/json"},
       encoding: Encoding.getByName('utf-8'),

@@ -16,38 +16,38 @@ class PersonalData {
   String? phone;
   String? email;
   PersonalData(this.authToken, this.accountId);
+
+  static String sexToString(int sex) {
+    if (sex == 0) return '暂无';
+    if (sex == 1) return '男';
+    if (sex == 2) return '女';
+    return '其他';
+  }
+
+  static String birthToString(DateTime date) {
+    return '${date.year}年${date.month}月${date.day}日';
+  }
+
   void parseJson(Map<String, dynamic> json) {
     if (json['identifyId'] != null) {
       identifyId = json['identifyId'] as String;
     }
-    if (json['nickName'] != null) {
-      nickName = json['nickName'] as String;
-    }
-    if (json['realName'] != null) {
-      realName = json['realName'] as String;
-    }
-    if (json['firstLanguage'] != null) {
-      nativeLanguage = json['firstLanguage'] as String;
-    }
-    if (json['sex'] != null) {
-      sex = json['sex'] as int;
-    }
-    if (json['birth'] != null) {
-      birth = json['birth'] as DateTime;
-    }
-    if (json['sign'] != null) {
-      sign = json['sign'] as String;
-    }
-    if (json['phone'] != null) {
-      phone = json['phone'] as String;
-    }
-    if (json['mail'] != null) {
-      email = json['mail'] as String;
-    }
+    nickName = (json['nickName'] != null) ? json['nickName'] as String : '暂无昵称';
+    realName = (json['realName'] != null) ? json['realName'] as String : '暂无';
+    nativeLanguage = (json['firstLanguage'] != null)
+        ? json['firstLanguage'] as String
+        : '暂无';
+    sex = (json['sex'] != null) ? json['sex'] as int : 0;
+    birth = (json['birth'] != null)
+        ? json['birth'] as DateTime
+        : DateTime.utc(1900);
+    sign = (json['sign'] != null) ? json['sign'] as String : '暂无';
+    phone = (json['phone'] != null) ? json['phone'] as String : '暂无';
+    email = (json['mail'] != null) ? json['mail'] as String : '暂无';
   }
 }
 
-Future<PersonalData?> fetchPersonalData(String token) async {
+Future<PersonalData?> fetchPersonalData(String? token) async {
   final client = http.Client();
   try {
     final response = await client.post(
@@ -57,7 +57,7 @@ Future<PersonalData?> fetchPersonalData(String token) async {
       // ),
       headers: {
         // 'Content-Type': 'application/json',
-        'token': token,
+        'token': token!,
       },
     );
     final u8decoded = utf8.decode(response.bodyBytes);
@@ -67,6 +67,9 @@ Future<PersonalData?> fetchPersonalData(String token) async {
     personalData.parseJson(decoded);
     return personalData;
   } catch (_) {
-    return null;
+    // FIXME 22.12.8 返回临时数据, 只用作测试前端界面. 因为目前后端拿不到数据.
+    var personalData = PersonalData('Temp Token', 'Temp Id');
+    personalData.parseJson({});
+    return personalData;
   }
 }
