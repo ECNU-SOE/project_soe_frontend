@@ -72,6 +72,8 @@ int questionTypeToInt(QuestionType t) {
 class QuestionPageData {
   final QuestionType type;
   final List<QuestionData> questionList;
+  bool isRecording = false;
+  bool _isUploading = false;
   String filePath;
   QuestionPageResultData? resultData;
   QuestionPageData({
@@ -80,10 +82,23 @@ class QuestionPageData {
     this.filePath = '',
   });
 
+  bool hasRecord() {
+    return filePath != '';
+  }
+
+  void setUploading(bool b) {
+    _isUploading = b;
+  }
+
+  bool isUploading() {
+    return _isUploading;
+  }
+
   Future<void> postAndGetResult() async {
     if (filePath == '') {
       return;
     }
+    _isUploading = true;
     final uri = Uri.parse(
         'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval');
     var request = http.MultipartRequest('POST', uri);
@@ -97,6 +112,7 @@ class QuestionPageData {
     final responseString = String.fromCharCodes(responseBytes);
     final decoded = jsonDecode(responseString);
     resultData = QuestionPageResultData.fromJson(decoded['data']);
+    _isUploading = false;
   }
 
   Future<http.MultipartFile> getMultiPartFileAudio() async {
@@ -126,12 +142,23 @@ class QuestionPageData {
     if (questionList.isEmpty) {
       throw ('Invalid QuestionList size');
     }
+    // 古诗, 处理分段
     if (type == QuestionType.poem) {
       List<String> lines = questionList[0].label.split('\\n');
       var ret = '';
       for (String line in lines) {
         ret += line;
         ret += '\n';
+      }
+      return ret;
+    }
+    // 文章, 分段加空格.
+    if (type == QuestionType.article) {
+      List<String> lines = questionList[0].label.split('\\n');
+      var ret = '    ';
+      for (String line in lines) {
+        ret += line;
+        ret += '\n    ';
       }
       return ret;
     }

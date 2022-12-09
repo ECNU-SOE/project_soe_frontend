@@ -13,12 +13,7 @@ import 'package:project_soe/src/data/exam_data.dart';
 class VoiceInputPage extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
   final QuestionPageData questionPageData;
-  bool isRecording = false;
-  bool isUploading = false;
-  bool _hasRecord = false;
-  VoiceInputPage({super.key, required this.questionPageData}) {
-    _hasRecord = questionPageData.filePath != '';
-  }
+  VoiceInputPage({super.key, required this.questionPageData});
   @override
   State<VoiceInputPage> createState() => _VoiceInputPageState();
 }
@@ -40,9 +35,9 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
 
   Icon _recordIcon() {
     return Icon(
-      widget._hasRecord
+      widget.questionPageData.hasRecord()
           ? Icons.play_arrow
-          : widget.isRecording
+          : widget.questionPageData.isRecording
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
@@ -53,13 +48,14 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: widget._hasRecord ? Colors.amber : Colors.grey,
+      color: widget.questionPageData.hasRecord() ? Colors.amber : Colors.grey,
       size: 32.0,
     );
   }
 
   void _cbkRetry() {
-    if (widget.isRecording) {
+    if (widget.questionPageData.isRecording ||
+        widget.questionPageData.isUploading()) {
       return;
     } else {
       _retryRecording();
@@ -67,9 +63,12 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   void _cbkRecordStopPlay() {
-    if (widget._hasRecord) {
+    if (widget.questionPageData.isUploading()) {
+      return;
+    }
+    if (widget.questionPageData.hasRecord()) {
       _playRecord();
-    } else if (widget.isRecording) {
+    } else if (widget.questionPageData.isRecording) {
       _stopRecording();
     } else {
       _startRecording();
@@ -77,7 +76,8 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   Future<void> _startRecording() async {
-    if (widget.isRecording) return;
+    if (widget.questionPageData.isRecording ||
+        widget.questionPageData.isUploading()) return;
     try {
       if (!await _audioRecorder.hasPermission()) {
         return;
@@ -90,7 +90,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         samplingRate: 16000,
       );
       setState(() {
-        widget.isRecording = true;
+        widget.questionPageData.isRecording = true;
       });
     } catch (e) {
       if (kDebugMode) {
@@ -100,12 +100,13 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   Future<void> _stopRecording() async {
-    if (!widget.isRecording) return;
+    if (!widget.questionPageData.isRecording) return;
     final recordRet = await _audioRecorder.stop();
     if (recordRet != null) {
       widget.questionPageData.filePath = recordRet;
       setState(() {
-        widget.isUploading = true;
+        widget.questionPageData.isRecording = false;
+        widget.questionPageData.setUploading(true);
       });
       // HAX 22.11.19 避免录音未完成
       await Future.delayed(const Duration(milliseconds: 100));
@@ -121,9 +122,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
 
       await widget.questionPageData.postAndGetResult();
       setState(() {
-        widget.isUploading = false;
-        widget._hasRecord = true;
-        widget.isRecording = false;
+        // widget.questionPageData.isUploading() = false;
       });
     } else {
       if (kDebugMode) print('Record returns a null path');
@@ -131,17 +130,17 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   void _retryRecording() {
-    if (!widget._hasRecord) return;
-    if (widget.isRecording) return;
+    if (!widget.questionPageData.hasRecord()) return;
+    if (widget.questionPageData.isRecording ||
+        widget.questionPageData.isUploading()) return;
     _audioPlayer.stop();
     setState(() {
-      widget._hasRecord = false;
       widget.questionPageData.filePath = '';
     });
   }
 
   void _playRecord() {
-    if (!widget._hasRecord) return;
+    if (!widget.questionPageData.hasRecord()) return;
     _audioPlayer.play(ap.DeviceFileSource(widget.questionPageData.filePath));
   }
 
@@ -156,20 +155,23 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
           style: gFullExaminationSubTitleStyle,
         ),
       ),
-      body: ListView.builder(
-        itemCount: 1,
-        itemBuilder: (BuildContext context, _) {
-          return ListTile(
-            title: Text(
-              widget.questionPageData.toSingleString(),
+      body: ListView(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Text(
+                widget.questionPageData.toSingleString(),
+                style: gFullExaminationTextStyle,
+              ),
             ),
-          );
-        },
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         height: 55.0,
         color: Colors.white,
-        child: widget.isUploading
+        child: widget.questionPageData.isUploading()
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

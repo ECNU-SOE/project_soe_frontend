@@ -52,8 +52,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].isRecording ||
-          _voiceInputs![_index].isUploading) {
+      if (_voiceInputs![_index].questionPageData.isRecording) {
         return;
       }
       setState(() {
@@ -70,8 +69,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].isRecording ||
-          _voiceInputs![_index].isUploading) {
+      if (_voiceInputs![_index].questionPageData.isRecording) {
         return;
       }
       setState(() {
@@ -82,20 +80,64 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
   }
 
   void onSubmitButtonPressed() {
-    Navigator.pushNamed(context, FullExaminationResult.routeName,
-        arguments:
-            (FullExamResultScreenArguments(widget._examId, _voiceInputs!)));
-    return;
+    if (_checkAnyUploading()) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Container(
+            height: 48.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                CircularProgressIndicator(),
+                Column(
+                  children: [
+                    Text(
+                      "请等待语音评测完成.",
+                      style: gFullExaminationTextStyle,
+                    ),
+                    Text(
+                      '(点击空白处关闭提示)',
+                      style: gFullExaminationTextStyle,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      Navigator.pushNamed(context, FullExaminationResult.routeName,
+          arguments:
+              (FullExamResultScreenArguments(widget._examId, _voiceInputs!)));
+    }
+  }
+
+  bool _checkAnyUploading() {
+    if (null == _voiceInputs) {
+      return false;
+    }
+    for (var voiceInput in _voiceInputs!) {
+      if (voiceInput.questionPageData.isUploading()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Widget _buildBottomWidget() {
     if (_index == (_listSize - 1)) {
-      return ElevatedButton(
-        child: Text(
-          "提交",
-          style: gFullExaminationSubTitleStyle,
+      return Container(
+        height: 60.0,
+        child: ElevatedButton(
+          child: Text(
+            "提   交",
+            style: gFullExaminationSubTitleStyle,
+          ),
+          style: gFullExaminationSubButtonStyle,
+          onPressed: onSubmitButtonPressed,
         ),
-        onPressed: onSubmitButtonPressed,
       );
     } else {
       return LinearProgressIndicator(
