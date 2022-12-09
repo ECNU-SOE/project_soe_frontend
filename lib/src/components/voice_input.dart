@@ -78,55 +78,41 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   Future<void> _startRecording() async {
     if (widget.questionPageData.isRecording ||
         widget.questionPageData.isUploading()) return;
-    try {
-      if (!await _audioRecorder.hasPermission()) {
-        return;
-      }
-      await _audioRecorder.start(
-        // FIXME 注意, 格式可能和平台相异.
-        encoder: rcd.AudioEncoder.aacLc,
-        // encoder: rcd.AudioEncoder.wav,
-        // numChannels: 1,
-        samplingRate: 16000,
-      );
-      setState(() {
-        widget.questionPageData.isRecording = true;
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+    if (!await _audioRecorder.hasPermission()) {
+      return;
     }
+    await _audioRecorder.start(
+      encoder: rcd.AudioEncoder.aacLc,
+      samplingRate: 16000,
+    );
+    setState(() {
+      widget.questionPageData.isRecording = true;
+    });
   }
 
   Future<void> _stopRecording() async {
     if (!widget.questionPageData.isRecording) return;
     final recordRet = await _audioRecorder.stop();
-    if (recordRet != null) {
-      widget.questionPageData.filePath = recordRet;
-      setState(() {
-        widget.questionPageData.isRecording = false;
-        widget.questionPageData.setUploading(true);
-      });
-      // HAX 22.11.19 避免录音未完成
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      // if (Theme.of(context).platform != TargetPlatform.windows) {
-      //   final fileSplit = widget.questionPageData.filePath.split('\\');
-      //   final String fileName = fileSplit[fileSplit.length - 1];
-      //   final String nonFormatFilename = fileName.split('.')[0];
-      //   await ffmpeg.FFmpegKit.execute(
-      //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
-      //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
-      // }
-
-      await widget.questionPageData.postAndGetResult();
-      setState(() {
-        // widget.questionPageData.isUploading() = false;
-      });
-    } else {
-      if (kDebugMode) print('Record returns a null path');
-    }
+    // HAX 22.11.19 避免录音未完成
+    await Future.delayed(const Duration(milliseconds: 100));
+    widget.questionPageData.filePath = recordRet!;
+    setState(() {
+      widget.questionPageData.isRecording = false;
+      widget.questionPageData.setUploading(true);
+    });
+    // HAX 22.12.9 客户端实现本地格式转换.
+    // if (Theme.of(context).platform != TargetPlatform.windows) {
+    //   final fileSplit = widget.questionPageData.filePath.split('\\');
+    //   final String fileName = fileSplit[fileSplit.length - 1];
+    //   final String nonFormatFilename = fileName.split('.')[0];
+    //   await ffmpeg.FFmpegKit.execute(
+    //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
+    //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
+    // }
+    await widget.questionPageData.postAndGetResult();
+    setState(() {
+      widget.questionPageData.setUploading(false);
+    });
   }
 
   void _retryRecording() {
