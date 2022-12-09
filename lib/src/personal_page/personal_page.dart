@@ -70,9 +70,9 @@ class PersonalPage extends StatelessWidget {
     );
   }
 
-  // bool _hasToken() => AuthritionState.get().hasToken();
+  bool _hasToken() => AuthritionState.get().hasToken();
   // FIXME 22.12.8 测试用, 总返回true
-  bool _hasToken() => true;
+  // bool _hasToken() => true;
 
   Widget _buildDetailLine(List<String> details, List<String> labels) {
     List<Widget> chi = [];

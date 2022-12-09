@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_soe/src/data/nl_data.dart';
 
 class PersonalData {
   String authToken;
@@ -28,14 +29,14 @@ class PersonalData {
     return '${date.year}年${date.month}月${date.day}日';
   }
 
-  void parseJson(Map<String, dynamic> json) {
+  Future<void> parseJson(Map<String, dynamic> json) async {
     if (json['identifyId'] != null) {
       identifyId = json['identifyId'] as String;
     }
     nickName = (json['nickName'] != null) ? json['nickName'] as String : '暂无昵称';
     realName = (json['realName'] != null) ? json['realName'] as String : '暂无';
     nativeLanguage = (json['firstLanguage'] != null)
-        ? json['firstLanguage'] as String
+        ? await getStringbyNLId(json['firstLanguage'] as int)
         : '暂无';
     sex = (json['sex'] != null) ? json['sex'] as int : 0;
     birth = (json['birth'] != null)
@@ -50,26 +51,19 @@ class PersonalData {
 Future<PersonalData?> fetchPersonalData(String? token) async {
   final client = http.Client();
   try {
-    final response = await client.post(
-      Uri.parse('http://47.101.58.72:8001/api/user/v1/info'),
-      // body: jsonEncode(
-      //   {'token': token},
-      // ),
+    final response = await client.get(
+      Uri.parse('http://47.101.58.72:8001/api/user/v1/info2'),
       headers: {
-        // 'Content-Type': 'application/json',
         'token': token!,
       },
     );
     final u8decoded = utf8.decode(response.bodyBytes);
     final decoded = jsonDecode(u8decoded);
-    final accountId = decoded['accountNo'];
+    final accountId = decoded['data']['accountNo'];
     var personalData = PersonalData(token, accountId);
-    personalData.parseJson(decoded);
+    personalData.parseJson(decoded['data']);
     return personalData;
   } catch (_) {
-    // FIXME 22.12.8 返回临时数据, 只用作测试前端界面. 因为目前后端拿不到数据.
-    var personalData = PersonalData('Temp Token', 'Temp Id');
-    personalData.parseJson({});
-    return personalData;
+    return null;
   }
 }

@@ -197,7 +197,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
                     (widget.questionPageData.filePath == '' ||
                             widget.questionPageData.resultData == null)
                         ? '点击开始录音'
-                        : '您的分数是${widget.questionPageData.resultData!.suggestedScore}',
+                        : '此题已有评测结果',
                     style: gFullExaminationSubTitleStyle,
                   ),
                   IconButton(

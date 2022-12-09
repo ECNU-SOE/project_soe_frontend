@@ -5,6 +5,9 @@ class Credentials {
   final String userName;
   final String password;
   Credentials(this.userName, this.password);
+  static Credentials getTempAccount() {
+    return Credentials('13000000000', '00000000');
+  }
 }
 
 final sLoginMessages = LoginMessages(

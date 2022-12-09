@@ -40,13 +40,16 @@ Future<Map<String, dynamic>> submitAndGetResults(
     'scores': dataList,
   };
   final client = http.Client();
+  final token = AuthritionState.get().hasToken()
+      ? AuthritionState.get().getToken()!
+      : await AuthritionState.get().getTempToken();
   final response = await client.post(
     Uri.parse('http://47.101.58.72:8002/api/cpsgrp/v1/transcript'),
     body: jsonEncode(bodyMap).toString(),
     headers: {
       "Content-Type": "application/json",
       // FIXME 22.11.19 这里用的是临时Token
-      'token': gTempToken,
+      'token': token,
     },
     encoding: Encoding.getByName('utf-8'),
   );
