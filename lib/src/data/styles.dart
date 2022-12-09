@@ -1,5 +1,34 @@
 import 'package:flutter/material.dart';
 
+const TextStyle gHomePageAdsStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 20.0,
+);
+
+const TextStyle gHomePageListitemStyle = TextStyle(
+  color: Colors.black54,
+  fontSize: 18.0,
+);
+
+const TextStyle gHomePageSubTitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 18.0,
+);
+
+ButtonStyle gHomePageExamEntranceButtonStyle = ButtonStyle(padding:
+    MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
+  if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
+  if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
+  return EdgeInsets.all(2.0);
+}), backgroundColor:
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+  return Colors.white70;
+}), overlayColor:
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+  if (states.contains(MaterialState.hovered)) return Colors.grey[400];
+  return null; // Defer to the widget's default.
+}));
+
 const TextStyle gFullExaminationSubTitleStyle = TextStyle(
   color: Colors.amber,
   fontSize: 20.0,

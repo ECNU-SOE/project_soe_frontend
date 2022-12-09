@@ -15,20 +15,12 @@ void main() {
 
 class ProjectSOE extends StatelessWidget {
   ProjectSOE({super.key});
-  // FIXME 22.11.1 实现它
-  bool _queryFirstTimeUse() {
-    return true;
-    // return false;
-  }
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Project SoE Demo',
-      initialRoute: _queryFirstTimeUse()
-          ? NativeLanguageChoice.routeName
-          : ApplicationHome.routeName,
+      initialRoute: ApplicationHome.routeName,
       routes: sNavigationRoutes,
     );
   }
