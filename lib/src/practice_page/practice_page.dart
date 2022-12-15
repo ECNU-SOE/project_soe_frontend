@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/components/subtitle.dart';
 import 'package:project_soe/src/data/styles.dart';
 
 // FIXME 22.12.4 Temp
@@ -44,8 +45,7 @@ class PracticePage extends StatelessWidget {
         child: Wrap(
           children: [
             Center(
-              child:
-                  Text('您还没有测试结果, 点击进入测试', style: gPracticePageSubTitleStyle),
+              child: Text('您还没有测试结果, 点击进入测试', style: gSubtitleStyle),
             ),
             Padding(
               padding: EdgeInsets.only(top: 15.0),
@@ -84,7 +84,7 @@ class PracticePage extends StatelessWidget {
           padding: EdgeInsets.only(left: 12.0, top: 12.0),
           child: Text(
             title,
-            style: gPracticePageSubTitleStyle,
+            style: gSubtitleStyle,
           ),
         ),
       ],
@@ -114,11 +114,11 @@ class PracticePage extends StatelessWidget {
   Widget _buildDoubleWordPage() {
     var _listView = ListView(
       children: [
-        _buildDoubleWordSubtitle('声韵调练习'),
+        const Subtitle(label: '声韵调练习'),
         _buildDoubleWordListChild0(tempTitles2[0], tempCount2[0]),
         _buildDoubleWordListChild0(tempTitles2[1], tempCount2[1]),
         _buildDoubleWordListChild0(tempTitles2[2], tempCount2[2]),
-        _buildDoubleWordSubtitle('专项训练'),
+        const Subtitle(label: '专项训练'),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -127,7 +127,7 @@ class PracticePage extends StatelessWidget {
             _buildDoubleWordRowChild0(tempTitle3[2]),
           ],
         ),
-        _buildDoubleWordSubtitle('个性化训练'),
+        const Subtitle(label: '个性化训练'),
         _buildSpecificText(),
       ],
     );

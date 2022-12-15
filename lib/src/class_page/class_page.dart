@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_soe/src/data/styles.dart';
+import 'package:project_soe/src/components/subtitle.dart';
 
 // FIXME 22.12.7 temp
 class HorizontalScrollData {
@@ -92,20 +93,6 @@ class ClassPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle(String label) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(18.0),
-          child: Text(
-            label,
-            style: gClassPageSubTitleStyle,
-          ),
-        ),
-      ],
-    );
-  }
-
   // FIXME
   Widget _buildMyClassWidget() {
     return Row();
@@ -117,7 +104,7 @@ class ClassPage extends StatelessWidget {
       body: ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          // _buildSubtitle('推荐内容'),
+          // const Subtitle(label: '(.*)'),
           // Container(
           //   margin: const EdgeInsets.symmetric(vertical: 10.0),
           //   height: 160.0,
@@ -126,10 +113,10 @@ class ClassPage extends StatelessWidget {
           //     children: _buildHorizontalScrollWidgetList(),
           //   ),
           // ),
-          _buildSubtitle('快速入口'),
+          const Subtitle(label: '快速入口'),
           _buildClassRecWidget(classRecDatasFirst),
           _buildClassRecWidget(classRecDatasSecond),
-          _buildSubtitle('我的课堂'),
+          const Subtitle(label: '我的课堂'),
           _buildMyClassWidget(),
         ],
       ),

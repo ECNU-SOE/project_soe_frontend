@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_soe/src/data/styles.dart';
 import 'package:project_soe/src/nl_choice/nl_choice.dart';
+import 'package:project_soe/src/components/subtitle.dart';
 
 // FIXME 22.12.7 temp
 List<String> horizontalScrollImages = [
@@ -79,20 +80,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle(String label) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(18.0),
-          child: Text(
-            label,
-            style: gHomePageSubTitleStyle,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildFullExamEntranceWidget(BuildContext context) {
     return Container(
       height: 48.0,
@@ -104,7 +91,7 @@ class HomePage extends StatelessWidget {
             Icon(Icons.book),
             Text(
               '进入评测',
-              style: gHomePageSubTitleStyle,
+              style: gSubtitleStyle,
             ),
           ],
         ),
@@ -127,7 +114,7 @@ class HomePage extends StatelessWidget {
       body: ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          _buildSubtitle('初次使用，体验全面评测。'),
+          const Subtitle(label: '初次使用，体验全面评测。'),
           _buildFullExamEntranceWidget(context),
           // _buildSubtitle('推荐内容'),
           Container(
@@ -138,10 +125,10 @@ class HomePage extends StatelessWidget {
               children: _buildHorizontalScrollWidget(),
             ),
           ),
-          _buildSubtitle('快速入口'),
+          const Subtitle(label: '快速入口'),
           _buildRecWidget(homeRecDatasFirst),
           _buildRecWidget(homeRecDatasSecond),
-          _buildSubtitle('练习'),
+          const Subtitle(label: '练习'),
           _buildExerciseWidget(),
         ],
       ),

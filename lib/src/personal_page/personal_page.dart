@@ -4,6 +4,7 @@ import 'package:project_soe/src/login/login_screen.dart';
 import 'package:project_soe/src/login/authorition.dart';
 import 'package:project_soe/src/personal_page/personal_data.dart';
 import 'package:project_soe/src/data/styles.dart';
+import 'package:project_soe/src/components/subtitle.dart';
 
 // FIXME 22.12.7 temp
 class PersonalRecData {
@@ -28,20 +29,6 @@ List<PersonalRecData> personalRecDatasSecond = [
 class PersonalPage extends StatelessWidget {
   const PersonalPage({super.key});
   static const String routeName = 'personal';
-
-  Widget _buildSubtitle(String label) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(18.0),
-          child: Text(
-            label,
-            style: gPersonalPageSubTitleStyle,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildRecWidget(List<PersonalRecData> datalist) {
     return Row(
@@ -129,7 +116,7 @@ class PersonalPage extends StatelessWidget {
             ],
           ),
         ),
-        _buildSubtitle("详细信息"),
+        const Subtitle(label: '详细信息'),
         _buildDetailLine(['电话号码'], [personalData.phone!]),
         _buildDetailLine(['邮箱'], [personalData.email!]),
         _buildDetailLine([
@@ -204,7 +191,7 @@ class PersonalPage extends StatelessWidget {
           children: [
             Text(
               '登录解锁更多内容',
-              style: gPersonalPageSubTitleStyle,
+              style: gSubtitleStyle,
             )
           ],
         ),
@@ -226,7 +213,7 @@ class PersonalPage extends StatelessWidget {
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 _buildDetailsPanel(snapshot.data!),
-                _buildSubtitle('推荐内容'),
+                const Subtitle(label: '推荐内容'),
                 _buildRecWidget(personalRecDatasFirst),
                 _buildRecWidget(personalRecDatasSecond),
               ],

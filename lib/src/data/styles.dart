@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+const TextStyle gSubtitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 20.0,
+);
+
 const TextStyle gHomePageAdsStyle = TextStyle(
   color: Colors.black87,
   fontSize: 20.0,
@@ -7,11 +12,6 @@ const TextStyle gHomePageAdsStyle = TextStyle(
 
 const TextStyle gHomePageListitemStyle = TextStyle(
   color: Colors.black54,
-  fontSize: 18.0,
-);
-
-const TextStyle gHomePageSubTitleStyle = TextStyle(
-  color: Colors.black87,
   fontSize: 18.0,
 );
 
@@ -115,29 +115,14 @@ const TextStyle gClassPageListitemStyle = TextStyle(
   fontSize: 18.0,
 );
 
-const TextStyle gClassPageSubTitleStyle = TextStyle(
-  color: Colors.black87,
-  fontSize: 18.0,
-);
-
 const TextStyle gPracticePageTabStyle = TextStyle(
   color: Colors.black87,
   fontSize: 20.0,
 );
 
-const TextStyle gPracticePageSubTitleStyle = TextStyle(
-  color: Colors.black87,
-  fontSize: 18.0,
-);
-
 const TextStyle gPracticePageListitemStyle = TextStyle(
   color: Colors.black54,
   fontSize: 18.0,
-);
-
-const TextStyle gPersonalPageSubTitleStyle = TextStyle(
-  color: Colors.black87,
-  fontSize: 24.0,
 );
 
 const TextStyle gPersonalPageNicknameStyle = TextStyle(
