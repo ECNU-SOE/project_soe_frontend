@@ -20,7 +20,8 @@ class ProjectSOE extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Project SoE Demo',
-      initialRoute: ApplicationHome.routeName,
+      // initialRoute: ApplicationHome.routeName,
+      initialRoute: FullExaminationResult.routeName,
       routes: sNavigationRoutes,
     );
   }

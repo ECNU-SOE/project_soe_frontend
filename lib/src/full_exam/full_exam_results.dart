@@ -69,6 +69,56 @@ class FullExaminationResult extends StatelessWidget {
     );
   }
 
+  // TODO 23.3.5 实现这个转换
+  String _pinyintoString(List<Map<String, dynamic>> labelList) {
+    String ret = '';
+    for (var word in labelList) {
+      ret = ret + word['word'] + '(' + word['pinyin'] + ')';
+    }
+    return ret;
+  }
+
+  Widget _handleListItem(Map<String, dynamic>? data, String title) {
+    String label = title;
+    String example = _pinyintoString(data![title]['example']);
+    String score = data[title]['score'].toString();
+    return Row(
+      children: [
+        Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Text(
+                label,
+                style: gExaminationResultTextStyle,
+              ),
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Text(
+              example,
+              style: gExaminationResultTextStyle,
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 25.0),
+              child: Text(
+                score,
+                style: gExaminationResultTextStyle,
+              ),
+            ),
+          ],
+        )
+      ],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    );
+  }
+
   Widget? _generateScaffoldBody(Map<String, dynamic>? data) {
     if (data == null) {
       return null;
@@ -84,27 +134,128 @@ class FullExaminationResult extends StatelessWidget {
         ),
       );
     }
-    final score = data['suggestedScore'];
-    final completion = data['pronCompletion'];
-    final accuracy = data['pronAccuracy'];
-    final fluency = data['pronFluency'];
-    final scoreLabel = '建议得分: $score/100';
-    final completionLabel = '完整度: $completion/10.0';
-    final accuracyLabel = '准确度: $accuracy/10.0';
-    final fluencyLabel = '流畅度: $fluency/10.0';
-    final listView = ListView(
+    List<Widget> rows = List.empty(growable: true);
+    rows.addAll([
+      _textWrap('全面测试结果', gExaminationResultSubtitleStyle),
+      _textWrap('您的得分:${data['score']}', gExaminationResultSubtitleStyle),
+      Row(
+        children: [
+          Center(
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 10.0, top: 10.0, left: 20.0),
+              child: Text('您的主要问题有', style: gExaminationResultSubtitleStyle),
+            ),
+          ),
+        ],
+        mainAxisAlignment: MainAxisAlignment.start,
+      ),
+    ]);
+    final problems = data['problems'].toList();
+    for (String problem in problems) {
+      rows.add(
+        Row(
+          children: [
+            Center(
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(bottom: 10.0, top: 10.0, left: 40.0),
+                child: Text(problem, style: gExaminationResultTextStyle),
+              ),
+            ),
+          ],
+          mainAxisAlignment: MainAxisAlignment.start,
+        ),
+      );
+    }
+    rows.add(Row(
       children: [
-        _textWrap(scoreLabel, gExaminationResultSubtitleStyle),
-        _textWrap(completionLabel, gExaminationResultTextStyle),
-        _textWrap(accuracyLabel, gExaminationResultTextStyle),
-        _textWrap(fluencyLabel, gExaminationResultTextStyle),
+        Column(
+          children: [
+            Container(
+              height: 48,
+              child: Padding(
+                padding: EdgeInsets.only(left: 25.0),
+                child: Text(
+                  '声母',
+                  style: gExaminationResultSubtitleStyle,
+                ),
+              ),
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              height: 48,
+              child: Text('例字', style: gExaminationResultSubtitleStyle),
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              height: 48,
+              child: Padding(
+                padding: EdgeInsets.only(right: 25.0),
+                child: Text(
+                  '评价',
+                  style: gExaminationResultSubtitleStyle,
+                ),
+              ),
+            )
+          ],
+        ),
       ],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    ));
+    rows.add(_handleListItem(data['shengmu'], 'bpm'));
+    rows.add(_handleListItem(data['shengmu'], 'f'));
+    rows.add(_handleListItem(data['shengmu'], 'zcs'));
+    rows.add(_handleListItem(data['shengmu'], 'dtnl'));
+    // rows.add();
+
+    final listView = Wrap(
+      children: rows,
     );
     return listView;
+    // final completion = data['pronCompletion'];
+    // final accuracy = data['pronAccuracy'];
+    // final fluency = data['pronFluency'];
+    // final scoreLabel = '建议得分: $score/100';
+    // final completionLabel = '完整度: $completion/10.0';
+    // final accuracyLabel = '准确度: $accuracy/10.0';
+    // final fluencyLabel = '流畅度: $fluency/10.0';
+    // final listView = ListView(
+    //   children: [
+    //     _textWrap(scoreLabel, gExaminationResultSubtitleStyle),
+    //     _textWrap(completionLabel, gExaminationResultTextStyle),
+    //     _textWrap(accuracyLabel, gExaminationResultTextStyle),
+    //     _textWrap(fluencyLabel, gExaminationResultTextStyle),
+    //   ],
+    // );
+    // return listView;
   }
 
+  Widget? _showEnterApp(BuildContext context, bool isShow) {
+    return ElevatedButton(
+      child: Text(isShow ? "进入APP" : "返回APP"),
+      onPressed: () {
+        Navigator.pushNamed(context, ApplicationHome.routeName);
+      },
+    );
+  }
+
+  // FIXME 23.3.5 此处用的是临时界面
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   body: _generateScaffoldBody({}),
+    //   bottomNavigationBar: Container(
+    //     // FIXME 23.3.5 第二个参数
+    //     child: _showEnterApp(context, true),
+    //   ),
+    // );
     final args = ModalRoute.of(context)!.settings.arguments
         as FullExamResultScreenArguments;
     return FutureBuilder<Map<String, dynamic>>(

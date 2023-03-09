@@ -47,3 +47,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+test/古诗.json
+test/句子.json
+test/文章.json
+test/词语.json
+test/╩╘╛φ1.txt

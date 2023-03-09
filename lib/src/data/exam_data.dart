@@ -1,8 +1,10 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:flutter/gestures.dart';
@@ -22,6 +24,21 @@ enum QuestionType {
   sentance,
   article,
   poem,
+}
+
+String getXfCategoryString(QuestionType x) {
+  switch (x) {
+    case QuestionType.word:
+      return "read_word";
+    case QuestionType.sentance:
+      return "read_sentence";
+    case QuestionType.article:
+      return "read_chapter";
+    case QuestionType.poem:
+      return "read_chapter";
+    default:
+      throw ('不支持的格式');
+  }
 }
 
 String getQuestionTypeInfo(QuestionType x) {
@@ -76,6 +93,7 @@ class QuestionPageData {
   bool _isUploading = false;
   String filePath;
   QuestionPageResultData? resultData;
+  QuestionPageResultDataXf? resultDataXf;
   QuestionPageData({
     required this.type,
     required this.questionList,
@@ -94,7 +112,32 @@ class QuestionPageData {
     return _isUploading;
   }
 
+  Future<void> postAndGetResultXf() async {
+    if (filePath == '') {
+      return;
+    }
+    _isUploading = true;
+    final uri = Uri.parse(
+        'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(await getMultiPartFileAudio());
+    request.fields['refText'] = toSingleString();
+    request.fields['category'] = getXfCategoryString(type);
+    request.headers['Content-Type'] = 'multipart/form-data';
+    final response = await request.send();
+    final responseBytes = await response.stream.toBytes();
+    final responseString = String.fromCharCodes(responseBytes);
+    final decoded = jsonDecode(responseString);
+    resultDataXf = QuestionPageResultDataXf(type: this.type);
+    resultDataXf!.parseJson(decoded['data']);
+    _isUploading = false;
+  }
+
   Future<void> postAndGetResult() async {
+    // FIXME 23.3.2 暂时使用科大讯飞的接口.
+    await postAndGetResultXf();
+    return;
+    /*
     if (filePath == '') {
       return;
     }
@@ -113,6 +156,7 @@ class QuestionPageData {
     final decoded = jsonDecode(responseString);
     resultData = QuestionPageResultData.fromJson(decoded['data']);
     _isUploading = false;
+    */
   }
 
   Future<http.MultipartFile> getMultiPartFileAudio() async {
@@ -283,3 +327,176 @@ class QuestionPageResultData {
     );
   }
 }
+
+// phone_score 	声韵分
+// fluency_score 	流畅度分（暂会返回0分）
+// tone_score 	调型分
+// total_score 	总分
+// beg_pos/end_pos 	始末位置（单位：帧，每帧相当于10ms)
+// content 	试卷内容
+// time_len 	时长（单位：帧，每帧相当于10ms）
+class QuestionPageResultDataXf {
+  bool jsonParsed;
+  QuestionType type;
+  double fluencyScore;
+  double phoneScore;
+  double toneScore;
+  double totalScore;
+  int more; // 增读
+  int less; // 漏读
+  int retro; // 回读
+  int repl; // 替换
+  late List<MonoTone> wrongMonotones;
+  late List<WrongPhone> wrongSheng;
+  late List<WrongPhone> wrongYun;
+  QuestionPageResultDataXf({
+    required this.type,
+    this.jsonParsed = false,
+    this.fluencyScore = 0.0,
+    this.phoneScore = 0.0,
+    this.toneScore = 0.0,
+    this.totalScore = 0.0,
+    this.more = 0,
+    this.less = 0,
+    this.retro = 0,
+    this.repl = 0,
+  }) {
+    this.wrongMonotones = List.empty(growable: true);
+    this.wrongSheng = List.empty(growable: true);
+    this.wrongYun = List.empty(growable: true);
+  }
+
+  void parseJson(Map<String, dynamic> json) {
+    String category = getXfCategoryString(type);
+    Map<String, dynamic> resultJson = json['rec_paper'][category];
+    fluencyScore = resultJson['fluency_score'];
+    phoneScore = resultJson['phone_score'];
+    totalScore = resultJson['total_score'];
+    toneScore = resultJson['tone_score'];
+    for (Map<String, dynamic> sentanceJson in resultJson['sentence']) {
+      for (Map<String, dynamic> wordJson in sentanceJson['word']) {
+        final wordSyll = wordJson['syll'];
+        if (wordSyll['dp_message'] == 0) {
+          int rightMonotone =
+              getMonoToneIntFromPinyin(wordSyll['symbol'].toString());
+          final phoneJson = wordSyll['phone'];
+          for (var phone in phoneJson) {
+            if (phone['perr_msg'] != 0) {
+              if (phone['is_yun'] == 1) {
+                if (phone['perr_msg'] == 1) {
+                  wrongYun.add(
+                    WrongPhone(
+                      word: wordSyll['content'],
+                      yunmu: phone['content'],
+                      shengmu: '',
+                      isShengWrong: false,
+                    ),
+                  );
+                } else if (phone['perr_msg'] == 2) {
+                  wrongMonotones.add(
+                    MonoTone(word: wordSyll['content'], tone: rightMonotone),
+                  );
+                } else if (phone['perr_msg'] == 3) {
+                  wrongYun.add(
+                    WrongPhone(
+                      word: wordSyll['content'],
+                      yunmu: phone['content'],
+                      shengmu: '',
+                      isShengWrong: false,
+                    ),
+                  );
+                  wrongMonotones.add(
+                    MonoTone(word: wordSyll['content'], tone: rightMonotone),
+                  );
+                } else {
+                  throw ('未知的错误信息');
+                }
+              } else if (phone['is_yun'] == 0) {
+                if (phone['perr_msg'] == 1) {
+                  wrongSheng.add(
+                    WrongPhone(
+                      word: wordSyll['content'],
+                      yunmu: '',
+                      shengmu: phone['content'],
+                      isShengWrong: true,
+                    ),
+                  );
+                } else {
+                  throw ('未知的错误信息');
+                }
+              } else {
+                throw ('错误的声韵母信息');
+              }
+            }
+          }
+        } else {
+          switch (wordSyll['dp_message']) {
+            case 16:
+              less++;
+              break;
+            case 32:
+              more++;
+              break;
+            case 64:
+              retro++;
+              break;
+            case 128:
+              repl++;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    }
+    jsonParsed = true;
+  }
+}
+
+class WrongPhone {
+  final String word;
+  final String shengmu;
+  final String yunmu;
+  final bool isShengWrong;
+  const WrongPhone({
+    required this.word,
+    required this.shengmu,
+    required this.yunmu,
+    required this.isShengWrong,
+  });
+}
+
+int getMonoToneIntFromPinyin(String pinyin) {
+  int rightMonotone = -1;
+  try {
+    int pinyinLength = pinyin.length;
+    rightMonotone = int.parse(pinyin[pinyinLength - 1]);
+  } catch (e) {
+    throw ('错误的拼音');
+  }
+  return rightMonotone;
+}
+
+int getMonoToneIntFromString(String monoTone) {
+  switch (monoTone) {
+    case 'TONE1':
+      return 1;
+    case 'TONE2':
+      return 2;
+    case 'TONE3':
+      return 3;
+    case 'TONE4':
+      return 4;
+    default:
+      throw ('没有该调型');
+      return -1;
+  }
+}
+
+class MonoTone {
+  final Char word;
+  final int tone;
+  const MonoTone({required this.word, required this.tone});
+}
+
+class FullExaminationResultDataXf {}
