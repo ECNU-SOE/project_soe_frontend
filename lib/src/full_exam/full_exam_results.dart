@@ -21,6 +21,17 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   return retMap;
 }
 
+Future<List<QuestionPageResultDataXf>> submitAndGetResultsXf(
+    List<VoiceInputPage> inputPages, String id) async {
+  List<QuestionPageResultDataXf> ret = List.empty(growable: true);
+  for (var inputPage in inputPages) {
+    if (inputPage.questionPageData.resultDataXf != null) {
+      ret.add(inputPage.questionPageData.resultDataXf!);
+    }
+  }
+  return ret;
+}
+
 Future<Map<String, dynamic>> submitAndGetResults(
     List<VoiceInputPage> inputPages, String id) async {
   List<Map<String, dynamic>> dataList = [];
@@ -117,6 +128,77 @@ class FullExaminationResult extends StatelessWidget {
       ],
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
     );
+  }
+
+  Widget _generateScaffoldBodyXf(List<QuestionPageResultDataXf> data) {
+    if (data.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(15.0),
+          child: Text(
+            '您没有进行测试，不生成报告。',
+            style: gExaminationResultSubtitleStyle,
+          ),
+        ),
+      );
+    }
+    double sumTotal = 0.0;
+    double sumPhone = 0.0;
+    double sumTone = 0.0;
+    double sumFluency = 0.0;
+    int sumMore = 0; // 增读
+    int sumLess = 0; // 漏读
+    int sumRetro = 0; // 回读
+    int sumRepl = 0; // 替换
+    for (final result in data) {
+      sumTotal += result.totalScore;
+      sumPhone += result.phoneScore;
+      sumTone += result.toneScore;
+      sumFluency += result.fluencyScore;
+      sumMore += result.more;
+      sumLess += result.less;
+      sumRetro += result.retro;
+      sumRepl += result.repl;
+    }
+    final averageTotal = sumTotal / data.length;
+    final averagePhone = sumPhone / data.length;
+    final averageTone = sumTone / data.length;
+    final averageFluency = sumFluency / data.length;
+    List<Widget> rows = List.empty(growable: true);
+    rows.addAll([
+      _textWrap('全面测试结果', gExaminationResultSubtitleStyle),
+      _textWrap('您的得分:$averageTotal', gExaminationResultSubtitleStyle),
+      _textWrap('声调得分:$averageTone', gExaminationResultSubtitleStyle),
+      _textWrap('发音得分:$averagePhone', gExaminationResultSubtitleStyle),
+      _textWrap('流畅得分:$averageFluency', gExaminationResultSubtitleStyle),
+      _textWrap('增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
+          gExaminationResultTextStyle),
+    ]);
+    rows.add(_textWrap('你读错的声母', gExaminationResultSubtitleStyle));
+    for (final resultDataXf in data) {
+      for (final sheng in resultDataXf.wrongSheng) {
+        rows.add(_textWrap(
+            '${sheng.word}(${sheng.shengmu})', gExaminationResultTextStyle));
+      }
+    }
+    rows.add(_textWrap('你读错的韵母', gExaminationResultSubtitleStyle));
+    for (final resultDataXf in data) {
+      for (final yun in resultDataXf.wrongYun) {
+        rows.add(_textWrap(
+            '${yun.word}(${yun.yunmu})', gExaminationResultTextStyle));
+      }
+    }
+    rows.add(_textWrap('你读错的声调', gExaminationResultSubtitleStyle));
+    for (final resultDataXf in data) {
+      for (final monotone in resultDataXf.wrongMonotones) {
+        rows.add(_textWrap(
+            '${monotone.word}(${monotone.tone})', gExaminationResultTextStyle));
+      }
+    }
+    final listView = ListView(
+      children: rows,
+    );
+    return listView;
   }
 
   Widget? _generateScaffoldBody(Map<String, dynamic>? data) {
@@ -249,17 +331,12 @@ class FullExaminationResult extends StatelessWidget {
   // FIXME 23.3.5 此处用的是临时界面
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   body: _generateScaffoldBody({}),
-    //   bottomNavigationBar: Container(
-    //     // FIXME 23.3.5 第二个参数
-    //     child: _showEnterApp(context, true),
-    //   ),
-    // );
     final args = ModalRoute.of(context)!.settings.arguments
         as FullExamResultScreenArguments;
-    return FutureBuilder<Map<String, dynamic>>(
-      future: submitAndGetResults(args.inputPages, args.id),
+    // return FutureBuilder<Map<String, dynamic>>(
+    return FutureBuilder<List<QuestionPageResultDataXf>>(
+      // future: submitAndGetResults(args.inputPages, args.id),
+      future: submitAndGetResultsXf(args.inputPages, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
@@ -267,7 +344,7 @@ class FullExaminationResult extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           return Scaffold(
-            body: _generateScaffoldBody(snapshot.data),
+            body: _generateScaffoldBodyXf(snapshot.data!),
             bottomNavigationBar: Container(
               child: ElevatedButton(
                 child: const Text("进入APP"),

@@ -451,18 +451,18 @@ packages:
     dependency: "direct main"
     description:
       name: record
-      sha256: "33c69d0100c8380514618d7e933712669010e984543c0eb119b81b42b3fc83d6"
+      sha256: f703397f5a60d9b2b655b3acc94ba079b2d9a67dc0725bdb90ef2fee2441ebf7
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.4.1"
+    version: "4.4.4"
   record_linux:
     dependency: transitive
     description:
       name: record_linux
-      sha256: "32b8937bae11b7224237e4b2514197808e6ab11e3dfc6ffa37add69d1834cd8e"
+      sha256: "348db92c4ec1b67b1b85d791381c8c99d7c6908de141e7c9edc20dad399b15ce"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.4"
+    version: "0.4.1"
   record_macos:
     dependency: transitive
     description:
@@ -491,10 +491,10 @@ packages:
     dependency: transitive
     description:
       name: record_windows
-      sha256: "8a5f10652ac7a3aa004429e254a9f35e4d1b47265521edaca62544e19354e1b8"
+      sha256: "42d545155a26b20d74f5107648dbb3382dbbc84dc3f1adc767040359e57a1345"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.6.2"
+    version: "0.7.1"
   sign_in_button:
     dependency: transitive
     description:

@@ -62,7 +62,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     }
   }
 
-  void _cbkRecordStopPlay() {
+  Future<void> _cbkRecordStopPlay() async {
     if (widget.questionPageData.isUploading()) {
       return;
     }
@@ -71,30 +71,33 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     } else if (widget.questionPageData.isRecording) {
       _stopRecording();
     } else {
-      _startRecording();
+      await _startRecording();
     }
   }
 
   Future<void> _startRecording() async {
     if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading()) return;
-    if (!await _audioRecorder.hasPermission()) {
+        widget.questionPageData.isUploading()) {
       return;
     }
-    await _audioRecorder.start(
-      encoder: rcd.AudioEncoder.aacLc,
-      samplingRate: 16000,
-    );
-    setState(() {
-      widget.questionPageData.isRecording = true;
-    });
+    if (await _audioRecorder.hasPermission()) {
+      await _audioRecorder.start(
+        encoder: rcd.AudioEncoder.aacLc,
+        samplingRate: 16000,
+      );
+      if (await _audioRecorder.isRecording()) {
+        setState(() {
+          widget.questionPageData.isRecording = true;
+        });
+      }
+    }
   }
 
   Future<void> _stopRecording() async {
     if (!widget.questionPageData.isRecording) return;
     final recordRet = await _audioRecorder.stop();
     // HAX 22.11.19 避免录音未完成
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
     widget.questionPageData.filePath = recordRet!;
     setState(() {
       widget.questionPageData.isRecording = false;
@@ -109,6 +112,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
     //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
     // }
+    await Future.delayed(const Duration(seconds: 5));
     await widget.questionPageData.postAndGetResult();
     setState(() {
       widget.questionPageData.setUploading(false);
@@ -183,7 +187,8 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
                 children: <Widget>[
                   Text(
                     (widget.questionPageData.filePath == '' ||
-                            widget.questionPageData.resultData == null)
+                            (widget.questionPageData.resultData == null &&
+                                widget.questionPageData.resultDataXf == null))
                         ? '点击开始录音'
                         : '此题已有评测结果',
                     style: gFullExaminationSubTitleStyle,

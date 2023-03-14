@@ -126,8 +126,10 @@ class QuestionPageData {
     request.headers['Content-Type'] = 'multipart/form-data';
     final response = await request.send();
     final responseBytes = await response.stream.toBytes();
-    final responseString = String.fromCharCodes(responseBytes);
-    final decoded = jsonDecode(responseString);
+    // final responseString = String.fromCharCodes(responseBytes);
+    // final decoded = jsonDecode(responseString);
+    final u8decoded = utf8.decode(responseBytes);
+    final decoded = jsonDecode(u8decoded);
     resultDataXf = QuestionPageResultDataXf(type: this.type);
     resultDataXf!.parseJson(decoded['data']);
     _isUploading = false;
@@ -361,9 +363,118 @@ class QuestionPageResultDataXf {
     this.retro = 0,
     this.repl = 0,
   }) {
-    this.wrongMonotones = List.empty(growable: true);
-    this.wrongSheng = List.empty(growable: true);
-    this.wrongYun = List.empty(growable: true);
+    wrongMonotones = List.empty(growable: true);
+    wrongSheng = List.empty(growable: true);
+    wrongYun = List.empty(growable: true);
+  }
+  void parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
+    if (phone['perr_msg'] != 0) {
+      if (phone['is_yun'] == 1) {
+        if (phone['perr_msg'] == 1) {
+          wrongYun.add(
+            WrongPhone(
+              word: syrllJson['content'],
+              yunmu: phone['content'],
+              shengmu: '',
+              isShengWrong: false,
+            ),
+          );
+        } else if (phone['perr_msg'] == 2) {
+          wrongMonotones.add(
+            MonoTone(
+                word: syrllJson['content'],
+                tone: getMonoToneIntFromString(phone['mono_tone'])),
+          );
+        } else if (phone['perr_msg'] == 3) {
+          wrongYun.add(
+            WrongPhone(
+              word: syrllJson['content'],
+              yunmu: phone['content'],
+              shengmu: '',
+              isShengWrong: false,
+            ),
+          );
+          wrongMonotones.add(
+            MonoTone(
+                word: syrllJson['content'],
+                tone: getMonoToneIntFromString(phone['mono_tone'])),
+          );
+        } else {
+          throw ('未知的错误信息');
+        }
+      } else if (phone['is_yun'] == 0) {
+        if (phone['perr_msg'] == 1) {
+          wrongSheng.add(
+            WrongPhone(
+              word: syrllJson['content'],
+              yunmu: '',
+              shengmu: phone['content'],
+              isShengWrong: true,
+            ),
+          );
+        } else {
+          throw ('未知的错误信息');
+        }
+      } else {
+        throw ('错误的声韵母信息');
+      }
+    }
+  }
+
+  void parseSyrll(Map<String, dynamic> syrllJson) {
+    if (syrllJson['content'] == 'silv' || syrllJson['content'] == 'sil') {
+      return;
+    }
+    try {
+      if (syrllJson['dp_message'] == 0) {
+        // int rightMonotone =
+        //     getMonoToneIntFromPinyin(syrllJson['symbol'].toString());
+        final phoneJson = syrllJson['phone'];
+        if (_isJsonList(phoneJson)) {
+          for (var phone in phoneJson) {
+            parsePhone(phone, syrllJson);
+          }
+        } else {
+          parsePhone(phoneJson, syrllJson);
+        }
+      } else {
+        switch (syrllJson['dp_message']) {
+          case 16:
+            less++;
+            break;
+          case 32:
+            more++;
+            break;
+          case 64:
+            retro++;
+            break;
+          case 128:
+            repl++;
+            break;
+          default:
+            break;
+        }
+      }
+    } catch (_) {}
+  }
+
+  void parseWord(Map<String, dynamic> wordJson) {
+    if (_isJsonList(wordJson['syll'])) {
+      for (var syrllJson in wordJson['syll']) {
+        parseSyrll(syrllJson);
+      }
+    } else {
+      parseSyrll(wordJson['syll']);
+    }
+  }
+
+  bool _isJsonList(var json) {
+    final ret = json[1];
+    if (ret != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void parseJson(Map<String, dynamic> json) {
@@ -373,80 +484,13 @@ class QuestionPageResultDataXf {
     phoneScore = resultJson['phone_score'];
     totalScore = resultJson['total_score'];
     toneScore = resultJson['tone_score'];
-    for (Map<String, dynamic> sentanceJson in resultJson['sentence']) {
-      for (Map<String, dynamic> wordJson in sentanceJson['word']) {
-        final wordSyll = wordJson['syll'];
-        if (wordSyll['dp_message'] == 0) {
-          int rightMonotone =
-              getMonoToneIntFromPinyin(wordSyll['symbol'].toString());
-          final phoneJson = wordSyll['phone'];
-          for (var phone in phoneJson) {
-            if (phone['perr_msg'] != 0) {
-              if (phone['is_yun'] == 1) {
-                if (phone['perr_msg'] == 1) {
-                  wrongYun.add(
-                    WrongPhone(
-                      word: wordSyll['content'],
-                      yunmu: phone['content'],
-                      shengmu: '',
-                      isShengWrong: false,
-                    ),
-                  );
-                } else if (phone['perr_msg'] == 2) {
-                  wrongMonotones.add(
-                    MonoTone(word: wordSyll['content'], tone: rightMonotone),
-                  );
-                } else if (phone['perr_msg'] == 3) {
-                  wrongYun.add(
-                    WrongPhone(
-                      word: wordSyll['content'],
-                      yunmu: phone['content'],
-                      shengmu: '',
-                      isShengWrong: false,
-                    ),
-                  );
-                  wrongMonotones.add(
-                    MonoTone(word: wordSyll['content'], tone: rightMonotone),
-                  );
-                } else {
-                  throw ('未知的错误信息');
-                }
-              } else if (phone['is_yun'] == 0) {
-                if (phone['perr_msg'] == 1) {
-                  wrongSheng.add(
-                    WrongPhone(
-                      word: wordSyll['content'],
-                      yunmu: '',
-                      shengmu: phone['content'],
-                      isShengWrong: true,
-                    ),
-                  );
-                } else {
-                  throw ('未知的错误信息');
-                }
-              } else {
-                throw ('错误的声韵母信息');
-              }
-            }
-          }
-        } else {
-          switch (wordSyll['dp_message']) {
-            case 16:
-              less++;
-              break;
-            case 32:
-              more++;
-              break;
-            case 64:
-              retro++;
-              break;
-            case 128:
-              repl++;
-              break;
-            default:
-              break;
-          }
+    for (var sentanceJson in resultJson['sentence']) {
+      if (_isJsonList(sentanceJson['word'])) {
+        for (var wordJson in sentanceJson['word']) {
+          parseWord(wordJson);
         }
+      } else {
+        parseWord(sentanceJson['word']);
       }
     }
     jsonParsed = true;
@@ -467,13 +511,12 @@ class WrongPhone {
 }
 
 int getMonoToneIntFromPinyin(String pinyin) {
-  int rightMonotone = -1;
-  try {
-    int pinyinLength = pinyin.length;
-    rightMonotone = int.parse(pinyin[pinyinLength - 1]);
-  } catch (e) {
-    throw ('错误的拼音');
+  if (pinyin == null) {
+    return 0;
   }
+  int rightMonotone = 0;
+  int pinyinLength = pinyin.length;
+  rightMonotone = int.parse(pinyin[pinyinLength - 1]);
   return rightMonotone;
 }
 
