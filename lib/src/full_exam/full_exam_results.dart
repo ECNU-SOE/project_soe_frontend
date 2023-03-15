@@ -162,7 +162,8 @@ class FullExaminationResult extends StatelessWidget {
     List<Widget> rows = List.empty(growable: true);
     rows.addAll([
       _textWrap('全面测试结果', gExaminationResultSubtitleStyle),
-      _textWrap('您的得分:${data.weightedScore}/总分:${data.totalWeight}',
+      _textWrap(
+          '您的得分:${data.weightedScore.toStringAsFixed(1)}/总分:${data.totalWeight}',
           gExaminationResultSubtitleStyle),
       _textWrap('声调得分:$averageTone', gExaminationResultSubtitleStyle),
       _textWrap('发音得分:$averagePhone', gExaminationResultSubtitleStyle),

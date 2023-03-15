@@ -111,7 +111,7 @@ class ParsedResultsXf {
       }
     }
     return ParsedResultsXf(
-        weightedScore: weightedScore,
+        weightedScore: (weightedScore / totalWeight),
         totalWeight: totalWeight,
         resultList: list);
   }
@@ -160,7 +160,7 @@ class QuestionPageData {
         'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
     var request = http.MultipartRequest('POST', uri);
     request.files.add(await getMultiPartFileAudio());
-    request.fields['refText'] = toSingleString();
+    request.fields['refText'] = toSingleString(false);
     request.fields['category'] = getXfCategoryString(type);
     request.headers['Content-Type'] = 'multipart/form-data';
     final response = await request.send();
@@ -224,14 +224,14 @@ class QuestionPageData {
     return httpAudio;
   }
 
-  String toSingleString() {
+  String toSingleString(bool withWeightedScore) {
     if (questionList.isEmpty) {
       throw ('Invalid QuestionList size');
     }
     // 古诗, 处理分段
     if (type == QuestionType.poem) {
       List<String> lines = questionList[0].label.split('\\n');
-      var ret = '(${questionList[0].weight})\n';
+      var ret = withWeightedScore ? '(${questionList[0].weight})\n' : '';
       for (String line in lines) {
         ret += line;
         ret += '\n';
@@ -241,20 +241,23 @@ class QuestionPageData {
     // 文章, 分段加空格.
     if (type == QuestionType.article) {
       List<String> lines = questionList[0].label.split('\\n');
-      var ret = '(${questionList[0].weight})\n    ';
+      var ret =
+          withWeightedScore ? '(${questionList[0].weight})\n    ' : '    ';
       for (String line in lines) {
         ret += line;
         ret += '\n    ';
       }
       return ret;
     }
-    String single = '(${questionList[0].weight})' + questionList[0].label;
+    String single = (withWeightedScore ? '(${questionList[0].weight})' : '') +
+        questionList[0].label;
     if (questionList.length == 1) {
       return single;
     }
     single += '\n';
     for (int i = 1; i < questionList.length; ++i) {
-      single += '(${questionList[i].weight})' + questionList[i].label;
+      single += (withWeightedScore ? '(${questionList[i].weight})' : '') +
+          questionList[i].label;
       single += '\n';
     }
     return single;

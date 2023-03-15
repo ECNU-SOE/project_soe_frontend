@@ -97,7 +97,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     if (!widget.questionPageData.isRecording) return;
     final recordRet = await _audioRecorder.stop();
     // HAX 22.11.19 避免录音未完成
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 500));
     widget.questionPageData.filePath = recordRet!;
     setState(() {
       widget.questionPageData.isRecording = false;
@@ -112,7 +112,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
     //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
     // }
-    await Future.delayed(const Duration(seconds: 5));
+    // await Future.delayed(const Duration(seconds: 5));
     await widget.questionPageData.postAndGetResult();
     setState(() {
       widget.questionPageData.setUploading(false);
@@ -151,7 +151,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0),
               child: Text(
-                widget.questionPageData.toSingleString(),
+                widget.questionPageData.toSingleString(true),
                 style: gFullExaminationTextStyle,
               ),
             ),
