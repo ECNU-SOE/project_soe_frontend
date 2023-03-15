@@ -86,6 +86,37 @@ int questionTypeToInt(QuestionType t) {
   }
 }
 
+class ParsedResultsXf {
+  List<QuestionPageResultDataXf> resultList;
+  double weightedScore;
+  double totalWeight;
+  ParsedResultsXf({
+    required this.resultList,
+    required this.weightedScore,
+    required this.totalWeight,
+  });
+
+  factory ParsedResultsXf.fromVoiceInputPageList(
+      List<VoiceInputPage> inputPages) {
+    List<QuestionPageResultDataXf> list = List.empty(growable: true);
+    double weightedScore = 0.0;
+    double totalWeight = 0.0;
+    for (var inputPage in inputPages) {
+      double pageWeight = inputPage.questionPageData.getPageWeight();
+      totalWeight += pageWeight;
+      if (inputPage.questionPageData.resultDataXf != null) {
+        list.add(inputPage.questionPageData.resultDataXf!);
+        weightedScore +=
+            inputPage.questionPageData.resultDataXf!.totalScore * pageWeight;
+      }
+    }
+    return ParsedResultsXf(
+        weightedScore: weightedScore,
+        totalWeight: totalWeight,
+        resultList: list);
+  }
+}
+
 class QuestionPageData {
   final QuestionType type;
   final List<QuestionData> questionList;
@@ -112,6 +143,14 @@ class QuestionPageData {
     return _isUploading;
   }
 
+  double getPageWeight() {
+    double weight = 0.0;
+    for (final question in questionList) {
+      weight += question.weight;
+    }
+    return weight;
+  }
+
   Future<void> postAndGetResultXf() async {
     if (filePath == '') {
       return;
@@ -130,7 +169,8 @@ class QuestionPageData {
     // final decoded = jsonDecode(responseString);
     final u8decoded = utf8.decode(responseBytes);
     final decoded = jsonDecode(u8decoded);
-    resultDataXf = QuestionPageResultDataXf(type: this.type);
+    resultDataXf =
+        QuestionPageResultDataXf(type: this.type, weight: getPageWeight());
     resultDataXf!.parseJson(decoded['data']);
     _isUploading = false;
   }
@@ -191,7 +231,7 @@ class QuestionPageData {
     // 古诗, 处理分段
     if (type == QuestionType.poem) {
       List<String> lines = questionList[0].label.split('\\n');
-      var ret = '';
+      var ret = '(${questionList[0].weight})\n';
       for (String line in lines) {
         ret += line;
         ret += '\n';
@@ -201,20 +241,20 @@ class QuestionPageData {
     // 文章, 分段加空格.
     if (type == QuestionType.article) {
       List<String> lines = questionList[0].label.split('\\n');
-      var ret = '    ';
+      var ret = '(${questionList[0].weight})\n    ';
       for (String line in lines) {
         ret += line;
         ret += '\n    ';
       }
       return ret;
     }
+    String single = '(${questionList[0].weight})' + questionList[0].label;
     if (questionList.length == 1) {
-      return questionList[0].label;
+      return single;
     }
-    String single = questionList[0].label;
     single += '\n';
     for (int i = 1; i < questionList.length; ++i) {
-      single += questionList[i].label;
+      single += '(${questionList[i].weight})' + questionList[i].label;
       single += '\n';
     }
     return single;
@@ -242,16 +282,22 @@ class QuestionData {
   final String id;
   final int order;
   final String label;
+  final String pinyin;
+  final double weight;
   const QuestionData({
     required this.id,
     required this.order,
     required this.label,
+    required this.pinyin,
+    required this.weight,
   });
   factory QuestionData.fromJson(Map<String, dynamic> json) {
     return QuestionData(
       id: json['id'] as String,
       order: json['order'] as int,
       label: json['refText'] as String,
+      pinyin: json['pinyin'] as String,
+      weight: json['weight'] as double,
     );
   }
   Map<String, dynamic> toDynamicMap() {
@@ -338,6 +384,8 @@ class QuestionPageResultData {
 // content 	试卷内容
 // time_len 	时长（单位：帧，每帧相当于10ms）
 class QuestionPageResultDataXf {
+  double weight;
+  double weightedScore;
   bool jsonParsed;
   QuestionType type;
   double fluencyScore;
@@ -353,6 +401,7 @@ class QuestionPageResultDataXf {
   late List<WrongPhone> wrongYun;
   QuestionPageResultDataXf({
     required this.type,
+    required this.weight,
     this.jsonParsed = false,
     this.fluencyScore = 0.0,
     this.phoneScore = 0.0,
@@ -362,7 +411,9 @@ class QuestionPageResultDataXf {
     this.less = 0,
     this.retro = 0,
     this.repl = 0,
+    this.weightedScore = 0.0,
   }) {
+    weightedScore = weight * totalScore;
     wrongMonotones = List.empty(growable: true);
     wrongSheng = List.empty(growable: true);
     wrongYun = List.empty(growable: true);
@@ -422,7 +473,9 @@ class QuestionPageResultDataXf {
   }
 
   void parseSyrll(Map<String, dynamic> syrllJson) {
-    if (syrllJson['content'] == 'silv' || syrllJson['content'] == 'sil') {
+    if (syrllJson['content'] == 'silv' ||
+        syrllJson['content'] == 'sil' ||
+        syrllJson['content'] == 'fil') {
       return;
     }
     try {

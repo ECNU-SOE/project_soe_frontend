@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -21,15 +22,9 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   return retMap;
 }
 
-Future<List<QuestionPageResultDataXf>> submitAndGetResultsXf(
+Future<ParsedResultsXf> submitAndGetResultsXf(
     List<VoiceInputPage> inputPages, String id) async {
-  List<QuestionPageResultDataXf> ret = List.empty(growable: true);
-  for (var inputPage in inputPages) {
-    if (inputPage.questionPageData.resultDataXf != null) {
-      ret.add(inputPage.questionPageData.resultDataXf!);
-    }
-  }
-  return ret;
+  return ParsedResultsXf.fromVoiceInputPageList(inputPages);
 }
 
 Future<Map<String, dynamic>> submitAndGetResults(
@@ -130,8 +125,8 @@ class FullExaminationResult extends StatelessWidget {
     );
   }
 
-  Widget _generateScaffoldBodyXf(List<QuestionPageResultDataXf> data) {
-    if (data.isEmpty) {
+  Widget _generateScaffoldBodyXf(ParsedResultsXf data) {
+    if (data.resultList.isEmpty) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(15.0),
@@ -142,7 +137,7 @@ class FullExaminationResult extends StatelessWidget {
         ),
       );
     }
-    double sumTotal = 0.0;
+    // double sumTotal = 0.0;
     double sumPhone = 0.0;
     double sumTone = 0.0;
     double sumFluency = 0.0;
@@ -150,8 +145,8 @@ class FullExaminationResult extends StatelessWidget {
     int sumLess = 0; // 漏读
     int sumRetro = 0; // 回读
     int sumRepl = 0; // 替换
-    for (final result in data) {
-      sumTotal += result.totalScore;
+    for (final result in data.resultList) {
+      // sumTotal += result.totalScore;
       sumPhone += result.phoneScore;
       sumTone += result.toneScore;
       sumFluency += result.fluencyScore;
@@ -160,14 +155,15 @@ class FullExaminationResult extends StatelessWidget {
       sumRetro += result.retro;
       sumRepl += result.repl;
     }
-    final averageTotal = sumTotal / data.length;
-    final averagePhone = sumPhone / data.length;
-    final averageTone = sumTone / data.length;
-    final averageFluency = sumFluency / data.length;
+    // final averageTotal = sumTotal / data.resultList.length;
+    final averagePhone = sumPhone / data.resultList.length;
+    final averageTone = sumTone / data.resultList.length;
+    final averageFluency = sumFluency / data.resultList.length;
     List<Widget> rows = List.empty(growable: true);
     rows.addAll([
       _textWrap('全面测试结果', gExaminationResultSubtitleStyle),
-      _textWrap('您的得分:$averageTotal', gExaminationResultSubtitleStyle),
+      _textWrap('您的得分:${data.weightedScore}/总分:${data.totalWeight}',
+          gExaminationResultSubtitleStyle),
       _textWrap('声调得分:$averageTone', gExaminationResultSubtitleStyle),
       _textWrap('发音得分:$averagePhone', gExaminationResultSubtitleStyle),
       _textWrap('流畅得分:$averageFluency', gExaminationResultSubtitleStyle),
@@ -175,21 +171,21 @@ class FullExaminationResult extends StatelessWidget {
           gExaminationResultTextStyle),
     ]);
     rows.add(_textWrap('你读错的声母', gExaminationResultSubtitleStyle));
-    for (final resultDataXf in data) {
+    for (final resultDataXf in data.resultList) {
       for (final sheng in resultDataXf.wrongSheng) {
         rows.add(_textWrap(
             '${sheng.word}(${sheng.shengmu})', gExaminationResultTextStyle));
       }
     }
     rows.add(_textWrap('你读错的韵母', gExaminationResultSubtitleStyle));
-    for (final resultDataXf in data) {
+    for (final resultDataXf in data.resultList) {
       for (final yun in resultDataXf.wrongYun) {
         rows.add(_textWrap(
             '${yun.word}(${yun.yunmu})', gExaminationResultTextStyle));
       }
     }
     rows.add(_textWrap('你读错的声调', gExaminationResultSubtitleStyle));
-    for (final resultDataXf in data) {
+    for (final resultDataXf in data.resultList) {
       for (final monotone in resultDataXf.wrongMonotones) {
         rows.add(_textWrap(
             '${monotone.word}(${monotone.tone})', gExaminationResultTextStyle));
@@ -201,6 +197,7 @@ class FullExaminationResult extends StatelessWidget {
     return listView;
   }
 
+  // 23.3.15 此函数弃用
   Widget? _generateScaffoldBody(Map<String, dynamic>? data) {
     if (data == null) {
       return null;
@@ -334,7 +331,7 @@ class FullExaminationResult extends StatelessWidget {
     final args = ModalRoute.of(context)!.settings.arguments
         as FullExamResultScreenArguments;
     // return FutureBuilder<Map<String, dynamic>>(
-    return FutureBuilder<List<QuestionPageResultDataXf>>(
+    return FutureBuilder<ParsedResultsXf>(
       // future: submitAndGetResults(args.inputPages, args.id),
       future: submitAndGetResultsXf(args.inputPages, args.id),
       builder: (context, snapshot) {

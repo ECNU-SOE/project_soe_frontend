@@ -17,22 +17,29 @@ List<QuestionPageData> parseWordMap(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
   final parsed = decoded['data']['cpsrcdList'].cast<Map<String, dynamic>>();
-  List<QuestionPageData> list = List<QuestionPageData>.empty(growable: true);
+  Map<int, List<QuestionData>> typeMap = Map.identity();
   for (var item in parsed) {
     int type = item['type'] as int;
-    List<QuestionData> questionList = item['corpus_list']
-        .map<QuestionData>((json) => QuestionData.fromJson(json))
-        .toList();
-    list.add(QuestionPageData(
-        type: questionTypeFromInt(type), questionList: questionList));
+    if (!typeMap.containsKey(type)) {
+      List<QuestionData> list = List.empty(growable: true);
+      typeMap[type] = list;
+    }
+    QuestionData questionData = QuestionData.fromJson(item);
+    typeMap[type]!.add(questionData);
   }
-  return list;
+
+  List<QuestionPageData> retList = List<QuestionPageData>.empty(growable: true);
+  for (var type in typeMap.keys) {
+    retList.add(QuestionPageData(
+        type: questionTypeFromInt(type), questionList: typeMap[type]!));
+  }
+  return retList;
 }
 
 Future<List<QuestionPageData>> fetchWordMap(
     http.Client client, String id) async {
   final response = await client.get(
-    Uri.parse("http://47.101.58.72:8002/api/evaluate/v1/details?cpsgrpId=$id"),
+    Uri.parse("http://47.101.58.72:8002/api/cpsgrp/v1/detail?cpsgrpId=$id"),
   );
   return compute(parseWordMap, response);
 }
