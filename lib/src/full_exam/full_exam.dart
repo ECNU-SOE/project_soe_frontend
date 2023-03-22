@@ -16,22 +16,25 @@ import 'package:project_soe/src/data/exam_data.dart';
 List<QuestionPageData> parseWordMap(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
-  final parsed = decoded['data']['cpsrcdList'].cast<Map<String, dynamic>>();
-  Map<int, List<QuestionData>> typeMap = Map.identity();
-  for (var item in parsed) {
-    int type = item['type'] as int;
-    if (!typeMap.containsKey(type)) {
-      List<QuestionData> list = List.empty(growable: true);
-      typeMap[type] = list;
+  final parsed = decoded['data']['topics'];
+  List<QuestionPageData> retList = List.empty(growable: true);
+  for (var topicMap in parsed) {
+    List<QuestionData> questionList = List.empty(growable: true);
+    for (var json in topicMap['subCpsrcds']) {
+      questionList.add(QuestionData.fromJson(json));
     }
-    QuestionData questionData = QuestionData.fromJson(item);
-    typeMap[type]!.add(questionData);
-  }
-
-  List<QuestionPageData> retList = List<QuestionPageData>.empty(growable: true);
-  for (var type in typeMap.keys) {
-    retList.add(QuestionPageData(
-        type: questionTypeFromInt(type), questionList: typeMap[type]!));
+    QuestionPageData pageData = QuestionPageData(
+      // type: getQuestionTypeFromInt(topicMap['type']),
+      // type: getQuestionTypeFromInt(questionList[0].evalMode),
+      questionList: questionList,
+      evalMode: questionList[0].evalMode,
+      cpsgrpId: topicMap['cpsgrpId'],
+      id: topicMap['id'],
+      weight: topicMap['score'],
+      desc: topicMap['description'],
+      title: topicMap['title'],
+    );
+    retList.add(pageData);
   }
   return retList;
 }
@@ -39,7 +42,8 @@ List<QuestionPageData> parseWordMap(http.Response response) {
 Future<List<QuestionPageData>> fetchWordMap(
     http.Client client, String id) async {
   final response = await client.get(
-    Uri.parse("http://47.101.58.72:8002/api/cpsgrp/v1/detail?cpsgrpId=$id"),
+    Uri.parse(
+        "http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=$id"),
   );
   return compute(parseWordMap, response);
 }
@@ -222,11 +226,12 @@ class FullExamination extends StatelessWidget {
     return FutureBuilder<List<QuestionPageData>>(
       future: fetchWordMap(http.Client(), examId),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasData) {
+        // if (snapshot.hasError) {
+        //   return const Center(
+        //     child: CircularProgressIndicator(),
+        //   );
+        // } else
+        if (snapshot.hasData) {
           return _FullExaminationBody(examId, snapshot.data!);
         } else {
           return const Center(

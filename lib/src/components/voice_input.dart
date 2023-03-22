@@ -113,7 +113,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
     // }
     // await Future.delayed(const Duration(seconds: 5));
-    await widget.questionPageData.postAndGetResult();
+    await widget.questionPageData.postAndGetResultXf();
     setState(() {
       widget.questionPageData.setUploading(false);
     });
@@ -141,7 +141,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
-          getQuestionTypeInfo(widget.questionPageData.type),
+          '${widget.questionPageData.title} 本题满分:${widget.questionPageData.weight}',
           style: gFullExaminationSubTitleStyle,
         ),
       ),
@@ -149,9 +149,18 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
         children: [
           Center(
             child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                widget.questionPageData.desc,
+                style: gFullExaminationSubTitleStyle,
+              ),
+            ),
+          ),
+          Center(
+            child: Padding(
               padding: const EdgeInsets.only(top: 12.0),
               child: Text(
-                widget.questionPageData.toSingleString(true),
+                widget.questionPageData.toSingleString(),
                 style: gFullExaminationTextStyle,
               ),
             ),
@@ -187,8 +196,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
                 children: <Widget>[
                   Text(
                     (widget.questionPageData.filePath == '' ||
-                            (widget.questionPageData.resultData == null &&
-                                widget.questionPageData.resultDataXf == null))
+                            widget.questionPageData.resultDataXf == null)
                         ? '点击开始录音'
                         : '此题已有评测结果',
                     style: gFullExaminationSubTitleStyle,
