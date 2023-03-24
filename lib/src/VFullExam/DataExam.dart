@@ -4,13 +4,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
-// import 'package:pinyinizer/Pinyinizer.dart' as pinyin_convertor;
+
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
-import '../VPersonalPage/ViewPersonal.dart';
-import '../VPracticePage/ViewPractice.dart';
-import '../VClassPage/ViewClass.dart';
+import 'package:project_soe/src/VPersonalPage/ViewPersonal.dart';
+import 'package:project_soe/src/VPracticePage/ViewPractice.dart';
+import 'package:project_soe/src/VClassPage/ViewClass.dart';
+
 import 'PageAppHome.dart';
 
 class ApplicationHome extends StatelessWidget {

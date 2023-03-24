@@ -14,7 +14,7 @@ import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VFullExam/DataExam.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
-import 'package:project_soe/src/LAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 
 Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);

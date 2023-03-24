@@ -1,9 +1,10 @@
 // TODO 11.2 实现此类.
 import 'package:flutter/material.dart';
+
+import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/src/VPersonalPage/DataPersonal.dart';
-import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 
 // FIXME 22.12.7 temp

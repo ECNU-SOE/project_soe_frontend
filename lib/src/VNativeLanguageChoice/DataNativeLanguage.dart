@@ -3,8 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../VFullExam/ViewFullExam.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:project_soe/src/VFullExam/ViewFullExam.dart';
 
 class NativeLanguageData {
   final int id;
