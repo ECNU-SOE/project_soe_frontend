@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:project_soe/src/app_home/app_home.dart';
-import 'package:project_soe/src/full_exam/full_exam_results.dart';
-import 'package:project_soe/src/login/login_screen.dart';
+import 'package:project_soe/src/VAppHome/app_home.dart';
+import 'package:project_soe/src/VFullExam/full_exam_results.dart';
+import 'package:project_soe/src/LAuthorition/login_screen.dart';
 
-import 'src/nl_choice/nl_choice.dart';
-import 'src/full_exam/full_exam.dart';
+import 'src/VNlChoice/nl_choice.dart';
+import 'src/VFullExam/full_exam.dart';
 
-import 'src/components/voice_input.dart';
-import 'src/navigation/navigation_routes.dart';
+import 'src/CComponents/voice_input.dart';
+import 'src/LNavigation/navigation_routes.dart';
 
 void main() {
   runApp(ProjectSOE());

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../full_exam/full_exam.dart';
+import '../VFullExam/full_exam.dart';
 import 'package:http/http.dart' as http;
 
 class NativeLanguageData {

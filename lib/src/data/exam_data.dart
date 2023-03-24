@@ -11,8 +11,8 @@ import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 // import 'package:pinyinizer/Pinyinizer.dart' as pinyin_convertor;
-import 'package:project_soe/src/components/voice_input.dart';
-import 'package:project_soe/src/full_exam/full_exam_results.dart';
+import 'package:project_soe/src/CComponents/voice_input.dart';
+import 'package:project_soe/src/VFullExam/full_exam_results.dart';
 
 class FullExamResultScreenArguments {
   final String id;
