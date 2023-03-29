@@ -127,6 +127,51 @@ class ParsedResultsXf {
     required this.wrongMonos,
   });
 
+  String toJson() {
+    String ret = '';
+    ret += '{';
+    ret += 'wrongSheng:{';
+    for (final wrongSheng in wrongShengs.keys) {
+      ret += wrongSheng + ':[';
+      final lst = wrongShengs[wrongSheng];
+      if (lst != null) {
+        for (final ws in lst) {
+          ret += '{${ws.toJson()}},';
+        }
+      }
+      ret += '],';
+    }
+    ret += '},';
+    ret += 'wrongYun:{';
+
+    for (final wys in wrongYuns.keys) {
+      ret += wys + ':[';
+      final lst = wrongShengs[wys];
+      if (lst != null) {
+        for (final wy in lst) {
+          ret += '${wy.toJson()},';
+        }
+      }
+      ret += '],';
+    }
+    ret += '},';
+    ret += 'wrongMono:{';
+
+    for (final wms in wrongMonos.keys) {
+      ret += wms + ':[';
+      final lst = wrongShengs[wms];
+      if (lst != null) {
+        for (final wm in lst) {
+          ret += '{${wm.toJson()}},';
+        }
+      }
+      ret += '],';
+    }
+    ret += '},';
+    ret += '}';
+    return ret;
+  }
+
   factory ParsedResultsXf.fromQuestionPageDataList(
       List<QuestionPageData> pageDatas) {
     List<QuestionPageResultDataXf> list = List.empty(growable: true);
@@ -504,6 +549,17 @@ class WrongPhone {
     required this.isShengWrong,
     required this.pinyinString,
   });
+
+  String toJson() {
+    final map = {
+      'word': word,
+      'shengmu': shengmu,
+      'yunmu': yunmu,
+      'isShengWrong': isShengWrong,
+      'pinyinString': pinyinString,
+    };
+    return jsonEncode(map);
+  }
 }
 
 // 错误的调型
@@ -516,4 +572,13 @@ class WrongMonoTone {
     required this.tone,
     required this.pinyinString,
   });
+
+  String toJson() {
+    final map = {
+      'word': word,
+      'tone': tone,
+      'pinyin': pinyinString,
+    };
+    return jsonEncode(map);
+  }
 }

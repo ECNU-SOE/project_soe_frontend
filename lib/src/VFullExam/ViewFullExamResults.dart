@@ -15,6 +15,7 @@ import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VFullExam/DataExam.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/src/VFullExam/MsgExam.dart';
 
 Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
@@ -23,9 +24,11 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   return retMap;
 }
 
-Future<ParsedResultsXf> submitAndGetResultsXf(
+Future<ParsedResultsXf> parseAndPostResultsXf(
     List<QuestionPageData> pageDatas, String id) async {
-  return ParsedResultsXf.fromQuestionPageDataList(pageDatas);
+  final parsedResultsXf = ParsedResultsXf.fromQuestionPageDataList(pageDatas);
+  await MsgMgrExam().postResultToServer(parsedResultsXf);
+  return parsedResultsXf;
 }
 
 class FullExaminationResult extends StatelessWidget {
@@ -216,7 +219,7 @@ class FullExaminationResult extends StatelessWidget {
     // return FutureBuilder<Map<String, dynamic>>(
     return FutureBuilder<ParsedResultsXf>(
       // future: submitAndGetResults(args.inputPages, args.id),
-      future: submitAndGetResultsXf(args.pageDatas, args.id),
+      future: parseAndPostResultsXf(args.pageDatas, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
