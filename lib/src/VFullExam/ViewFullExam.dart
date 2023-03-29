@@ -119,9 +119,12 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
         ),
       );
     } else {
+      List<QuestionPageData> lst = List.empty(growable: true);
+      for (final voiceInput in _voiceInputs!) {
+        lst.add(voiceInput.questionPageData);
+      }
       Navigator.pushNamed(context, FullExaminationResult.routeName,
-          arguments:
-              (FullExamResultScreenArguments(widget._examId, _voiceInputs!)));
+          arguments: (FullExamResultScreenArguments(widget._examId, lst)));
     }
   }
 
@@ -130,7 +133,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       return false;
     }
     for (var voiceInput in _voiceInputs!) {
-      if (voiceInput.questionPageData.isUploading()) {
+      if (voiceInput.questionPageData.isUploading) {
         return true;
       }
     }

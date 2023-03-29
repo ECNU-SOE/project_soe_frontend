@@ -35,7 +35,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
 
   Icon _recordIcon() {
     return Icon(
-      widget.questionPageData.hasRecord()
+      widget.questionPageData.filePath != ''
           ? Icons.play_arrow
           : widget.questionPageData.isRecording
               ? Icons.stop
@@ -48,14 +48,15 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: widget.questionPageData.hasRecord() ? Colors.amber : Colors.grey,
+      color:
+          (widget.questionPageData.filePath != '') ? Colors.amber : Colors.grey,
       size: 32.0,
     );
   }
 
   void _cbkRetry() {
     if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading()) {
+        widget.questionPageData.isUploading) {
       return;
     } else {
       _retryRecording();
@@ -63,10 +64,10 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   Future<void> _cbkRecordStopPlay() async {
-    if (widget.questionPageData.isUploading()) {
+    if (widget.questionPageData.isUploading) {
       return;
     }
-    if (widget.questionPageData.hasRecord()) {
+    if (widget.questionPageData.filePath != '') {
       _playRecord();
     } else if (widget.questionPageData.isRecording) {
       _stopRecording();
@@ -77,7 +78,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
 
   Future<void> _startRecording() async {
     if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading()) {
+        widget.questionPageData.isUploading) {
       return;
     }
     if (await _audioRecorder.hasPermission()) {
@@ -101,28 +102,18 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
     widget.questionPageData.filePath = recordRet!;
     setState(() {
       widget.questionPageData.isRecording = false;
-      widget.questionPageData.setUploading(true);
+      widget.questionPageData.isUploading = true;
     });
-    // HAX 22.12.9 客户端实现本地格式转换.
-    // if (Theme.of(context).platform != TargetPlatform.windows) {
-    //   final fileSplit = widget.questionPageData.filePath.split('\\');
-    //   final String fileName = fileSplit[fileSplit.length - 1];
-    //   final String nonFormatFilename = fileName.split('.')[0];
-    //   await ffmpeg.FFmpegKit.execute(
-    //       '-i ${widget.questionPageData.filePath} -f s16le -acodec libmp3lame -ar 16k -ac 1 -b 48 $nonFormatFilename.mp3');
-    //   widget.questionPageData.filePath = '$nonFormatFilename.mp3';
-    // }
-    // await Future.delayed(const Duration(seconds: 5));
     await widget.questionPageData.postAndGetResultXf();
     setState(() {
-      widget.questionPageData.setUploading(false);
+      widget.questionPageData.isUploading = false;
     });
   }
 
   void _retryRecording() {
-    if (!widget.questionPageData.hasRecord()) return;
+    if (widget.questionPageData.filePath == '') return;
     if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading()) return;
+        widget.questionPageData.isUploading) return;
     _audioPlayer.stop();
     setState(() {
       widget.questionPageData.filePath = '';
@@ -130,7 +121,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   }
 
   void _playRecord() {
-    if (!widget.questionPageData.hasRecord()) return;
+    if (widget.questionPageData.filePath == '') return;
     _audioPlayer.play(ap.DeviceFileSource(widget.questionPageData.filePath));
   }
 
@@ -170,7 +161,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
       bottomNavigationBar: Container(
         height: 55.0,
         color: Colors.white,
-        child: widget.questionPageData.isUploading()
+        child: widget.questionPageData.isUploading
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

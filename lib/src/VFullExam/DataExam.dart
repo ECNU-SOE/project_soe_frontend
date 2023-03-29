@@ -11,12 +11,14 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
+import 'package:project_soe/src/CComponents/LogicPingyinlizer.dart'
+    as pinyinlizer;
 import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
 
 class FullExamResultScreenArguments {
   final String id;
-  final List<VoiceInputPage> inputPages;
-  FullExamResultScreenArguments(this.id, this.inputPages);
+  final List<QuestionPageData> pageDatas;
+  FullExamResultScreenArguments(this.id, this.pageDatas);
 }
 
 enum QuestionType {
@@ -26,6 +28,28 @@ enum QuestionType {
   poem,
 }
 
+// 转换为拼音 pin1 yin1 -> pīn yīn
+String getStringFromPinyin(String pinyin) {
+  return pinyinlizer.Pinyinizer().pinyinize(pinyin);
+}
+
+// 获取调型对应的文本
+String getLabelFromMonotoneInt(int monoTone) {
+  switch (monoTone) {
+    case 1:
+      return '一声';
+    case 2:
+      return '二声';
+    case 3:
+      return '三声';
+    case 4:
+      return '四声';
+    default:
+      throw ('没有该调型');
+  }
+}
+
+// 获取讯飞数据的解析格式
 String getXfCategoryStringByInt(int x) {
   switch (x) {
     case 2:
@@ -39,65 +63,52 @@ String getXfCategoryStringByInt(int x) {
   }
 }
 
-// String getXfCategoryString(QuestionType x) {
-//   switch (x) {
-//     case QuestionType.word:
-//       return "read_word";
-//     case QuestionType.sentance:
-//       return "read_sentence";
-//     case QuestionType.article:
-//       return "read_chapter";
-//     case QuestionType.poem:
-//       return "read_chapter";
-//     default:
-//       throw ('不支持的格式');
-//   }
-// }
+// 错误声韵母列表整理为一个String
+String getStringLabelFromWrongPhoneList(List<WrongPhone> phoneList) {
+  String ret = '';
+  for (WrongPhone phone in phoneList) {
+    ret += phone.word;
+    ret += phone.pinyinString;
+  }
+  return ret;
+}
 
-// String getQuestionTypeInfo(QuestionType x) {
-//   switch (x) {
-//     case QuestionType.word:
-//       return '本题是单词问题';
-//     case QuestionType.sentance:
-//       return '本题是句子题';
-//     case QuestionType.article:
-//       return '本题是文章题';
-//     case QuestionType.poem:
-//       return '本题是读古诗';
-//     default:
-//       throw ('不支持的格式');
-//   }
-// }
+// 错误调型列表整理为一个String
+String getStringLabelFromWrongMonoList(List<WrongMonoTone> monoList) {
+  String ret = '';
+  for (WrongMonoTone monoTone in monoList) {
+    ret += monoTone.word;
+    ret += monoTone.pinyinString;
+  }
+  return ret;
+}
 
-// QuestionType getQuestionTypeFromInt(int x) {
-//   switch (x) {
-//     case 1:
-//       return QuestionType.word;
-//     case 2:
-//       return QuestionType.sentance;
-//     case 3:
-//       return QuestionType.article;
-//     case 5:
-//       return QuestionType.poem;
-//     default:
-//       throw ("No Such Question Type");
-//   }
-// }
+// 获取调型Int 1234
+int getMonoToneIntFromPinyin(String pinyin) {
+  if (pinyin == null) {
+    return 0;
+  }
+  int rightMonotone = 0;
+  int pinyinLength = pinyin.length;
+  rightMonotone = int.parse(pinyin[pinyinLength - 1]);
+  return rightMonotone;
+}
 
-// int questionTypeToInt(QuestionType t) {
-//   switch (t) {
-//     case QuestionType.word:
-//       return 1;
-//     case QuestionType.sentance:
-//       return 2;
-//     case QuestionType.article:
-//       return 3;
-//     case QuestionType.poem:
-//       return 5;
-//     default:
-//       throw ("No Such Question Type");
-//   }
-// }
+// 获取调型String
+int getMonoToneIntFromMsgString(String monoTone) {
+  switch (monoTone) {
+    case 'TONE1':
+      return 1;
+    case 'TONE2':
+      return 2;
+    case 'TONE3':
+      return 3;
+    case 'TONE4':
+      return 4;
+    default:
+      throw ('没有该调型');
+  }
+}
 
 class ParsedResultsXf {
   List<QuestionPageResultDataXf> resultList;
@@ -116,18 +127,17 @@ class ParsedResultsXf {
     required this.wrongMonos,
   });
 
-  factory ParsedResultsXf.fromVoiceInputPageList(
-      List<VoiceInputPage> inputPages) {
+  factory ParsedResultsXf.fromQuestionPageDataList(
+      List<QuestionPageData> pageDatas) {
     List<QuestionPageResultDataXf> list = List.empty(growable: true);
     double weightedScore = 0.0;
     double totalWeight = 0.0;
-    for (var inputPage in inputPages) {
-      double pageWeight = inputPage.questionPageData.getPageWeight();
+    for (var pageData in pageDatas) {
+      double pageWeight = pageData.weight;
       totalWeight += pageWeight;
-      if (inputPage.questionPageData.resultDataXf != null) {
-        list.add(inputPage.questionPageData.resultDataXf!);
-        weightedScore +=
-            inputPage.questionPageData.resultDataXf!.totalScore * pageWeight;
+      if (pageData.resultDataXf != null) {
+        list.add(pageData.resultDataXf!);
+        weightedScore += pageData.resultDataXf!.totalScore * pageWeight;
       }
     }
     Map<String, List<WrongPhone>> wrongShengs = Map.identity();
@@ -171,24 +181,7 @@ class ParsedResultsXf {
   }
 }
 
-String getStringLabelFromWrongPhoneList(List<WrongPhone> phoneList) {
-  String ret = '';
-  for (WrongPhone phone in phoneList) {
-    ret += phone.word;
-    ret += phone.pinyinString;
-  }
-  return ret;
-}
-
-String getStringLabelFromWrongMonoList(List<WrongMonoTone> monoList) {
-  String ret = '';
-  for (WrongMonoTone monoTone in monoList) {
-    ret += monoTone.word;
-    ret += monoTone.pinyinString;
-  }
-  return ret;
-}
-
+// 每一页题目的数据.
 class QuestionPageData {
   // final QuestionType type;
   final double weight;
@@ -199,9 +192,9 @@ class QuestionPageData {
   final int evalMode;
   final List<QuestionData> questionList;
   bool isRecording = false;
-  bool _isUploading = false;
+  bool isUploading = false;
   String filePath;
-  // QuestionPageResultData? resultData;
+  // 评测以页为单位, 因此页数据内包含结果
   QuestionPageResultDataXf? resultDataXf;
   QuestionPageData({
     // required this.type,
@@ -214,84 +207,37 @@ class QuestionPageData {
     required this.evalMode,
     this.filePath = '',
   });
-  // factory QuestionPageData.fronJson(Map<String, dynamic>) {
-  //   return QuestionPageData(
-  //     type: getQuestionTypeFromInt(x), questionList: questionList, cpsgrpId: cpsgrpId, id: id, weight: weight)
 
-  // }
-
-  bool hasRecord() {
-    return filePath != '';
-  }
-
-  void setUploading(bool b) {
-    _isUploading = b;
-  }
-
-  bool isUploading() {
-    return _isUploading;
-  }
-
-  double getPageWeight() {
-    // double weight = 0.0;
-    // for (final question in questionList) {
-    //   weight += question.weight;
-    // }
-    return weight;
-  }
-
+  // 发送结果至服务器评测
   Future<void> postAndGetResultXf() async {
     if (filePath == '') {
       return;
     }
-    _isUploading = true;
+    isUploading = true;
+    // 指定URI
     final uri = Uri.parse(
         'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
+    // 指定Request类型
     var request = http.MultipartRequest('POST', uri);
+    // 添加文件
     request.files.add(await getMultiPartFileAudio());
+    // 添加Fields
     request.fields['refText'] = toSingleString();
     request.fields['category'] = getXfCategoryStringByInt(evalMode);
+    // 设置Headers
     request.headers['Content-Type'] = 'multipart/form-data';
+    // 发送 并等待返回
     final response = await request.send();
-    final responseBytes = await response.stream.toBytes();
-    // final responseString = String.fromCharCodes(responseBytes);
-    // final decoded = jsonDecode(responseString);
-    final u8decoded = utf8.decode(responseBytes);
-    final decoded = jsonDecode(u8decoded);
-    resultDataXf = QuestionPageResultDataXf(
-        evalMode: this.evalMode, weight: getPageWeight());
+    // 将返回转换为字节流, 并解码
+    final decoded = jsonDecode(utf8.decode(await response.stream.toBytes()));
+    // 处理解码后的数据
+    resultDataXf = QuestionPageResultDataXf(evalMode: evalMode, weight: weight);
     resultDataXf!.parseJson(decoded['data']);
-    _isUploading = false;
+    // 标定状态
+    isUploading = false;
   }
 
-/*
-   Future<void> postAndGetResult() async {
-     // FIXME 23.3.2 暂时使用科大讯飞的接口.
-     await postAndGetResultXf();
-     return;
- 
-    if (filePath == '') {
-      return;
-    }
-    _isUploading = true;
-    final uri = Uri.parse(
-        'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval');
-    var request = http.MultipartRequest('POST', uri);
-    request.files.add(await getMultiPartFileAudio());
-    request.fields['refText'] = toSingleString();
-    request.fields['evalMode'] = '2';
-    request.fields['pinyin'] = '';
-    request.headers['Content-Type'] = 'multipart/form-data';
-    final response = await request.send();
-    final responseBytes = await response.stream.toBytes();
-    final responseString = String.fromCharCodes(responseBytes);
-    final decoded = jsonDecode(responseString);
-    resultData = QuestionPageResultData.fromJson(decoded['data']);
-    _isUploading = false;
-    
-   }
-*/
-
+  // 将语音文件转换为可以被发送的 MultiPartFileAudio
   Future<http.MultipartFile> getMultiPartFileAudio() async {
     dynamic httpAudio;
     if (filePath != '') {
@@ -315,6 +261,7 @@ class QuestionPageData {
     return httpAudio;
   }
 
+  // 把所有题目内容变成一个String, 方便界面显示.
   String toSingleString({bool withScore = false}) {
     if (questionList.isEmpty) {
       throw ('Invalid QuestionList size');
@@ -329,39 +276,19 @@ class QuestionPageData {
     }
     return ret;
   }
-
-  // 22.11.19 此函数弃用, 只适用于之前的接口.
-  // Future<Map<String, dynamic>> toDynamicMap() async {
-  //   List<Map<String, dynamic>> wordList = [];
-  //   for (QuestionData questionData in questionList) {
-  //     wordList.add(questionData.toDynamicMap());
-  //   }
-
-  //   Map<String, dynamic> json = {
-  //     'type': questionTypeToInt(type).toString(),
-  //     'audioName': filePath == ''
-  //         ? ''
-  //         : filePath.split('\\')[filePath.split('\\').length - 1],
-  //     'refText': wordList,
-  //   };
-  //   return json;
-  // }
 }
 
+// 每一道题的数据
 class QuestionData {
   final String id;
   final String label;
-  // final String pinyin;
-  // final double wordWeight;
   final int evalMode;
   final String cpsgrpId;
   final String topicId;
   const QuestionData({
     required this.id,
     required this.label,
-    // required this.pinyin,
     required this.cpsgrpId,
-    // required this.wordWeight,
     required this.topicId,
     required this.evalMode,
   });
@@ -369,11 +296,9 @@ class QuestionData {
     return QuestionData(
       id: json['id'] as String,
       label: json['refText'] as String,
-      // pinyin: json['pinyin'] as String,
       cpsgrpId: json['cpsgrpId'] as String,
       topicId: json['topicId'] as String,
       evalMode: json['evalMode'] as int,
-      // wordWeight: json['wordWeight'] as double,
     );
   }
   Map<String, dynamic> toDynamicMap() {
@@ -384,6 +309,7 @@ class QuestionData {
   }
 }
 
+// 科大讯飞评测得到的结果
 // phone_score 	声韵分
 // fluency_score 	流畅度分（暂会返回0分）
 // tone_score 	调型分
@@ -426,7 +352,7 @@ class QuestionPageResultDataXf {
     wrongSheng = List.empty(growable: true);
     wrongYun = List.empty(growable: true);
   }
-  void parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
+  void _parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
     if (phone['perr_msg'] != 0) {
       if (phone['is_yun'] == 1) {
         if (phone['perr_msg'] == 1) {
@@ -486,7 +412,7 @@ class QuestionPageResultDataXf {
     }
   }
 
-  void parseSyrll(Map<String, dynamic> syrllJson) {
+  void _parseSyrll(Map<String, dynamic> syrllJson) {
     if (syrllJson['content'] == 'silv' ||
         syrllJson['content'] == 'sil' ||
         syrllJson['content'] == 'fil') {
@@ -499,10 +425,10 @@ class QuestionPageResultDataXf {
         final phoneJson = syrllJson['phone'];
         if (_isJsonList(phoneJson)) {
           for (var phone in phoneJson) {
-            parsePhone(phone, syrllJson);
+            _parsePhone(phone, syrllJson);
           }
         } else {
-          parsePhone(phoneJson, syrllJson);
+          _parsePhone(phoneJson, syrllJson);
         }
       } else {
         switch (syrllJson['dp_message']) {
@@ -525,13 +451,13 @@ class QuestionPageResultDataXf {
     } catch (_) {}
   }
 
-  void parseWord(Map<String, dynamic> wordJson) {
+  void _parseWord(Map<String, dynamic> wordJson) {
     if (_isJsonList(wordJson['syll'])) {
       for (var syrllJson in wordJson['syll']) {
-        parseSyrll(syrllJson);
+        _parseSyrll(syrllJson);
       }
     } else {
-      parseSyrll(wordJson['syll']);
+      _parseSyrll(wordJson['syll']);
     }
   }
 
@@ -554,16 +480,17 @@ class QuestionPageResultDataXf {
     for (var sentanceJson in resultJson['sentence']) {
       if (_isJsonList(sentanceJson['word'])) {
         for (var wordJson in sentanceJson['word']) {
-          parseWord(wordJson);
+          _parseWord(wordJson);
         }
       } else {
-        parseWord(sentanceJson['word']);
+        _parseWord(sentanceJson['word']);
       }
     }
     jsonParsed = true;
   }
 }
 
+// 错误的声韵母
 class WrongPhone {
   final String word;
   final String shengmu;
@@ -579,53 +506,7 @@ class WrongPhone {
   });
 }
 
-String getLabelFromMonotoneInt(int monoTone) {
-  switch (monoTone) {
-    case 1:
-      return '一声';
-    case 2:
-      return '二声';
-    case 3:
-      return '三声';
-    case 4:
-      return '四声';
-    default:
-      throw ('没有该调型');
-  }
-}
-
-// TODO 23.3.16 转拼音
-String getStringFromPinyin(String pinyin) {
-  // var convertor = pinyin_convertor.Pinyinizer();
-  // return convertor.pinyinize(pinyin);
-  return pinyin;
-}
-
-int getMonoToneIntFromPinyin(String pinyin) {
-  if (pinyin == null) {
-    return 0;
-  }
-  int rightMonotone = 0;
-  int pinyinLength = pinyin.length;
-  rightMonotone = int.parse(pinyin[pinyinLength - 1]);
-  return rightMonotone;
-}
-
-int getMonoToneIntFromMsgString(String monoTone) {
-  switch (monoTone) {
-    case 'TONE1':
-      return 1;
-    case 'TONE2':
-      return 2;
-    case 'TONE3':
-      return 3;
-    case 'TONE4':
-      return 4;
-    default:
-      throw ('没有该调型');
-  }
-}
-
+// 错误的调型
 class WrongMonoTone {
   final String word;
   final int tone;
@@ -636,74 +517,3 @@ class WrongMonoTone {
     required this.pinyinString,
   });
 }
-
-// 23.3.16 改用讯飞的
-/*
-class QuestionPageResultData {
-  final int totalWords;
-  final int wrongWords;
-  final double proportion = 0.2;
-  final double pronCompletion;
-  final double pronAccuracy;
-  final double pronFluency;
-  final double suggestedScore;
-  const QuestionPageResultData({
-    required this.totalWords,
-    required this.wrongWords,
-    required this.pronCompletion,
-    required this.pronAccuracy,
-    required this.pronFluency,
-    required this.suggestedScore,
-  });
-
-  Map<String, dynamic> getJsonMap(int id) {
-    final retMap = {
-      'subTopic': id,
-      // FIXME 22.11.19 这些数据目前保留
-      'proportion': 0.0,
-      'totalWords': totalWords,
-      'wrongWords': wrongWords,
-      'pronCompletion': pronCompletion,
-      'pronAccuracy': pronAccuracy,
-      'pronFluency': pronFluency,
-      'suggestedScore': suggestedScore,
-    };
-    return retMap;
-  }
-
-  factory QuestionPageResultData.fromJson(Map<String, dynamic> json) {
-    return QuestionPageResultData(
-      totalWords: (json['totalWordCount'] == null)
-          ? 0
-          : json['totalWordCount'] as int > 0
-              ? json['totalWordCount'] as int
-              : 0,
-      wrongWords: (json['wrongWordsCount'] == null)
-          ? 0
-          : json['wrongWordsCount'] as int > 0
-              ? json['wrongWordsCount'] as int
-              : 0,
-      pronAccuracy: (json['pronAccuracy'] == null)
-          ? 0.0
-          : json['pronAccuracy'] as double >= 0.0
-              ? json['pronAccuracy'] as double
-              : 0.0,
-      pronFluency: (json['pronFluency'] == null)
-          ? 0.0
-          : json['pronFluency'] as double >= 0.0
-              ? json['pronFluency'] as double
-              : 0.0,
-      pronCompletion: (json['pronCompletion'] == null)
-          ? 0.0
-          : json['pronCompletion'] as double >= 0.0
-              ? json['pronCompletion'] as double
-              : 0.0,
-      suggestedScore: (json['suggestedScore'] == null)
-          ? 0.0
-          : json['suggestedScore'] as double >= 0.0
-              ? json['suggestedScore'] as double
-              : 0.0,
-    );
-  }
-}
-*/

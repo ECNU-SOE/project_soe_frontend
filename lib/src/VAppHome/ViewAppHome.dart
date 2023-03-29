@@ -29,6 +29,7 @@ class _ApplicationHomeBodyState extends State<ApplicationHomeBody> {
     ClassPage(),
     PersonalPage(),
   ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

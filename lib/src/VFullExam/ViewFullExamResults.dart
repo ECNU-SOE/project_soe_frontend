@@ -24,8 +24,8 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
 }
 
 Future<ParsedResultsXf> submitAndGetResultsXf(
-    List<VoiceInputPage> inputPages, String id) async {
-  return ParsedResultsXf.fromVoiceInputPageList(inputPages);
+    List<QuestionPageData> pageDatas, String id) async {
+  return ParsedResultsXf.fromQuestionPageDataList(pageDatas);
 }
 
 class FullExaminationResult extends StatelessWidget {
@@ -216,7 +216,7 @@ class FullExaminationResult extends StatelessWidget {
     // return FutureBuilder<Map<String, dynamic>>(
     return FutureBuilder<ParsedResultsXf>(
       // future: submitAndGetResults(args.inputPages, args.id),
-      future: submitAndGetResultsXf(args.inputPages, args.id),
+      future: submitAndGetResultsXf(args.pageDatas, args.id),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
