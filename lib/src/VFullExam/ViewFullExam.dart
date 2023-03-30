@@ -13,17 +13,17 @@ import 'package:project_soe/src/GGlobalParams/LabelText.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/VFullExam/DataExam.dart';
 
-List<QuestionPageData> parseWordMap(http.Response response) {
+List<DataQuestionPage> parseWordMap(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
   final parsed = decoded['data']['topics'];
-  List<QuestionPageData> retList = List.empty(growable: true);
+  List<DataQuestionPage> retList = List.empty(growable: true);
   for (var topicMap in parsed) {
-    List<QuestionData> questionList = List.empty(growable: true);
+    List<DataQuestion> questionList = List.empty(growable: true);
     for (var json in topicMap['subCpsrcds']) {
-      questionList.add(QuestionData.fromJson(json));
+      questionList.add(DataQuestion.fromJson(json));
     }
-    QuestionPageData pageData = QuestionPageData(
+    DataQuestionPage dataPage = DataQuestionPage(
       // type: getQuestionTypeFromInt(topicMap['type']),
       // type: getQuestionTypeFromInt(questionList[0].evalMode),
       questionList: questionList,
@@ -34,12 +34,12 @@ List<QuestionPageData> parseWordMap(http.Response response) {
       desc: topicMap['description'],
       title: topicMap['title'],
     );
-    retList.add(pageData);
+    retList.add(dataPage);
   }
   return retList;
 }
 
-Future<List<QuestionPageData>> fetchWordMap(
+Future<List<DataQuestionPage>> fetchWordMap(
     http.Client client, String id) async {
   final response = await client.get(
     Uri.parse(
@@ -52,8 +52,8 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
   _FullExaminationBodyState();
   int _index = 0;
   int _listSize = 0;
-  VoiceInputPage? _inputPage;
-  List<VoiceInputPage>? _voiceInputs;
+  ComponentVoiceInput? _inputPage;
+  List<ComponentVoiceInput>? _voiceInputs;
   final ValueNotifier<double> _process = ValueNotifier<double>(0.0);
 
   void _forward() {
@@ -119,7 +119,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
         ),
       );
     } else {
-      List<QuestionPageData> lst = List.empty(growable: true);
+      List<DataQuestionPage> lst = List.empty(growable: true);
       for (final voiceInput in _voiceInputs!) {
         lst.add(voiceInput.questionPageData);
       }
@@ -162,7 +162,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
 
   @override
   void initState() {
-    _voiceInputs = List<VoiceInputPage>.empty(growable: true);
+    _voiceInputs = List<ComponentVoiceInput>.empty(growable: true);
     super.initState();
   }
 
@@ -173,7 +173,8 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
 
   @override
   Widget build(BuildContext context) {
-    _inputPage = VoiceInputPage(questionPageData: widget._pageDatas[_index]);
+    _inputPage =
+        ComponentVoiceInput(questionPageData: widget._pageDatas[_index]);
     try {
       _voiceInputs![_index] = _inputPage!;
     } catch (e) {
@@ -212,7 +213,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
 }
 
 class _FullExaminationBody extends StatefulWidget {
-  List<QuestionPageData> _pageDatas;
+  List<DataQuestionPage> _pageDatas;
   String _examId;
   _FullExaminationBody(this._examId, this._pageDatas);
   @override
@@ -226,14 +227,9 @@ class FullExamination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String examId = ModalRoute.of(context)!.settings.arguments as String;
-    return FutureBuilder<List<QuestionPageData>>(
+    return FutureBuilder<List<DataQuestionPage>>(
       future: fetchWordMap(http.Client(), examId),
       builder: (context, snapshot) {
-        // if (snapshot.hasError) {
-        //   return const Center(
-        //     child: CircularProgressIndicator(),
-        //   );
-        // } else
         if (snapshot.hasData) {
           return _FullExaminationBody(examId, snapshot.data!);
         } else {

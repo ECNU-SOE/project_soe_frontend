@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/styles.dart';
+import 'package:project_soe/src/LNavigation/LogicNavigation.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/VPracticePage/ViewPracticeFollow.dart';
 
 // FIXME 22.12.7 temp
 List<String> horizontalScrollImages = [
@@ -23,7 +25,7 @@ class HomeRecData {
 
 // FIXME 22.12.7 temp
 List<HomeRecData> homeRecDatasFirst = [
-  HomeRecData('快速入口1', Icons.book, null),
+  HomeRecData('跟读练习', Icons.abc_sharp, null),
   HomeRecData('快速入口2', Icons.book, null),
   HomeRecData('快速入口3', Icons.book, null),
 ];
@@ -54,7 +56,7 @@ class HomePage extends StatelessWidget {
         .toList();
   }
 
-  Widget _buildRecWidget(List<HomeRecData> datalist) {
+  Widget _buildRecWidget(List<HomeRecData> datalist, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: datalist
@@ -68,7 +70,10 @@ class HomePage extends StatelessWidget {
                         data.icon,
                         color: Colors.black87,
                       ),
-                      onPressed: data.onPressed,
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, ViewPracticeFollow.routeName);
+                      },
                     )),
                 Text(
                   data.label,
@@ -128,8 +133,8 @@ class HomePage extends StatelessWidget {
             ),
           ),
           const Subtitle(label: '快速入口'),
-          _buildRecWidget(homeRecDatasFirst),
-          _buildRecWidget(homeRecDatasSecond),
+          _buildRecWidget(homeRecDatasFirst, context),
+          _buildRecWidget(homeRecDatasSecond, context),
           const Subtitle(label: '练习'),
           _buildExerciseWidget(),
         ],

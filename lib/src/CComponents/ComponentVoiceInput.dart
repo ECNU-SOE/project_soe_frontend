@@ -10,16 +10,16 @@ import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
 import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VFullExam/DataExam.dart';
 
-class VoiceInputPage extends StatefulWidget with ChangeNotifier {
+class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
-  final QuestionPageData questionPageData;
-  VoiceInputPage({super.key, required this.questionPageData});
+  final DataQuestionPage questionPageData;
+  ComponentVoiceInput({super.key, required this.questionPageData});
   @override
-  State<VoiceInputPage> createState() => _VoiceInputPageState();
+  State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
 
-class _VoiceInputPageState extends State<VoiceInputPage> {
-  _VoiceInputPageState({Key? key});
+class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
+  _ComponentVoiceInputState({Key? key});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
 

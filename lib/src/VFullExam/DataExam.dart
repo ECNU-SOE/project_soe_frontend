@@ -1,24 +1,21 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart' as mime;
-import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/CComponents/LogicPingyinlizer.dart'
     as pinyinlizer;
+import 'package:project_soe/src/VFullExam/MsgExam.dart';
 import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
 
 class FullExamResultScreenArguments {
   final String id;
-  final List<QuestionPageData> pageDatas;
-  FullExamResultScreenArguments(this.id, this.pageDatas);
+  final List<DataQuestionPage> dataList;
+  FullExamResultScreenArguments(this.id, this.dataList);
 }
 
 enum QuestionType {
@@ -173,11 +170,11 @@ class ParsedResultsXf {
   }
 
   factory ParsedResultsXf.fromQuestionPageDataList(
-      List<QuestionPageData> pageDatas) {
+      List<DataQuestionPage> dataList) {
     List<QuestionPageResultDataXf> list = List.empty(growable: true);
     double weightedScore = 0.0;
     double totalWeight = 0.0;
-    for (var pageData in pageDatas) {
+    for (var pageData in dataList) {
       double pageWeight = pageData.weight;
       totalWeight += pageWeight;
       if (pageData.resultDataXf != null) {
@@ -227,7 +224,7 @@ class ParsedResultsXf {
 }
 
 // 每一页题目的数据.
-class QuestionPageData {
+class DataQuestionPage {
   // final QuestionType type;
   final double weight;
   final String cpsgrpId;
@@ -235,13 +232,13 @@ class QuestionPageData {
   final String desc;
   final String title;
   final int evalMode;
-  final List<QuestionData> questionList;
+  final List<DataQuestion> questionList;
   bool isRecording = false;
   bool isUploading = false;
   String filePath;
   // 评测以页为单位, 因此页数据内包含结果
   QuestionPageResultDataXf? resultDataXf;
-  QuestionPageData({
+  DataQuestionPage({
     // required this.type,
     required this.questionList,
     required this.cpsgrpId,
@@ -259,25 +256,7 @@ class QuestionPageData {
       return;
     }
     isUploading = true;
-    // 指定URI
-    final uri = Uri.parse(
-        'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
-    // 指定Request类型
-    var request = http.MultipartRequest('POST', uri);
-    // 添加文件
-    request.files.add(await getMultiPartFileAudio());
-    // 添加Fields
-    request.fields['refText'] = toSingleString();
-    request.fields['category'] = getXfCategoryStringByInt(evalMode);
-    // 设置Headers
-    request.headers['Content-Type'] = 'multipart/form-data';
-    // 发送 并等待返回
-    final response = await request.send();
-    // 将返回转换为字节流, 并解码
-    final decoded = jsonDecode(utf8.decode(await response.stream.toBytes()));
-    // 处理解码后的数据
-    resultDataXf = QuestionPageResultDataXf(evalMode: evalMode, weight: weight);
-    resultDataXf!.parseJson(decoded['data']);
+    resultDataXf = await MsgMgrExam().postAndGetResultXf(this);
     // 标定状态
     isUploading = false;
   }
@@ -324,21 +303,21 @@ class QuestionPageData {
 }
 
 // 每一道题的数据
-class QuestionData {
+class DataQuestion {
   final String id;
   final String label;
   final int evalMode;
   final String cpsgrpId;
   final String topicId;
-  const QuestionData({
+  const DataQuestion({
     required this.id,
     required this.label,
     required this.cpsgrpId,
     required this.topicId,
     required this.evalMode,
   });
-  factory QuestionData.fromJson(Map<String, dynamic> json) {
-    return QuestionData(
+  factory DataQuestion.fromJson(Map<String, dynamic> json) {
+    return DataQuestion(
       id: json['id'] as String,
       label: json['refText'] as String,
       cpsgrpId: json['cpsgrpId'] as String,
