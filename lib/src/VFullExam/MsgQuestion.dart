@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:project_soe/src/VFullExam/DataQuestion.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 
+// 此文件只应被DataQuestion包含
 class MsgMgrQuestion {
   Future<List<DataQuestionPageMain>> getQuestionPageMainList(
       String examId) async {
@@ -21,13 +22,11 @@ class MsgMgrQuestion {
       for (var json in topicMap['subCpsrcds']) {
         questionList.add(DataQuestion.fromJson(json));
       }
-      DataQuestionEval dataEval =
-          DataQuestionEval(evalMode: questionList[0].evalMode);
       DataQuestionPageMain dataPage = DataQuestionPageMain(
         // type: getQuestionTypeFromInt(topicMap['type']),
         // type: getQuestionTypeFromInt(questionList[0].evalMode),
         questionList: questionList,
-        dataEval: dataEval,
+        evalMode: questionList[0].evalMode,
         cpsgrpId: topicMap['cpsgrpId'],
         id: topicMap['id'],
         weight: topicMap['score'],
@@ -58,8 +57,8 @@ class MsgMgrQuestion {
   }
 
   // 将语音数据发往服务器并评测
-  Future<DataResultXf> postAndGetResultXf(DataQuestionEval data, String refText,
-      {double weight = 100.0}) async {
+  // 此函数只应被Data调用
+  Future<DataResultXf> postAndGetResultXf(DataQuestionEval data) async {
     // 指定URI
     final uri = Uri.parse(
         'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
@@ -68,7 +67,7 @@ class MsgMgrQuestion {
     // 添加文件
     request.files.add(await data.getMultiPartFileAudio());
     // 添加Fields
-    request.fields['refText'] = refText;
+    request.fields['refText'] = data.toSingleString();
     //data.toSingleString();
     request.fields['category'] = getXfCategoryStringByInt(data.evalMode);
     // 设置Headers
@@ -78,7 +77,8 @@ class MsgMgrQuestion {
     // 将返回转换为字节流, 并解码
     final decoded = jsonDecode(utf8.decode(await response.stream.toBytes()));
     // 处理解码后的数据
-    final resultDataXf = DataResultXf(evalMode: data.evalMode, weight: weight);
+    final resultDataXf =
+        DataResultXf(evalMode: data.evalMode, weight: data.getWeight());
     resultDataXf.parseJson(decoded['data']);
     return resultDataXf;
   }

@@ -29,7 +29,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].dataPage.dataEval.isRecording) {
+      if (_voiceInputs![_index].dataPage.isRecording()) {
         return;
       }
       setState(() {
@@ -46,7 +46,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].dataPage.dataEval.isRecording) {
+      if (_voiceInputs![_index].dataPage.isRecording()) {
         return;
       }
       setState(() {
@@ -99,7 +99,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       return false;
     }
     for (var voiceInput in _voiceInputs!) {
-      if (voiceInput.dataPage.dataEval.isUploading) {
+      if (voiceInput.dataPage.isUploading()) {
         return true;
       }
     }

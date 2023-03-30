@@ -36,9 +36,9 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
 
   Icon _recordIcon() {
     return Icon(
-      widget.dataPage.dataEval.filePath != ''
+      widget.dataPage.hasRecordFile()
           ? Icons.play_arrow
-          : widget.dataPage.dataEval.isRecording
+          : widget.dataPage.isRecording()
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
@@ -49,16 +49,13 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: (widget.dataPage.dataEval.filePath != '')
-          ? Colors.amber
-          : Colors.grey,
+      color: (widget.dataPage.hasRecordFile()) ? Colors.amber : Colors.grey,
       size: 32.0,
     );
   }
 
   void _cbkRetry() {
-    if (widget.dataPage.dataEval.isRecording ||
-        widget.dataPage.dataEval.isUploading) {
+    if (widget.dataPage.isRecording() || widget.dataPage.isUploading()) {
       return;
     } else {
       _retryRecording();
@@ -66,12 +63,12 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Future<void> _cbkRecordStopPlay() async {
-    if (widget.dataPage.dataEval.isUploading) {
+    if (widget.dataPage.isUploading()) {
       return;
     }
-    if (widget.dataPage.dataEval.filePath != '') {
+    if (widget.dataPage.hasRecordFile()) {
       _playRecord();
-    } else if (widget.dataPage.dataEval.isRecording) {
+    } else if (widget.dataPage.isRecording()) {
       _stopRecording();
     } else {
       await _startRecording();
@@ -79,8 +76,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Future<void> _startRecording() async {
-    if (widget.dataPage.dataEval.isRecording ||
-        widget.dataPage.dataEval.isUploading) {
+    if (widget.dataPage.isRecording() || widget.dataPage.isUploading()) {
       return;
     }
     if (await _audioRecorder.hasPermission()) {
@@ -90,43 +86,38 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       );
       if (await _audioRecorder.isRecording()) {
         setState(() {
-          widget.dataPage.dataEval.isRecording = true;
+          widget.dataPage.setRecording(true);
         });
       }
     }
   }
 
   Future<void> _stopRecording() async {
-    if (!widget.dataPage.dataEval.isRecording) return;
+    if (!widget.dataPage.isRecording()) return;
     final recordRet = await _audioRecorder.stop();
-    // HAX 22.11.19 避免录音未完成
-    await Future.delayed(const Duration(milliseconds: 500));
-    widget.dataPage.dataEval.filePath = recordRet!;
+    widget.dataPage.setFilePath(recordRet!);
     setState(() {
-      widget.dataPage.dataEval.isRecording = false;
-      widget.dataPage.dataEval.isUploading = true;
+      widget.dataPage.setRecording(false);
+      widget.dataPage.setUploading(true);
     });
-    await widget.dataPage.dataEval.postAndGetResultXf(
-        widget.dataPage.toSingleString(),
-        weight: widget.dataPage.weight);
+    await widget.dataPage.postAndGetResultXf();
     setState(() {
-      widget.dataPage.dataEval.isUploading = false;
+      widget.dataPage.setUploading(false);
     });
   }
 
   void _retryRecording() {
-    if (widget.dataPage.dataEval.filePath == '') return;
-    if (widget.dataPage.dataEval.isRecording ||
-        widget.dataPage.dataEval.isUploading) return;
+    if (!widget.dataPage.hasRecordFile()) return;
+    if (widget.dataPage.isRecording() || widget.dataPage.isUploading()) return;
     _audioPlayer.stop();
     setState(() {
-      widget.dataPage.dataEval.filePath = '';
+      widget.dataPage.setFilePath('');
     });
   }
 
   void _playRecord() {
-    if (widget.dataPage.dataEval.filePath == '') return;
-    _audioPlayer.play(ap.DeviceFileSource(widget.dataPage.dataEval.filePath));
+    if (!widget.dataPage.hasRecordFile()) return;
+    _audioPlayer.play(ap.DeviceFileSource(widget.dataPage.getFilePath()));
   }
 
   @override
@@ -165,7 +156,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       bottomNavigationBar: Container(
         height: 55.0,
         color: Colors.white,
-        child: widget.dataPage.dataEval.isUploading
+        child: widget.dataPage.isUploading()
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,8 +181,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    (widget.dataPage.dataEval.filePath == '' ||
-                            widget.dataPage.dataEval.resultXf == null)
+                    (!widget.dataPage.hasRecordFile() ||
+                            widget.dataPage.resultXf == null)
                         ? '点击开始录音'
                         : '此题已有评测结果',
                     style: gFullExaminationSubTitleStyle,

@@ -178,9 +178,9 @@ class ParsedResultsXf {
     for (var pageData in dataList) {
       double pageWeight = pageData.weight;
       totalWeight += pageWeight;
-      if (pageData.dataEval.resultXf != null) {
-        list.add(pageData.dataEval.resultXf!);
-        weightedScore += pageData.dataEval.resultXf!.totalScore * pageWeight;
+      if (pageData.resultXf != null) {
+        list.add(pageData.resultXf!);
+        weightedScore += pageData.resultXf!.totalScore * pageWeight;
       }
     }
     Map<String, List<WrongPhone>> wrongShengs = Map.identity();
@@ -224,43 +224,52 @@ class ParsedResultsXf {
   }
 }
 
-// 记录录音情况和评测内容
-// DataQuestrionPageXXX {
-//    DataQuestionEval
+// 基类, 记录录音情况和评测内容
+// DataQuestrionPageXXX extends DataQuestionEval {
 //    + other data
 // }
 class DataQuestionEval {
   // 应该是由上层存储的, 但是传递下来
   final int evalMode;
-  bool isRecording = false;
-  bool isUploading = false;
-  String filePath = '';
+  bool _isRecording = false;
+  bool _isUploading = false;
+  String _filePath = '';
   // 评测以页为单位, 因此页数据内包含结果
   DataResultXf? resultXf;
 
-  DataQuestionEval({required this.evalMode});
+  DataQuestionEval({
+    required this.evalMode,
+  });
+
+  // 虚函数, 用来获取发送给服务器用来评测的内容
+  String toSingleString() {
+    return '';
+  }
+
+  // 虚函数, 用来获取评测时的满分
+  double getWeight() {
+    return 100.0;
+  }
 
   // 发送结果至服务器评测
-  Future<void> postAndGetResultXf(String refText,
-      {double weight = 100.0}) async {
-    if (filePath == '') {
+  Future<void> postAndGetResultXf() async {
+    if (_filePath == '') {
       return;
     }
-    isUploading = true;
-    resultXf = await MsgMgrQuestion()
-        .postAndGetResultXf(this, refText, weight: weight);
+    _isUploading = true;
+    resultXf = await MsgMgrQuestion().postAndGetResultXf(this);
     // 标定状态
-    isUploading = false;
+    _isUploading = false;
   }
 
   // 将语音文件转换为可以被发送的 MultiPartFileAudio
   Future<http.MultipartFile> getMultiPartFileAudio() async {
     dynamic httpAudio;
-    if (filePath != '') {
-      final bytes = await File(filePath).readAsBytes();
-      final fileSplit = filePath.split('\\');
+    if (_filePath != '') {
+      final bytes = await File(_filePath).readAsBytes();
+      final fileSplit = _filePath.split('\\');
       final String fileName = fileSplit[fileSplit.length - 1];
-      final String mimeLook = mime.lookupMimeType(filePath)!;
+      final String mimeLook = mime.lookupMimeType(_filePath)!;
       final mimeSplit = mimeLook.split('/');
       final String mimeString = mimeSplit[0];
       final String mimeType = mimeSplit[1];
@@ -275,6 +284,35 @@ class DataQuestionEval {
       );
     }
     return httpAudio;
+  }
+
+  // getters&setters
+  bool hasRecordFile() {
+    return _filePath != '';
+  }
+
+  void setFilePath(String filePath) {
+    _filePath = filePath;
+  }
+
+  String getFilePath() {
+    return _filePath;
+  }
+
+  bool isRecording() {
+    return _isRecording;
+  }
+
+  void setRecording(bool bRecording) {
+    _isRecording = bRecording;
+  }
+
+  bool isUploading() {
+    return _isUploading;
+  }
+
+  void setUploading(bool bUploading) {
+    _isUploading = bUploading;
   }
 }
 
@@ -295,28 +333,27 @@ class DataQuestionPageFollow {
 }
 
 // 每一页题目的数据.
-class DataQuestionPageMain {
+class DataQuestionPageMain extends DataQuestionEval {
   // final QuestionType type;
   final String id;
   final String cpsgrpId;
   final double weight;
   final String title;
   final String desc;
-  // final int evalMode;
-  DataQuestionEval dataEval;
   final List<DataQuestion> questionList;
+
   DataQuestionPageMain({
-    // required this.evalMode,
+    required super.evalMode,
+    required this.questionList,
     required this.id,
     required this.cpsgrpId,
     required this.weight,
     required this.title,
     required this.desc,
-    required this.questionList,
-    required this.dataEval,
   });
 
   // 把所有题目内容变成一个String, 方便界面显示.
+  @override
   String toSingleString({bool withScore = false}) {
     if (questionList.isEmpty) {
       throw ('Invalid QuestionList size');
@@ -325,7 +362,7 @@ class DataQuestionPageMain {
     for (final question in questionList) {
       List<String> lines = question.label.split('\\n');
       for (String line in lines) {
-        ret += (dataEval.evalMode == 4 ? '     ' : '') + line;
+        ret += (super.evalMode == 4 ? '     ' : '') + line;
         ret += '\n';
       }
     }
