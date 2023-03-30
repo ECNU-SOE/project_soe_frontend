@@ -12,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 
 import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/DataExam.dart';
+import 'package:project_soe/src/VFullExam/DataQuestion.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
-import 'package:project_soe/src/VFullExam/MsgExam.dart';
+import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
 
 Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
@@ -25,9 +25,9 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
 }
 
 Future<ParsedResultsXf> parseAndPostResultsXf(
-    List<DataQuestionPage> dataList, String id) async {
+    List<DataQuestionPageMain> dataList, String id) async {
   final parsedResultsXf = ParsedResultsXf.fromQuestionPageDataList(dataList);
-  await MsgMgrExam().postResultToServer(parsedResultsXf);
+  await MsgMgrQuestion().postResultToServer(parsedResultsXf);
   return parsedResultsXf;
 }
 

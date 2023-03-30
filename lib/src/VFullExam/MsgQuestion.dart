@@ -1,0 +1,85 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
+
+class MsgMgrQuestion {
+  Future<List<DataQuestionPageMain>> getQuestionPageMainList(
+      String examId) async {
+    final response = await http.Client().get(
+      Uri.parse(
+          "http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=$examId"),
+    );
+    final u8decoded = utf8.decode(response.bodyBytes);
+    final decoded = jsonDecode(u8decoded);
+    final parsed = decoded['data']['topics'];
+    List<DataQuestionPageMain> retList = List.empty(growable: true);
+    for (var topicMap in parsed) {
+      List<DataQuestion> questionList = List.empty(growable: true);
+      for (var json in topicMap['subCpsrcds']) {
+        questionList.add(DataQuestion.fromJson(json));
+      }
+      DataQuestionEval dataEval =
+          DataQuestionEval(evalMode: questionList[0].evalMode);
+      DataQuestionPageMain dataPage = DataQuestionPageMain(
+        // type: getQuestionTypeFromInt(topicMap['type']),
+        // type: getQuestionTypeFromInt(questionList[0].evalMode),
+        questionList: questionList,
+        dataEval: dataEval,
+        cpsgrpId: topicMap['cpsgrpId'],
+        id: topicMap['id'],
+        weight: topicMap['score'],
+        desc: topicMap['description'],
+        title: topicMap['title'],
+      );
+      retList.add(dataPage);
+    }
+    return retList;
+  }
+
+  // 客户端解析后的数据上传至服务器
+  Future<void> postResultToServer(ParsedResultsXf parsedResultsXf) async {
+    final client = http.Client();
+    final bodyMap = {'resJson': parsedResultsXf.toJson()};
+    final token = await AuthritionState.get().getTempToken();
+    final response = client.post(
+      Uri.parse(
+          'http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/save_transcript'),
+      body: jsonEncode(bodyMap),
+      headers: {
+        "Content-Type": "application/json",
+        // FIXME 23.3.29 暂时使用TempToken
+        'token': token,
+      },
+      encoding: Encoding.getByName('utf-8'),
+    );
+  }
+
+  // 将语音数据发往服务器并评测
+  Future<DataResultXf> postAndGetResultXf(DataQuestionEval data, String refText,
+      {double weight = 100.0}) async {
+    // 指定URI
+    final uri = Uri.parse(
+        'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
+    // 指定Request类型
+    var request = http.MultipartRequest('POST', uri);
+    // 添加文件
+    request.files.add(await data.getMultiPartFileAudio());
+    // 添加Fields
+    request.fields['refText'] = refText;
+    //data.toSingleString();
+    request.fields['category'] = getXfCategoryStringByInt(data.evalMode);
+    // 设置Headers
+    request.headers['Content-Type'] = 'multipart/form-data';
+    // 发送 并等待返回
+    final response = await request.send();
+    // 将返回转换为字节流, 并解码
+    final decoded = jsonDecode(utf8.decode(await response.stream.toBytes()));
+    // 处理解码后的数据
+    final resultDataXf = DataResultXf(evalMode: data.evalMode, weight: weight);
+    resultDataXf.parseJson(decoded['data']);
+    return resultDataXf;
+  }
+}

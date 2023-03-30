@@ -9,12 +9,12 @@ import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/CComponents/LogicPingyinlizer.dart'
     as pinyinlizer;
-import 'package:project_soe/src/VFullExam/MsgExam.dart';
+import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
 import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
 
 class FullExamResultScreenArguments {
   final String id;
-  final List<DataQuestionPage> dataList;
+  final List<DataQuestionPageMain> dataList;
   FullExamResultScreenArguments(this.id, this.dataList);
 }
 
@@ -107,8 +107,9 @@ int getMonoToneIntFromMsgString(String monoTone) {
   }
 }
 
+// 评测之后返回的数据经解析的结果
 class ParsedResultsXf {
-  List<QuestionPageResultDataXf> resultList;
+  List<DataResultXf> resultList;
   double weightedScore;
   double totalWeight;
   Map<String, List<WrongPhone>> wrongShengs;
@@ -170,16 +171,16 @@ class ParsedResultsXf {
   }
 
   factory ParsedResultsXf.fromQuestionPageDataList(
-      List<DataQuestionPage> dataList) {
-    List<QuestionPageResultDataXf> list = List.empty(growable: true);
+      List<DataQuestionPageMain> dataList) {
+    List<DataResultXf> list = List.empty(growable: true);
     double weightedScore = 0.0;
     double totalWeight = 0.0;
     for (var pageData in dataList) {
       double pageWeight = pageData.weight;
       totalWeight += pageWeight;
-      if (pageData.resultDataXf != null) {
-        list.add(pageData.resultDataXf!);
-        weightedScore += pageData.resultDataXf!.totalScore * pageWeight;
+      if (pageData.dataEval.resultXf != null) {
+        list.add(pageData.dataEval.resultXf!);
+        weightedScore += pageData.dataEval.resultXf!.totalScore * pageWeight;
       }
     }
     Map<String, List<WrongPhone>> wrongShengs = Map.identity();
@@ -223,40 +224,31 @@ class ParsedResultsXf {
   }
 }
 
-// 每一页题目的数据.
-class DataQuestionPage {
-  // final QuestionType type;
-  final double weight;
-  final String cpsgrpId;
-  final String id;
-  final String desc;
-  final String title;
+// 记录录音情况和评测内容
+// DataQuestrionPageXXX {
+//    DataQuestionEval
+//    + other data
+// }
+class DataQuestionEval {
+  // 应该是由上层存储的, 但是传递下来
   final int evalMode;
-  final List<DataQuestion> questionList;
   bool isRecording = false;
   bool isUploading = false;
-  String filePath;
+  String filePath = '';
   // 评测以页为单位, 因此页数据内包含结果
-  QuestionPageResultDataXf? resultDataXf;
-  DataQuestionPage({
-    // required this.type,
-    required this.questionList,
-    required this.cpsgrpId,
-    required this.id,
-    required this.weight,
-    required this.desc,
-    required this.title,
-    required this.evalMode,
-    this.filePath = '',
-  });
+  DataResultXf? resultXf;
+
+  DataQuestionEval({required this.evalMode});
 
   // 发送结果至服务器评测
-  Future<void> postAndGetResultXf() async {
+  Future<void> postAndGetResultXf(String refText,
+      {double weight = 100.0}) async {
     if (filePath == '') {
       return;
     }
     isUploading = true;
-    resultDataXf = await MsgMgrExam().postAndGetResultXf(this);
+    resultXf = await MsgMgrQuestion()
+        .postAndGetResultXf(this, refText, weight: weight);
     // 标定状态
     isUploading = false;
   }
@@ -284,6 +276,45 @@ class DataQuestionPage {
     }
     return httpAudio;
   }
+}
+
+// 跟读页的每页题目数据
+class DataQuestionPageFollow {
+  String followFilePath;
+  final String title;
+  final String desc;
+  DataQuestionEval dataEval;
+  final List<DataQuestion> questionList;
+  DataQuestionPageFollow({
+    required this.questionList,
+    required this.dataEval,
+    this.desc = '',
+    this.title = '',
+    this.followFilePath = '',
+  });
+}
+
+// 每一页题目的数据.
+class DataQuestionPageMain {
+  // final QuestionType type;
+  final String id;
+  final String cpsgrpId;
+  final double weight;
+  final String title;
+  final String desc;
+  // final int evalMode;
+  DataQuestionEval dataEval;
+  final List<DataQuestion> questionList;
+  DataQuestionPageMain({
+    // required this.evalMode,
+    required this.id,
+    required this.cpsgrpId,
+    required this.weight,
+    required this.title,
+    required this.desc,
+    required this.questionList,
+    required this.dataEval,
+  });
 
   // 把所有题目内容变成一个String, 方便界面显示.
   String toSingleString({bool withScore = false}) {
@@ -294,7 +325,7 @@ class DataQuestionPage {
     for (final question in questionList) {
       List<String> lines = question.label.split('\\n');
       for (String line in lines) {
-        ret += (evalMode == 4 ? '     ' : '') + line;
+        ret += (dataEval.evalMode == 4 ? '     ' : '') + line;
         ret += '\n';
       }
     }
@@ -341,7 +372,7 @@ class DataQuestion {
 // beg_pos/end_pos 	始末位置（单位：帧，每帧相当于10ms)
 // content 	试卷内容
 // time_len 	时长（单位：帧，每帧相当于10ms）
-class QuestionPageResultDataXf {
+class DataResultXf {
   double weight;
   double weightedScore;
   bool jsonParsed;
@@ -357,7 +388,7 @@ class QuestionPageResultDataXf {
   late List<WrongMonoTone> wrongMonotones;
   late List<WrongPhone> wrongSheng;
   late List<WrongPhone> wrongYun;
-  QuestionPageResultDataXf({
+  DataResultXf({
     required this.evalMode,
     required this.weight,
     this.jsonParsed = false,
@@ -376,6 +407,7 @@ class QuestionPageResultDataXf {
     wrongSheng = List.empty(growable: true);
     wrongYun = List.empty(growable: true);
   }
+
   void _parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
     if (phone['perr_msg'] != 0) {
       if (phone['is_yun'] == 1) {

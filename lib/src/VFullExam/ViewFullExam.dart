@@ -6,47 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
 import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/GGlobalParams/LabelText.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
-import 'package:project_soe/src/VFullExam/DataExam.dart';
-
-List<DataQuestionPage> parseWordMap(http.Response response) {
-  final u8decoded = utf8.decode(response.bodyBytes);
-  final decoded = jsonDecode(u8decoded);
-  final parsed = decoded['data']['topics'];
-  List<DataQuestionPage> retList = List.empty(growable: true);
-  for (var topicMap in parsed) {
-    List<DataQuestion> questionList = List.empty(growable: true);
-    for (var json in topicMap['subCpsrcds']) {
-      questionList.add(DataQuestion.fromJson(json));
-    }
-    DataQuestionPage dataPage = DataQuestionPage(
-      // type: getQuestionTypeFromInt(topicMap['type']),
-      // type: getQuestionTypeFromInt(questionList[0].evalMode),
-      questionList: questionList,
-      evalMode: questionList[0].evalMode,
-      cpsgrpId: topicMap['cpsgrpId'],
-      id: topicMap['id'],
-      weight: topicMap['score'],
-      desc: topicMap['description'],
-      title: topicMap['title'],
-    );
-    retList.add(dataPage);
-  }
-  return retList;
-}
-
-Future<List<DataQuestionPage>> fetchWordMap(
-    http.Client client, String id) async {
-  final response = await client.get(
-    Uri.parse(
-        "http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=$id"),
-  );
-  return compute(parseWordMap, response);
-}
+import 'package:project_soe/src/VFullExam/DataQuestion.dart';
 
 class _FullExaminationBodyState extends State<_FullExaminationBody> {
   _FullExaminationBodyState();
@@ -63,7 +29,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].questionPageData.isRecording) {
+      if (_voiceInputs![_index].dataPage.dataEval.isRecording) {
         return;
       }
       setState(() {
@@ -80,7 +46,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       if (_voiceInputs == null) {
         return;
       }
-      if (_voiceInputs![_index].questionPageData.isRecording) {
+      if (_voiceInputs![_index].dataPage.dataEval.isRecording) {
         return;
       }
       setState(() {
@@ -119,9 +85,9 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
         ),
       );
     } else {
-      List<DataQuestionPage> lst = List.empty(growable: true);
+      List<DataQuestionPageMain> lst = List.empty(growable: true);
       for (final voiceInput in _voiceInputs!) {
-        lst.add(voiceInput.questionPageData);
+        lst.add(voiceInput.dataPage);
       }
       Navigator.pushNamed(context, FullExaminationResult.routeName,
           arguments: (FullExamResultScreenArguments(widget._examId, lst)));
@@ -133,7 +99,7 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       return false;
     }
     for (var voiceInput in _voiceInputs!) {
-      if (voiceInput.questionPageData.isUploading) {
+      if (voiceInput.dataPage.dataEval.isUploading) {
         return true;
       }
     }
@@ -173,14 +139,13 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
 
   @override
   Widget build(BuildContext context) {
-    _inputPage =
-        ComponentVoiceInput(questionPageData: widget._pageDatas[_index]);
+    _inputPage = ComponentVoiceInput(dataPage: widget._dataList[_index]);
     try {
       _voiceInputs![_index] = _inputPage!;
     } catch (e) {
       _voiceInputs!.add(_inputPage!);
     }
-    _listSize = widget._pageDatas.length;
+    _listSize = widget._dataList.length;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -213,9 +178,9 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
 }
 
 class _FullExaminationBody extends StatefulWidget {
-  List<DataQuestionPage> _pageDatas;
+  List<DataQuestionPageMain> _dataList;
   String _examId;
-  _FullExaminationBody(this._examId, this._pageDatas);
+  _FullExaminationBody(this._examId, this._dataList);
   @override
   State<StatefulWidget> createState() => _FullExaminationBodyState();
 }
@@ -227,8 +192,8 @@ class FullExamination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String examId = ModalRoute.of(context)!.settings.arguments as String;
-    return FutureBuilder<List<DataQuestionPage>>(
-      future: fetchWordMap(http.Client(), examId),
+    return FutureBuilder<List<DataQuestionPageMain>>(
+      future: MsgMgrQuestion().getQuestionPageMainList(examId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return _FullExaminationBody(examId, snapshot.data!);

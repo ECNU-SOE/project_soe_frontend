@@ -8,12 +8,13 @@ import 'package:record/record.dart' as rcd;
 import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
 
 import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/DataExam.dart';
+import 'package:project_soe/src/VFullExam/DataQuestion.dart';
 
+// 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
-  final DataQuestionPage questionPageData;
-  ComponentVoiceInput({super.key, required this.questionPageData});
+  final DataQuestionPageMain dataPage;
+  ComponentVoiceInput({super.key, required this.dataPage});
   @override
   State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
@@ -35,9 +36,9 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
 
   Icon _recordIcon() {
     return Icon(
-      widget.questionPageData.filePath != ''
+      widget.dataPage.dataEval.filePath != ''
           ? Icons.play_arrow
-          : widget.questionPageData.isRecording
+          : widget.dataPage.dataEval.isRecording
               ? Icons.stop
               : Icons.mic,
       color: Colors.amber,
@@ -48,15 +49,16 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color:
-          (widget.questionPageData.filePath != '') ? Colors.amber : Colors.grey,
+      color: (widget.dataPage.dataEval.filePath != '')
+          ? Colors.amber
+          : Colors.grey,
       size: 32.0,
     );
   }
 
   void _cbkRetry() {
-    if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading) {
+    if (widget.dataPage.dataEval.isRecording ||
+        widget.dataPage.dataEval.isUploading) {
       return;
     } else {
       _retryRecording();
@@ -64,12 +66,12 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Future<void> _cbkRecordStopPlay() async {
-    if (widget.questionPageData.isUploading) {
+    if (widget.dataPage.dataEval.isUploading) {
       return;
     }
-    if (widget.questionPageData.filePath != '') {
+    if (widget.dataPage.dataEval.filePath != '') {
       _playRecord();
-    } else if (widget.questionPageData.isRecording) {
+    } else if (widget.dataPage.dataEval.isRecording) {
       _stopRecording();
     } else {
       await _startRecording();
@@ -77,8 +79,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Future<void> _startRecording() async {
-    if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading) {
+    if (widget.dataPage.dataEval.isRecording ||
+        widget.dataPage.dataEval.isUploading) {
       return;
     }
     if (await _audioRecorder.hasPermission()) {
@@ -88,41 +90,43 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       );
       if (await _audioRecorder.isRecording()) {
         setState(() {
-          widget.questionPageData.isRecording = true;
+          widget.dataPage.dataEval.isRecording = true;
         });
       }
     }
   }
 
   Future<void> _stopRecording() async {
-    if (!widget.questionPageData.isRecording) return;
+    if (!widget.dataPage.dataEval.isRecording) return;
     final recordRet = await _audioRecorder.stop();
     // HAX 22.11.19 避免录音未完成
     await Future.delayed(const Duration(milliseconds: 500));
-    widget.questionPageData.filePath = recordRet!;
+    widget.dataPage.dataEval.filePath = recordRet!;
     setState(() {
-      widget.questionPageData.isRecording = false;
-      widget.questionPageData.isUploading = true;
+      widget.dataPage.dataEval.isRecording = false;
+      widget.dataPage.dataEval.isUploading = true;
     });
-    await widget.questionPageData.postAndGetResultXf();
+    await widget.dataPage.dataEval.postAndGetResultXf(
+        widget.dataPage.toSingleString(),
+        weight: widget.dataPage.weight);
     setState(() {
-      widget.questionPageData.isUploading = false;
+      widget.dataPage.dataEval.isUploading = false;
     });
   }
 
   void _retryRecording() {
-    if (widget.questionPageData.filePath == '') return;
-    if (widget.questionPageData.isRecording ||
-        widget.questionPageData.isUploading) return;
+    if (widget.dataPage.dataEval.filePath == '') return;
+    if (widget.dataPage.dataEval.isRecording ||
+        widget.dataPage.dataEval.isUploading) return;
     _audioPlayer.stop();
     setState(() {
-      widget.questionPageData.filePath = '';
+      widget.dataPage.dataEval.filePath = '';
     });
   }
 
   void _playRecord() {
-    if (widget.questionPageData.filePath == '') return;
-    _audioPlayer.play(ap.DeviceFileSource(widget.questionPageData.filePath));
+    if (widget.dataPage.dataEval.filePath == '') return;
+    _audioPlayer.play(ap.DeviceFileSource(widget.dataPage.dataEval.filePath));
   }
 
   @override
@@ -132,7 +136,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
-          '${widget.questionPageData.title} 本题满分:${widget.questionPageData.weight}',
+          '${widget.dataPage.title} 本题满分:${widget.dataPage.weight}',
           style: gFullExaminationSubTitleStyle,
         ),
       ),
@@ -142,7 +146,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
-                widget.questionPageData.desc,
+                widget.dataPage.desc,
                 style: gFullExaminationSubTitleStyle,
               ),
             ),
@@ -151,7 +155,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             child: Padding(
               padding: const EdgeInsets.only(top: 12.0),
               child: Text(
-                widget.questionPageData.toSingleString(),
+                widget.dataPage.toSingleString(),
                 style: gFullExaminationTextStyle,
               ),
             ),
@@ -161,7 +165,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       bottomNavigationBar: Container(
         height: 55.0,
         color: Colors.white,
-        child: widget.questionPageData.isUploading
+        child: widget.dataPage.dataEval.isUploading
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,8 +190,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    (widget.questionPageData.filePath == '' ||
-                            widget.questionPageData.resultDataXf == null)
+                    (widget.dataPage.dataEval.filePath == '' ||
+                            widget.dataPage.dataEval.resultXf == null)
                         ? '点击开始录音'
                         : '此题已有评测结果',
                     style: gFullExaminationSubTitleStyle,
