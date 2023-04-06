@@ -3,59 +3,23 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class ViewLogin extends StatelessWidget {
+  const ViewLogin({super.key});
 
   Duration get loginTime => Duration(milliseconds: 2000);
+  // 这里用的LoginData & SignupData不是soe项目定义的, 而是package:flutter_login里定义的
   Future<String?> _authUser(LoginData data) async {
-    final client = http.Client();
-    final bodyMap = {
-      'phone': data.name,
-      'pwd': data.password,
-    };
-    final response = await client.post(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/login'),
-      body: jsonEncode(bodyMap),
-      headers: {"Content-Type": "application/json"},
-      encoding: Encoding.getByName('utf-8'),
-    );
-    final u8decoded = utf8.decode(response.bodyBytes);
-    final decoded = jsonDecode(u8decoded);
-    if (decoded['code'] == 0) {
-      AuthritionState.get().setToken(decoded['data']);
-      return null;
-    } else {
-      return decoded['msg'];
-    }
+    return MsgAuthorition().postUserAuthorition(data);
   }
 
   Future<String?> _signupUser(SignupData data) async {
-    final client = http.Client();
-    final bodyMap = {
-      'phone': data.name,
-      'pwd': data.password,
-      // TODO 22.11.17 目前不实现验证码
-      'code': 'TODO',
-    };
-    final response = await client.post(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/register'),
-      body: jsonEncode(bodyMap),
-      headers: {"Content-Type": "application/json"},
-      encoding: Encoding.getByName('utf-8'),
-    );
-    final u8decoded = utf8.decode(response.bodyBytes);
-    final decoded = jsonDecode(u8decoded);
-    if (decoded['code'] == '0') {
-      return null;
-    } else {
-      return decoded['msg'];
-    }
+    return MsgAuthorition().postSignupUser(data);
   }
 
   // TODO 22.11.16 目前不支持找回密码.

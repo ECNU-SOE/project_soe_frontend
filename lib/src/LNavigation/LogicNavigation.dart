@@ -12,6 +12,6 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   FullExamination.routeName: (context) => FullExamination(),
   ApplicationHome.routeName: (context) => ApplicationHome(),
   FullExaminationResult.routeName: (context) => FullExaminationResult(),
-  LoginScreen.routeName: (context) => LoginScreen(),
+  ViewLogin.routeName: (context) => ViewLogin(),
   ViewPracticeFollow.routeName: (context) => ViewPracticeFollow(),
 };

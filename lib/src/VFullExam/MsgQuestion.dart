@@ -42,7 +42,7 @@ class MsgMgrQuestion {
   Future<void> postResultToServer(ParsedResultsXf parsedResultsXf) async {
     final client = http.Client();
     final bodyMap = {'resJson': parsedResultsXf.toJson()};
-    final token = await AuthritionState.get().getTempToken();
+    final token = await AuthritionState.get().getToken();
     final response = client.post(
       Uri.parse(
           'http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/save_transcript'),

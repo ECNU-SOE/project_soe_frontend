@@ -1,10 +1,13 @@
 // TODO 11.2 实现此类.
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
-import 'package:project_soe/src/VPersonalPage/DataPersonal.dart';
+import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
+import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 
 // FIXME 22.12.7 temp
@@ -59,8 +62,6 @@ class PersonalPage extends StatelessWidget {
   }
 
   bool _hasToken() => AuthritionState.get().hasToken();
-  // FIXME 22.12.8 测试用, 总返回true
-  // bool _hasToken() => true;
 
   Widget _buildDetailLine(List<String> details, List<String> labels) {
     List<Widget> chi = [];
@@ -90,7 +91,7 @@ class PersonalPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsPanel(PersonalData personalData) {
+  Widget _buildDetailsPanel(DataUserInfo personalData) {
     return Column(
       children: [
         Container(
@@ -125,14 +126,14 @@ class PersonalPage extends StatelessWidget {
           '性别',
         ], [
           personalData.realName!,
-          PersonalData.sexToString(personalData.sex!),
+          DataUserInfo.sexToString(personalData.sex!),
         ]),
         _buildDetailLine([
           '母语',
           '生日',
         ], [
           personalData.nativeLanguage!,
-          PersonalData.birthToString(personalData.birth!),
+          DataUserInfo.birthToString(personalData.birth!),
         ]),
       ],
     );
@@ -164,7 +165,7 @@ class PersonalPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     if (!AuthritionState.get().hasToken()) {
-                      Navigator.pushNamed(context, LoginScreen.routeName);
+                      Navigator.pushNamed(context, ViewLogin.routeName);
                     }
                   },
                   style: gPersonalPageLoginButtonStyle,
@@ -201,8 +202,9 @@ class PersonalPage extends StatelessWidget {
   }
 
   Widget _buildLoggedinPage(BuildContext context) {
-    return FutureBuilder<PersonalData?>(
-      future: fetchPersonalData(AuthritionState.get().getToken()),
+    return FutureBuilder<DataUserInfo?>(
+      future:
+          MsgAuthorition().getDataUserInfo(AuthritionState.get().getToken()),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(

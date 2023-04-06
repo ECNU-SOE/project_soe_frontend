@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter_login/flutter_login.dart';
 import 'package:flutter/material.dart';
 
-class Credentials {
+import 'package:http/http.dart' as http;
+
+import 'package:project_soe/src/VNativeLanguageChoice/DataNativeLanguage.dart';
+
+class DataCredentials {
   final String userName;
   final String password;
-  Credentials(this.userName, this.password);
-  static Credentials getTempAccount() {
-    return Credentials('13000000000', '00000000');
-  }
+  DataCredentials(this.userName, this.password);
+  // static Credentials getTempAccount() {
+  //   return Credentials('13000000000', '00000000');
+  // }
 }
 
 final sLoginMessages = LoginMessages(
@@ -23,8 +29,8 @@ final sLoginMessages = LoginMessages(
   goBackButton: "返回",
   confirmPasswordError: "两次输入的密码不一致",
   recoverPasswordSuccess: "找回密码成功",
-  flushbarTitleError: "#flushbarTitleError",
-  flushbarTitleSuccess: "#flushbarTitleSuccess",
+  flushbarTitleError: "登陆失败",
+  flushbarTitleSuccess: "登陆成功",
   signUpSuccess: "注册成功",
   // providersTitleFirst :,
   // providersTitleSecond :,
@@ -122,3 +128,47 @@ final sLoginTheme = LoginTheme(
     // shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(55.0)),
   ),
 );
+
+class DataUserInfo {
+  String authToken;
+  String accountId;
+  String? identifyId;
+  String? nickName;
+  String? realName;
+  String? nativeLanguage;
+  int? sex;
+  DateTime? birth;
+  String? sign;
+  String? phone;
+  String? email;
+  DataUserInfo(this.authToken, this.accountId);
+
+  static String sexToString(int sex) {
+    if (sex == 0) return '暂无';
+    if (sex == 1) return '男';
+    if (sex == 2) return '女';
+    return '其他';
+  }
+
+  static String birthToString(DateTime date) {
+    return '${date.year}年${date.month}月${date.day}日';
+  }
+
+  Future<void> parseJson(Map<String, dynamic> json) async {
+    if (json['identifyId'] != null) {
+      identifyId = json['identifyId'] as String;
+    }
+    nickName = (json['nickName'] != null) ? json['nickName'] as String : '暂无昵称';
+    realName = (json['realName'] != null) ? json['realName'] as String : '暂无';
+    nativeLanguage = (json['firstLanguage'] != null)
+        ? await getStringbyNLId(json['firstLanguage'] as int)
+        : '暂无';
+    sex = (json['sex'] != null) ? json['sex'] as int : 0;
+    birth = (json['birth'] != null)
+        ? json['birth'] as DateTime
+        : DateTime.utc(1900);
+    sign = (json['sign'] != null) ? json['sign'] as String : '暂无';
+    phone = (json['phone'] != null) ? json['phone'] as String : '暂无';
+    email = (json['mail'] != null) ? json['mail'] as String : '暂无';
+  }
+}
