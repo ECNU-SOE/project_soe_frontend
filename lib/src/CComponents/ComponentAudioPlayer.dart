@@ -1,15 +1,16 @@
 // import 'package:audioplayers/audioplayers.dart' as ap;
-// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
 
-// class AudioPlayer extends StatefulWidget {
-//   final String source;
-//   const AudioPlayer({
-//     Key? key,
-//     required this.source,
-//   }) : super(key: key);
+// class ComponentAudioPlayer extends StatefulWidget {
+//   ComponentAudioPlayer();
 
 //   @override
-//   State<AudioPlayer> createState() => _AudioPlayerState();
+//   State<ComponentAudioPlayer> createState() => _ComponentAudioPlayerState();
 // }
 
-// class _AudioPlayerState extends State<AudioPlayer> {}
+// class _ComponentAudioPlayerState extends State<ComponentAudioPlayer> {
+//   @override
+//   Widget build(BuildContext context) {
+
+//   }
+// }
