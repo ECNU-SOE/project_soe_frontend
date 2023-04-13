@@ -115,6 +115,11 @@ const TextStyle gClassPageListitemStyle = TextStyle(
   fontSize: 18.0,
 );
 
+const TextStyle gClassPageTextStyle = TextStyle(
+  color: Colors.black54,
+  fontSize: 18.0,
+);
+
 const TextStyle gPracticePageTabStyle = TextStyle(
   color: Colors.black87,
   fontSize: 20.0,

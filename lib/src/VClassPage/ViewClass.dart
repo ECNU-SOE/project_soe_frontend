@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/CComponents/Componentsubtitle.dart';
+import 'package:project_soe/src/VClassPage/DataClass.dart';
+import 'package:project_soe/src/VClassPage/ViewClassDetail.dart';
 
 // FIXME 22.12.7 temp
 class HorizontalScrollData {
@@ -68,22 +70,55 @@ class ClassPage extends StatelessWidget {
     );
   }
 
-  // FIXME
-  Widget _buildMyClassWidget() {
-    return Row();
+  // FIXME 23.4.13 哪个是Id?
+  TextButton _buildCourseTextButton(
+      BuildContext context, DataCourseInfo courseInfo) {
+    return TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, ViewClassDetail.routeName,
+              arguments: (courseInfo.classId));
+        },
+        child: Text(courseInfo.classId, style: gClassPageTextStyle));
+  }
+
+  List<Widget> _buildMyClassWidget(
+      BuildContext context, DataClassPageInfo classPageInfo) {
+    List<TextButton> buttons = List.empty(growable: true);
+    for (final courseInfo in classPageInfo.pickedCourses) {
+      buttons.add(_buildCourseTextButton(context, courseInfo));
+    }
+    return buttons;
+  }
+
+  Widget _buildViewClassPageBody(
+      BuildContext context, DataClassPageInfo classPageInfo) {
+    List<Widget> children = List.empty(growable: true);
+    children.addAll([
+      const Subtitle(label: '快速入口'),
+      const Subtitle(label: '我的课堂'),
+    ]);
+    children.addAll(_buildMyClassWidget(context, classPageInfo));
+    return Scaffold(
+      body: ListView(
+        scrollDirection: Axis.vertical,
+        children: children,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          const Subtitle(label: '快速入口'),
-          const Subtitle(label: '我的课堂'),
-          _buildMyClassWidget(),
-        ],
-      ),
+    return FutureBuilder<DataClassPageInfo>(
+      future: postGetDataClassInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _buildViewClassPageBody(context, snapshot.data!);
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

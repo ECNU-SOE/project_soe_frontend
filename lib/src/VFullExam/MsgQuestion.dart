@@ -26,7 +26,7 @@ class MsgMgrQuestion {
         // type: getQuestionTypeFromInt(topicMap['type']),
         // type: getQuestionTypeFromInt(questionList[0].evalMode),
         questionList: questionList,
-        evalMode: questionList[0].evalMode,
+        evalMode: questionList.isEmpty ? 1 : questionList[0].evalMode,
         cpsgrpId: topicMap['cpsgrpId'],
         id: topicMap['id'],
         weight: topicMap['score'],

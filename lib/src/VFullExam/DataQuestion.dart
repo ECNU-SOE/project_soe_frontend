@@ -356,7 +356,7 @@ class DataQuestionPageMain extends DataQuestionEval {
   @override
   String toSingleString({bool withScore = false}) {
     if (questionList.isEmpty) {
-      throw ('Invalid QuestionList size');
+      return '';
     }
     String ret = '';
     for (final question in questionList) {
