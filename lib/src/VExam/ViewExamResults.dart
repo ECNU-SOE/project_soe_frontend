@@ -31,9 +31,9 @@ Future<ParsedResultsXf> parseAndPostResultsXf(
   return parsedResultsXf;
 }
 
-class FullExaminationResult extends StatelessWidget {
+class ViewExamResult extends StatelessWidget {
   static const String routeName = 'fullExamResult';
-  const FullExaminationResult({super.key});
+  const ViewExamResult({super.key});
 
   Widget _textWrap(String text, TextStyle textStyle) {
     return Center(
@@ -185,7 +185,7 @@ class FullExaminationResult extends StatelessWidget {
     return ElevatedButton(
       child: Text(isShow ? "进入APP" : "返回APP"),
       onPressed: () {
-        Navigator.pushNamed(context, ApplicationHome.routeName);
+        Navigator.pushNamed(context, ViewAppHome.routeName);
       },
     );
   }

@@ -11,8 +11,8 @@ import 'package:project_soe/src/VPracticePage/ViewPracticeFollow.dart';
 Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewNativeLanuageChoose.routeName: (context) => ViewNativeLanuageChoose(),
   ViewExam.routeName: (context) => ViewExam(),
-  ApplicationHome.routeName: (context) => ApplicationHome(),
-  FullExaminationResult.routeName: (context) => FullExaminationResult(),
+  ViewAppHome.routeName: (context) => ViewAppHome(),
+  ViewExamResult.routeName: (context) => ViewExamResult(),
   ViewClassDetail.routeName: (context) => ViewClassDetail(),
   ViewLogin.routeName: (context) => ViewLogin(),
   ViewPracticeFollow.routeName: (context) => ViewPracticeFollow(),

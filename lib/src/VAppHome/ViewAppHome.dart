@@ -8,20 +8,20 @@ import 'package:project_soe/src/VClassPage/ViewClass.dart';
 
 import 'PageAppHome.dart';
 
-class ApplicationHome extends StatelessWidget {
+class ViewAppHome extends StatelessWidget {
   static const String routeName = 'apphome';
-  ApplicationHome({super.key});
+  ViewAppHome({super.key});
   @override
-  Widget build(BuildContext context) => ApplicationHomeBody();
+  Widget build(BuildContext context) => _ViewAppHomeImpl();
 }
 
-class ApplicationHomeBody extends StatefulWidget {
-  const ApplicationHomeBody({super.key});
+class _ViewAppHomeImpl extends StatefulWidget {
+  const _ViewAppHomeImpl({super.key});
   @override
-  State<ApplicationHomeBody> createState() => _ApplicationHomeBodyState();
+  State<_ViewAppHomeImpl> createState() => _ViewAppHomeImplState();
 }
 
-class _ApplicationHomeBodyState extends State<ApplicationHomeBody> {
+class _ViewAppHomeImplState extends State<_ViewAppHomeImpl> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),

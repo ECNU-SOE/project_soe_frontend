@@ -89,7 +89,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
       for (final voiceInput in _voiceInputs!) {
         lst.add(voiceInput.dataPage);
       }
-      Navigator.pushReplacementNamed(context, FullExaminationResult.routeName,
+      Navigator.pushReplacementNamed(context, ViewExamResult.routeName,
           arguments: (ArgsViewExamResult(
             widget._args.cprsgrpId,
             lst,

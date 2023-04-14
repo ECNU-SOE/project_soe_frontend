@@ -59,7 +59,7 @@ class ViewLogin extends StatelessWidget {
       userValidator: _userValidator,
       passwordValidator: _passwordValidator,
       onSubmitAnimationCompleted: () {
-        Navigator.pushReplacementNamed(context, ApplicationHome.routeName);
+        Navigator.pushReplacementNamed(context, ViewAppHome.routeName);
       },
       onRecoverPassword: _recoverPassword,
       theme: sLoginTheme,
