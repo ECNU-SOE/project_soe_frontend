@@ -7,8 +7,8 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:record/record.dart' as rcd;
 import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
 
-import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 
 // 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
@@ -128,7 +128,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         backgroundColor: Colors.white,
         title: Text(
           '${widget.dataPage.title} 本题满分:${widget.dataPage.weight}',
-          style: gFullExaminationSubTitleStyle,
+          style: gViewExamSubTitleStyle,
         ),
       ),
       body: ListView(
@@ -138,7 +138,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 widget.dataPage.desc,
-                style: gFullExaminationSubTitleStyle,
+                style: gViewExamSubTitleStyle,
               ),
             ),
           ),
@@ -147,7 +147,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
               padding: const EdgeInsets.only(top: 12.0),
               child: Text(
                 widget.dataPage.toSingleString(),
-                style: gFullExaminationTextStyle,
+                style: gViewExamTextStyle,
               ),
             ),
           ),
@@ -170,7 +170,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       padding: EdgeInsets.all(15.0),
                       child: (Text(
                         '评测进行中, 请稍等...',
-                        style: gFullExaminationSubTitleStyle,
+                        style: gViewExamSubTitleStyle,
                       )),
                     ),
                   ),
@@ -185,7 +185,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                             widget.dataPage.resultXf == null)
                         ? '点击开始录音'
                         : '此题已有评测结果',
-                    style: gFullExaminationSubTitleStyle,
+                    style: gViewExamSubTitleStyle,
                   ),
                   IconButton(
                     icon: _recordIcon(),

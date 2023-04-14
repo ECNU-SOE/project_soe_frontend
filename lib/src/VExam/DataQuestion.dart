@@ -9,13 +9,26 @@ import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/CComponents/LogicPingyinlizer.dart'
     as pinyinlizer;
-import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
-import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
+import 'package:project_soe/src/VExam/MsgQuestion.dart';
+import 'package:project_soe/src/VExam/ViewExamResults.dart';
+import 'package:project_soe/src/LNavigation/LogicNavigation.dart';
 
-class FullExamResultScreenArguments {
+class ArgsViewExamResult {
   final String id;
+  final String endingRoute;
   final List<DataQuestionPageMain> dataList;
-  FullExamResultScreenArguments(this.id, this.dataList);
+  ArgsViewExamResult(this.id, this.dataList, this.endingRoute);
+}
+
+class ArgsViewExam {
+  final String cprsgrpId;
+  final String title;
+  final String endingRoute;
+  ArgsViewExam(this.cprsgrpId, this.title, this.endingRoute) {
+    if (sNavigationRoutes[endingRoute] == null) {
+      throw ('ROUTE NAME NOT FOUND');
+    }
+  }
 }
 
 enum QuestionType {

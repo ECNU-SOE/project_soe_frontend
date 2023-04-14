@@ -11,11 +11,11 @@ import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 
-import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
-import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
+import 'package:project_soe/src/VExam/MsgQuestion.dart';
 
 Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
@@ -57,24 +57,24 @@ class FullExaminationResult extends StatelessWidget {
 
   void _handleTable(List<Widget> rows, String iconText,
       Map<String, List<WrongPhone>> wrongMap) {
-    rows.add(_textWrap('$iconText情况', gExaminationResultSubtitleStyle));
+    rows.add(_textWrap('$iconText情况', gViewExamResultSubtitleStyle));
     if (wrongMap.isEmpty) {
-      rows.add(_textWrap('你没有读错的$iconText', gExaminationResultSubtitleStyle));
+      rows.add(_textWrap('你没有读错的$iconText', gViewExamResultSubtitleStyle));
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误$iconText', gExaminationResultTextStyle),
-        _tableTextWrap('次数', gExaminationResultTextStyle),
-        _tableTextWrap('错误字词', gExaminationResultTextStyle),
+        _tableTextWrap('错误$iconText', gViewExamResultTextStyle),
+        _tableTextWrap('次数', gViewExamResultTextStyle),
+        _tableTextWrap('错误字词', gViewExamResultTextStyle),
       ]));
       for (String wrongPhone in wrongMap.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongPhone, gExaminationResultTextStyle),
+          _tableTextWrap(wrongPhone, gViewExamResultTextStyle),
           _tableTextWrap(wrongMap[wrongPhone]!.length.toString(),
-              gExaminationResultTextStyle),
+              gViewExamResultTextStyle),
           _tableTextWrap(
               getStringLabelFromWrongPhoneList(wrongMap[wrongPhone]!),
-              gExaminationResultTextStyle),
+              gViewExamResultTextStyle),
         ]));
       }
       final table = Table(
@@ -98,7 +98,7 @@ class FullExaminationResult extends StatelessWidget {
           padding: EdgeInsets.all(15.0),
           child: Text(
             '您没有进行测试，不生成报告。',
-            style: gExaminationResultSubtitleStyle,
+            style: gViewExamResultSubtitleStyle,
           ),
         ),
       );
@@ -127,40 +127,40 @@ class FullExaminationResult extends StatelessWidget {
     final averageFluency = sumFluency / data.resultList.length;
     List<Widget> rows = List.empty(growable: true);
     rows.addAll([
-      _textWrap('全面测试结果', gExaminationResultSubtitleStyle),
+      _textWrap('全面测试结果', gViewExamResultSubtitleStyle),
       _textWrap(
           '您的得分:${data.weightedScore.toStringAsFixed(1)}/总分:${data.totalWeight}',
-          gExaminationResultSubtitleStyle),
+          gViewExamResultSubtitleStyle),
       _textWrap('声调得分:${averageTone.toStringAsFixed(1)}',
-          gExaminationResultSubtitleStyle),
+          gViewExamResultSubtitleStyle),
       _textWrap('发音得分:${averagePhone.toStringAsFixed(1)}',
-          gExaminationResultSubtitleStyle),
+          gViewExamResultSubtitleStyle),
       _textWrap('流畅得分:${averageFluency.toStringAsFixed(1)}',
-          gExaminationResultSubtitleStyle),
+          gViewExamResultSubtitleStyle),
       _textWrap('增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
-          gExaminationResultTextStyle),
+          gViewExamResultTextStyle),
     ]);
     _handleTable(rows, '声母', data.wrongShengs);
     _handleTable(rows, '韵母', data.wrongYuns);
     // 声调需要和声母韵母分开处理
-    rows.add(_textWrap('声调情况', gExaminationResultSubtitleStyle));
+    rows.add(_textWrap('声调情况', gViewExamResultSubtitleStyle));
     if (data.wrongMonos.isEmpty) {
-      rows.add(_textWrap('你没有读错的声调。', gExaminationResultSubtitleStyle));
+      rows.add(_textWrap('你没有读错的声调。', gViewExamResultSubtitleStyle));
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误声调', gExaminationResultTextStyle),
-        _tableTextWrap('次数', gExaminationResultTextStyle),
-        _tableTextWrap('错误字词', gExaminationResultTextStyle),
+        _tableTextWrap('错误声调', gViewExamResultTextStyle),
+        _tableTextWrap('次数', gViewExamResultTextStyle),
+        _tableTextWrap('错误字词', gViewExamResultTextStyle),
       ]));
       for (String wrongMono in data.wrongMonos.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongMono, gExaminationResultTextStyle),
+          _tableTextWrap(wrongMono, gViewExamResultTextStyle),
           _tableTextWrap(data.wrongMonos[wrongMono]!.length.toString(),
-              gExaminationResultTextStyle),
+              gViewExamResultTextStyle),
           _tableTextWrap(
               getStringLabelFromWrongMonoList(data.wrongMonos[wrongMono]!),
-              gExaminationResultTextStyle),
+              gViewExamResultTextStyle),
         ]));
       }
       final monoTable = Table(
@@ -193,8 +193,8 @@ class FullExaminationResult extends StatelessWidget {
   // FIXME 23.3.5 此处用的是临时界面
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments
-        as FullExamResultScreenArguments;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as ArgsViewExamResult;
     return FutureBuilder<ParsedResultsXf>(
       future: parseAndPostResultsXf(args.dataList, args.id),
       builder: (context, snapshot) {
@@ -207,9 +207,9 @@ class FullExaminationResult extends StatelessWidget {
             body: _generateScaffoldBodyXf(snapshot.data!),
             bottomNavigationBar: Container(
               child: ElevatedButton(
-                child: const Text("进入APP"),
+                child: const Text("结束"),
                 onPressed: () {
-                  Navigator.pushNamed(context, ApplicationHome.routeName);
+                  Navigator.pushReplacementNamed(context, args.endingRoute);
                 },
               ),
             ),

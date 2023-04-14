@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/CComponents/Componentsubtitle.dart';
 import 'package:project_soe/src/VClassPage/DataClass.dart';
-import 'package:project_soe/src/VFullExam/ViewFullExam.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/ViewExam.dart';
 
 class ViewClassDetail extends StatelessWidget {
   ViewClassDetail({super.key});
@@ -37,8 +38,9 @@ class ViewClassDetail extends StatelessWidget {
       ),
       TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, FullExamination.routeName,
-                arguments: homeWorkInfo.cpsgrpId);
+            Navigator.pushNamed(context, ViewExam.routeName,
+                arguments: ArgsViewExam(
+                    homeWorkInfo.cpsgrpId, '作业', ViewClassDetail.routeName));
           },
           child: Text(
             '进入作业',

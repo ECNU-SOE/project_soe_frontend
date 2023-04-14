@@ -6,7 +6,7 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:record/record.dart' as rcd;
 
 import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 
 class ViewPracticeFollow extends StatelessWidget {

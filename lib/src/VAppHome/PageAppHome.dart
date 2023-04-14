@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:project_soe/src/GGlobalParams/styles.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/LNavigation/LogicNavigation.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
@@ -77,7 +77,7 @@ class HomePage extends StatelessWidget {
                     )),
                 Text(
                   data.label,
-                  style: gHomePageListitemStyle,
+                  style: gViewAppHomeListitemStyle,
                 ),
               ],
             ),
@@ -103,9 +103,9 @@ class HomePage extends StatelessWidget {
         ),
         onPressed: () {
           Navigator.of(context)
-              .pushReplacementNamed(NativeLanguageChoice.routeName);
+              .pushReplacementNamed(ViewNativeLanuageChoose.routeName);
         },
-        style: gHomePageExamEntranceButtonStyle,
+        style: gViewAppHomeEntranceButtonStyle,
       ),
     );
   }

@@ -5,17 +5,12 @@ const TextStyle gSubtitleStyle = TextStyle(
   fontSize: 20.0,
 );
 
-const TextStyle gHomePageAdsStyle = TextStyle(
-  color: Colors.black87,
-  fontSize: 20.0,
-);
-
-const TextStyle gHomePageListitemStyle = TextStyle(
+const TextStyle gViewAppHomeListitemStyle = TextStyle(
   color: Colors.black54,
   fontSize: 18.0,
 );
 
-ButtonStyle gHomePageExamEntranceButtonStyle = ButtonStyle(padding:
+ButtonStyle gViewAppHomeEntranceButtonStyle = ButtonStyle(padding:
     MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
   if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
   if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
@@ -29,32 +24,32 @@ ButtonStyle gHomePageExamEntranceButtonStyle = ButtonStyle(padding:
   return null; // Defer to the widget's default.
 }));
 
-const TextStyle gFullExaminationSubTitleStyle = TextStyle(
+const TextStyle gViewExamSubTitleStyle = TextStyle(
   color: Colors.amber,
   fontSize: 20.0,
 );
 
-const TextStyle gFullExaminationTitleStyle = TextStyle(
+const TextStyle gViewExamTitleStyle = TextStyle(
   color: Colors.amber,
   fontSize: 22.0,
 );
 
-const TextStyle gFullExaminationTextStyle = TextStyle(
+const TextStyle gViewExamTextStyle = TextStyle(
   color: Colors.black87,
   fontSize: 18.0,
 );
 
-const TextStyle gExaminationResultTextStyle = TextStyle(
+const TextStyle gViewExamResultTextStyle = TextStyle(
   color: Colors.black87,
   fontSize: 12.0,
 );
 
-const TextStyle gExaminationResultSubtitleStyle = TextStyle(
+const TextStyle gViewExamResultSubtitleStyle = TextStyle(
   color: Colors.black87,
   fontSize: 18.0,
 );
 
-ButtonStyle gFullExaminationNavButtonStyle = ButtonStyle(padding:
+ButtonStyle gViewExamNavButtonStyle = ButtonStyle(padding:
     MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
   if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
   if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
@@ -68,7 +63,7 @@ ButtonStyle gFullExaminationNavButtonStyle = ButtonStyle(padding:
   return null; // Defer to the widget's default.
 }));
 
-ButtonStyle gFullExaminationSubButtonStyle = ButtonStyle(padding:
+ButtonStyle gViewExamSubButtonStyle = ButtonStyle(padding:
     MaterialStateProperty.resolveWith<EdgeInsets?>((Set<MaterialState> states) {
   if (states.contains(MaterialState.hovered)) return EdgeInsets.all(1.0);
   if (states.contains(MaterialState.focused)) return EdgeInsets.all(1.0);
@@ -82,15 +77,15 @@ ButtonStyle gFullExaminationSubButtonStyle = ButtonStyle(padding:
   return null; // Defer to the widget's default.
 }));
 
-const TextStyle gNativeLanguageChooseTitleStyle = TextStyle(
+const TextStyle gViewChooseNativeLanuageTitleStyle = TextStyle(
   color: Colors.amber,
   fontSize: 30.0,
 );
-const TextStyle gNativeLanguageChooseListStyle = TextStyle(
+const TextStyle gViewChooseNativeLanuageListStyle = TextStyle(
   color: Colors.amber,
   fontSize: 20.0,
 );
-const TextStyle gNativeLanguageChooseInfoStyle = TextStyle(
+const TextStyle gViewChooseNativeLanuageInfoStyle = TextStyle(
   color: Colors.amber,
   fontSize: 30.0,
 );
@@ -123,6 +118,16 @@ const TextStyle gClassPageTextStyle = TextStyle(
 const TextStyle gPracticePageTabStyle = TextStyle(
   color: Colors.black87,
   fontSize: 20.0,
+);
+
+const TextStyle gPracticePageSubtitleStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 24.0,
+);
+
+const TextStyle gPracticePageTextStyle = TextStyle(
+  color: Colors.black87,
+  fontSize: 16.0,
 );
 
 const TextStyle gPracticePageListitemStyle = TextStyle(

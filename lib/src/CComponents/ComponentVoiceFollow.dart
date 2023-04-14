@@ -129,7 +129,7 @@
 //         backgroundColor: Colors.white,
 //         title: Text(
 //           '${widget.dataPage.title} 本题满分:${widget.dataPage.weight}',
-//           style: gFullExaminationSubTitleStyle,
+//           style: gViewExamSubTitleStyle,
 //         ),
 //       ),
 //       body: ListView(
@@ -139,7 +139,7 @@
 //               padding: const EdgeInsets.all(12.0),
 //               child: Text(
 //                 widget.dataPage.desc,
-//                 style: gFullExaminationSubTitleStyle,
+//                 style: gViewExamSubTitleStyle,
 //               ),
 //             ),
 //           ),
@@ -148,7 +148,7 @@
 //               padding: const EdgeInsets.only(top: 12.0),
 //               child: Text(
 //                 widget.dataPage.toSingleString(),
-//                 style: gFullExaminationTextStyle,
+//                 style: gViewExamTextStyle,
 //               ),
 //             ),
 //           ),
@@ -171,7 +171,7 @@
 //                       padding: EdgeInsets.all(15.0),
 //                       child: (Text(
 //                         '评测进行中, 请稍等...',
-//                         style: gFullExaminationSubTitleStyle,
+//                         style: gViewExamSubTitleStyle,
 //                       )),
 //                     ),
 //                   ),
@@ -186,7 +186,7 @@
 //                             widget.dataPage.resultDataXf == null)
 //                         ? '点击开始录音'
 //                         : '此题已有评测结果',
-//                     style: gFullExaminationSubTitleStyle,
+//                     style: gViewExamSubTitleStyle,
 //                   ),
 //                   IconButton(
 //                     icon: _recordIcon(),

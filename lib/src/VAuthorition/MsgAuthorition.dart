@@ -55,9 +55,12 @@ class MsgAuthorition {
   }
 
   Future<DataUserInfo?> getDataUserInfo(String token) async {
+    // FIXME 23.4.13
+    token =
+        'soe-token-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzbWFydC1vcmFsLWV2YWx1YXRpb24iLCJsb2dpblVzZXIiOnsiYWNjb3VudE5vIjoidXNlcl8xNTg3NDIyOTk5MDQzMjQ4MTI4IiwiaWRlbnRpZnlJZCI6IjY2NiIsInJvbGVJZCI6Mywibmlja05hbWUiOiIxODc4Njk3ODI3MiIsInJlYWxOYW1lIjoidGd4IiwiZmlyc3RMYW5ndWFnZSI6MiwicGhvbmUiOiIxODc4Njk3ODI3MiIsIm1haWwiOiIxNDMzMzgxNTM0QHFxLmNvbSJ9LCJpYXQiOjE2ODEyNzk0NDMsImV4cCI6MTY4MTg4NDI0M30.KuKIB_6s9wa5c7gLvAR8tl2I1k1zwlKiZe6o42AGBg4';
     final client = http.Client();
     final response = await client.get(
-      Uri.parse('http://47.101.58.72:8001/api/user/v1/info2'),
+      Uri.parse('http://47.101.58.72:8001/api/user/v1/info'),
       headers: {
         'token': token,
       },

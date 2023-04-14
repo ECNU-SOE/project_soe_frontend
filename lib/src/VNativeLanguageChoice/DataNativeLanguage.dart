@@ -5,34 +5,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:project_soe/src/VFullExam/ViewFullExam.dart';
+import 'package:project_soe/src/VExam/ViewExam.dart';
 
-class NativeLanguageData {
+class DataNativeLanuage {
   final int id;
   final String label;
-  const NativeLanguageData({
+  const DataNativeLanuage({
     required this.id,
     required this.label,
   });
-  factory NativeLanguageData.fromJson(Map<String, dynamic> json) {
-    return NativeLanguageData(
+  factory DataNativeLanuage.fromJson(Map<String, dynamic> json) {
+    return DataNativeLanuage(
       id: json['id'] as int,
       label: json['motherTongue'] as String,
     );
   }
 }
 
-List<NativeLanguageData> parseNativeLanguageData(http.Response response) {
+List<DataNativeLanuage> parseNativeLanguageData(http.Response response) {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
   final parsed = decoded['data']['languages'].cast<Map<String, dynamic>>();
   return parsed
-      .map<NativeLanguageData>((json) => NativeLanguageData.fromJson(json))
+      .map<DataNativeLanuage>((json) => DataNativeLanuage.fromJson(json))
       .toList();
 }
 
-Future<List<NativeLanguageData>> fetchNativeLanguages(
-    http.Client client) async {
+Future<List<DataNativeLanuage>> fetchNativeLanguages(http.Client client) async {
   final response = await client.get(
     Uri.parse('http://47.101.58.72:8002/api/common/v1/languages'),
   );

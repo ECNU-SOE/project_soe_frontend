@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:project_soe/src/GGlobalParams/styles.dart';
-import 'package:project_soe/src/VFullExam/ViewFullExam.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
+import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/ViewExam.dart';
 
 import 'DataNativeLanguage.dart';
 
@@ -17,16 +19,16 @@ Future<void> onChooseNativeLanguage(
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
   final parsedId = decoded['data'];
-  Navigator.pushNamed(context, FullExamination.routeName,
-      arguments: (parsedId));
+  Navigator.pushReplacementNamed(context, ViewExam.routeName,
+      arguments: ArgsViewExam(parsedId, '全面测试', ApplicationHome.routeName));
 }
 
-class NativeLanguageList extends StatelessWidget {
-  const NativeLanguageList({
+class _ViewNativeLanuageChooseImpl extends StatelessWidget {
+  const _ViewNativeLanuageChooseImpl({
     super.key,
     required this.nativeLanguages,
   });
-  final List<NativeLanguageData> nativeLanguages;
+  final List<DataNativeLanuage> nativeLanguages;
 
   final String _title = '标题';
   final String _info = '选择你的母语';
@@ -42,7 +44,7 @@ class NativeLanguageList extends StatelessWidget {
             title: Text(
               _title,
               textAlign: TextAlign.center,
-              style: gNativeLanguageChooseTitleStyle,
+              style: gViewChooseNativeLanuageTitleStyle,
             ),
           );
         }
@@ -51,7 +53,7 @@ class NativeLanguageList extends StatelessWidget {
             title: Text(
               _info,
               textAlign: TextAlign.center,
-              style: gNativeLanguageChooseInfoStyle,
+              style: gViewChooseNativeLanuageInfoStyle,
             ),
           );
         }
@@ -61,7 +63,7 @@ class NativeLanguageList extends StatelessWidget {
         return ListTile(
           title: Text(
             nativeLanguages[index].label,
-            style: gNativeLanguageChooseListStyle,
+            style: gViewChooseNativeLanuageListStyle,
             textAlign: TextAlign.center,
           ),
           trailing: const Icon(
@@ -78,14 +80,14 @@ class NativeLanguageList extends StatelessWidget {
   }
 }
 
-class NativeLanguageChoice extends StatelessWidget {
-  const NativeLanguageChoice({super.key});
+class ViewNativeLanuageChoose extends StatelessWidget {
+  const ViewNativeLanuageChoose({super.key});
   static const String routeName = 'nlchoice';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<NativeLanguageData>>(
+      body: FutureBuilder<List<DataNativeLanuage>>(
         future: fetchNativeLanguages(http.Client()),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -93,7 +95,8 @@ class NativeLanguageChoice extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            return NativeLanguageList(nativeLanguages: snapshot.data!);
+            return _ViewNativeLanuageChooseImpl(
+                nativeLanguages: snapshot.data!);
           } else {
             return const Center(
               child: CircularProgressIndicator(),

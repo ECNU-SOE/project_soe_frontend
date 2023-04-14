@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 
 // 此文件只应被DataQuestion包含

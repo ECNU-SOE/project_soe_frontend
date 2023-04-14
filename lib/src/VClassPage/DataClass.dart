@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 
 // 获取课堂页面数据 (用户选课列表)
@@ -23,7 +23,7 @@ Future<DataClassPageInfo> postGetDataClassInfo() async {
   final token = AuthritionState.get().getToken();
   final client = http.Client();
   final uri = Uri.parse(
-      'http://47.101.58.72:8888/user-server/api/course/v1/list_user_cour');
+      'http://47.101.58.72:8888/user-server/api/class/v1/list_usr_class');
   final userInfo = await MsgAuthorition().getDataUserInfo(token);
   final bodyMap = {'accountNo': userInfo!.accountId};
   final response = await client.post(
@@ -34,9 +34,10 @@ Future<DataClassPageInfo> postGetDataClassInfo() async {
     },
     encoding: Encoding.getByName('utf-8'),
   );
-  final decoded = jsonDecode(utf8.decode(response.bodyBytes))['data'];
+  final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+  final decodedJson = decoded['data'];
   final dataClassPageInfo = DataClassPageInfo();
-  return dataClassPageInfo.parseJson(decoded);
+  return dataClassPageInfo.parseJson(decodedJson);
 }
 
 // 获取某一课堂的数据 (作业列表)

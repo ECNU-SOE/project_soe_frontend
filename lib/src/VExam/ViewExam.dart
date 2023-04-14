@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
-import 'package:project_soe/src/VFullExam/MsgQuestion.dart';
-import 'package:project_soe/src/VFullExam/ViewFullExamResults.dart';
+import 'package:project_soe/src/VExam/MsgQuestion.dart';
+import 'package:project_soe/src/VExam/ViewExamResults.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/GGlobalParams/LabelText.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
-import 'package:project_soe/src/VFullExam/DataQuestion.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 
-class _FullExaminationBodyState extends State<_FullExaminationBody> {
-  _FullExaminationBodyState();
+class _ViewExamBodyState extends State<_ViewExamBody> {
+  _ViewExamBodyState();
   int _index = 0;
   int _listSize = 0;
   ComponentVoiceInput? _inputPage;
@@ -71,11 +71,11 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
                   children: [
                     Text(
                       "请等待语音评测完成.",
-                      style: gFullExaminationTextStyle,
+                      style: gViewExamTextStyle,
                     ),
                     Text(
                       '(点击空白处关闭提示)',
-                      style: gFullExaminationTextStyle,
+                      style: gViewExamTextStyle,
                     ),
                   ],
                 ),
@@ -89,8 +89,12 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
       for (final voiceInput in _voiceInputs!) {
         lst.add(voiceInput.dataPage);
       }
-      Navigator.pushNamed(context, FullExaminationResult.routeName,
-          arguments: (FullExamResultScreenArguments(widget._examId, lst)));
+      Navigator.pushReplacementNamed(context, FullExaminationResult.routeName,
+          arguments: (ArgsViewExamResult(
+            widget._args.cprsgrpId,
+            lst,
+            widget._args.endingRoute,
+          )));
     }
   }
 
@@ -113,9 +117,9 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
         child: ElevatedButton(
           child: Text(
             "提   交",
-            style: gFullExaminationSubTitleStyle,
+            style: gViewExamSubTitleStyle,
           ),
-          style: gFullExaminationSubButtonStyle,
+          style: gViewExamSubButtonStyle,
           onPressed: onSubmitButtonPressed,
         ),
       );
@@ -157,16 +161,16 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
             ElevatedButton(
               onPressed: _forward,
               child: Icon(Icons.arrow_left),
-              style: gFullExaminationNavButtonStyle,
+              style: gViewExamNavButtonStyle,
             ),
-            const Text(
-              '全面测试',
-              style: gFullExaminationTitleStyle,
+            Text(
+              widget._args.title,
+              style: gViewExamTitleStyle,
             ),
             ElevatedButton(
               onPressed: _next,
               child: Icon(Icons.arrow_right),
-              style: gFullExaminationNavButtonStyle,
+              style: gViewExamNavButtonStyle,
             ),
           ],
         ),
@@ -177,26 +181,27 @@ class _FullExaminationBodyState extends State<_FullExaminationBody> {
   }
 }
 
-class _FullExaminationBody extends StatefulWidget {
+class _ViewExamBody extends StatefulWidget {
   List<DataQuestionPageMain> _dataList;
-  String _examId;
-  _FullExaminationBody(this._examId, this._dataList);
+  ArgsViewExam _args;
+  _ViewExamBody(this._args, this._dataList);
   @override
-  State<StatefulWidget> createState() => _FullExaminationBodyState();
+  State<StatefulWidget> createState() => _ViewExamBodyState();
 }
 
-class FullExamination extends StatelessWidget {
-  FullExamination({super.key});
-  static const String routeName = 'fullExam';
-  String examId = '';
+class ViewExam extends StatelessWidget {
+  ViewExam({super.key});
+  static const String routeName = 'exam';
+  ArgsViewExam? _argsViewExam;
   @override
   Widget build(BuildContext context) {
-    String examId = ModalRoute.of(context)!.settings.arguments as String;
+    _argsViewExam = ModalRoute.of(context)!.settings.arguments as ArgsViewExam;
     return FutureBuilder<List<DataQuestionPageMain>>(
-      future: MsgMgrQuestion().getQuestionPageMainList(examId),
+      future:
+          MsgMgrQuestion().getQuestionPageMainList(_argsViewExam!.cprsgrpId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _FullExaminationBody(examId, snapshot.data!);
+          return _ViewExamBody(_argsViewExam!, snapshot.data!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),
