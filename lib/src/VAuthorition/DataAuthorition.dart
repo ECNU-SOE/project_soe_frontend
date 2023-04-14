@@ -160,12 +160,13 @@ class DataUserInfo {
     }
     nickName = (json['nickName'] != null) ? json['nickName'] as String : '暂无昵称';
     realName = (json['realName'] != null) ? json['realName'] as String : '暂无';
-    nativeLanguage = (json['firstLanguage'] != null)
-        ? await getStringbyNLId(json['firstLanguage'] as int)
-        : '暂无';
+    // nativeLanguage = (json['firstLanguage'] != null) ?
+    // ? await getStringbyNLId(json['firstLanguage'] as int)
+    // : '暂无';
+    nativeLanguage = '暂无';
     sex = (json['sex'] != null) ? json['sex'] as int : 0;
     birth = (json['birth'] != null)
-        ? json['birth'] as DateTime
+        ? DateTime.parse(json['birth'])
         : DateTime.utc(1900);
     sign = (json['sign'] != null) ? json['sign'] as String : '暂无';
     phone = (json['phone'] != null) ? json['phone'] as String : '暂无';

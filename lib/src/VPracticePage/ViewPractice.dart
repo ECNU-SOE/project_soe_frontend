@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
+import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VPracticePage/DataPractice.dart';
 import 'package:project_soe/src/VExam/ViewExam.dart';
 
@@ -130,7 +132,7 @@ class PracticePage extends StatelessWidget {
       TextButton(
           onPressed: () {
             Navigator.pushReplacementNamed(context, ViewExam.routeName,
-                arguments: data.id);
+                arguments: ArgsViewExam(data.id, '作业', ViewAppHome.routeName));
           },
           child: Text(
             '进入作业',

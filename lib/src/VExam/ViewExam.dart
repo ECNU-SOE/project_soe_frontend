@@ -195,6 +195,7 @@ class ViewExam extends StatelessWidget {
   ArgsViewExam? _argsViewExam;
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings;
     _argsViewExam = ModalRoute.of(context)!.settings.arguments as ArgsViewExam;
     return FutureBuilder<List<DataQuestionPageMain>>(
       future:
