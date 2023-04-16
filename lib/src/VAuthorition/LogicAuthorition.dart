@@ -16,18 +16,18 @@ class AuthritionState {
   AuthritionState();
 
   bool hasToken() {
-    if (kDebugMode) {
-      return true;
-    }
+    // if (kDebugMode) {
+    //   return true;
+    // }
     if (_authoritionToken == null) return false;
     if (_authoritionToken == '') return false;
     return true;
   }
 
   String getToken() {
-    if (kDebugMode) {
-      return "soe-token-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzbWFydC1vcmFsLWV2YWx1YXRpb24iLCJsb2dpblVzZXIiOnsiYWNjb3VudE5vIjoidXNlcl8xNTkzODU4NjQ0MzMwNTQ5MjQ4IiwiaWRlbnRpZnlJZCI6bnVsbCwicm9sZUlkIjpudWxsLCJuaWNrTmFtZSI6IjEzMDAwMDAwMDAwIiwicmVhbE5hbWUiOm51bGwsImZpcnN0TGFuZ3VhZ2UiOm51bGwsInBob25lIjoiMTMwMDAwMDAwMDAiLCJtYWlsIjpudWxsfSwiaWF0IjoxNjgwNzQ5NTEzLCJleHAiOjE2ODEzNTQzMTN9.QE6iMfWTxwBDJtTwERWOWtrf9Py1LoWBbdonAFtuVgY";
-    }
+    // if (kDebugMode) {
+    //   return "soe-token-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzbWFydC1vcmFsLWV2YWx1YXRpb24iLCJsb2dpblVzZXIiOnsiYWNjb3VudE5vIjoidXNlcl8xNTkzODU4NjQ0MzMwNTQ5MjQ4IiwiaWRlbnRpZnlJZCI6bnVsbCwicm9sZUlkIjpudWxsLCJuaWNrTmFtZSI6IjEzMDAwMDAwMDAwIiwicmVhbE5hbWUiOm51bGwsImZpcnN0TGFuZ3VhZ2UiOm51bGwsInBob25lIjoiMTMwMDAwMDAwMDAiLCJtYWlsIjpudWxsfSwiaWF0IjoxNjgwNzQ5NTEzLCJleHAiOjE2ODEzNTQzMTN9.QE6iMfWTxwBDJtTwERWOWtrf9Py1LoWBbdonAFtuVgY";
+    // }
     if (_authoritionToken == null) {
       return "soe-token-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzbWFydC1vcmFsLWV2YWx1YXRpb24iLCJsb2dpblVzZXIiOnsiYWNjb3VudE5vIjoidXNlcl8xNTkzODU4NjQ0MzMwNTQ5MjQ4IiwiaWRlbnRpZnlJZCI6bnVsbCwicm9sZUlkIjpudWxsLCJuaWNrTmFtZSI6IjEzMDAwMDAwMDAwIiwicmVhbE5hbWUiOm51bGwsImZpcnN0TGFuZ3VhZ2UiOm51bGwsInBob25lIjoiMTMwMDAwMDAwMDAiLCJtYWlsIjpudWxsfSwiaWF0IjoxNjgwNzQ5NTEzLCJleHAiOjE2ODEzNTQzMTN9.QE6iMfWTxwBDJtTwERWOWtrf9Py1LoWBbdonAFtuVgY";
     }

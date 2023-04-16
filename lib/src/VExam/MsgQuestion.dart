@@ -18,22 +18,24 @@ class MsgMgrQuestion {
     final parsed = decoded['data']['topics'];
     List<DataQuestionPageMain> retList = List.empty(growable: true);
     for (var topicMap in parsed) {
-      List<DataQuestion> questionList = List.empty(growable: true);
+      int tnum = topicMap['tNum'];
       for (var json in topicMap['subCpsrcds']) {
-        questionList.add(DataQuestion.fromJson(json));
+        DataQuestion dataQuestion = DataQuestion.fromJson(json);
+        DataQuestionPageMain dataPage = DataQuestionPageMain(
+          // type: getQuestionTypeFromInt(topicMap['type']),
+          // type: getQuestionTypeFromInt(questionList[0].evalMode),
+          dataQuestion: dataQuestion,
+          evalMode: dataQuestion.evalMode,
+          cnum: json['cNum'],
+          tnum: tnum,
+          cpsgrpId: topicMap['cpsgrpId'],
+          id: topicMap['id'],
+          weight: topicMap['score'],
+          desc: topicMap['description'],
+          title: topicMap['title'],
+        );
+        retList.add(dataPage);
       }
-      DataQuestionPageMain dataPage = DataQuestionPageMain(
-        // type: getQuestionTypeFromInt(topicMap['type']),
-        // type: getQuestionTypeFromInt(questionList[0].evalMode),
-        questionList: questionList,
-        evalMode: questionList.isEmpty ? 1 : questionList[0].evalMode,
-        cpsgrpId: topicMap['cpsgrpId'],
-        id: topicMap['id'],
-        weight: topicMap['score'],
-        desc: topicMap['description'],
-        title: topicMap['title'],
-      );
-      retList.add(dataPage);
     }
     return retList;
   }

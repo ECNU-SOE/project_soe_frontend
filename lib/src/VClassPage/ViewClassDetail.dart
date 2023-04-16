@@ -53,6 +53,13 @@ class ViewClassDetail extends StatelessWidget {
       BuildContext context, List<DataHomeworkInfo> homeworkList) {
     List<Widget> children = List.empty(growable: true);
     children.add(Subtitle(label: '作业列表'));
+    if (homeworkList.isEmpty) {
+      return Scaffold(
+        body: ListView(
+          children: [Subtitle(label: '暂无作业')],
+        ),
+      );
+    }
     for (DataHomeworkInfo homeworkInfo in homeworkList) {
       children.addAll(_buildHomeworkBlock(context, homeworkInfo));
     }

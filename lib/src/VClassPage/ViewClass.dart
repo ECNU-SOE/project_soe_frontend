@@ -83,6 +83,11 @@ class ClassPage extends StatelessWidget {
 
   List<Widget> _buildMyClassWidget(
       BuildContext context, DataClassPageInfo classPageInfo) {
+    if (classPageInfo.pickedCourses.isEmpty) {
+      return [
+        Subtitle(label: '你没有选择的课堂'),
+      ];
+    }
     List<TextButton> buttons = List.empty(growable: true);
     for (final courseInfo in classPageInfo.pickedCourses) {
       buttons.add(_buildCourseTextButton(context, courseInfo));

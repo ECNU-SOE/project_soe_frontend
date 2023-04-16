@@ -349,16 +349,20 @@ class DataQuestionPageFollow {
 class DataQuestionPageMain extends DataQuestionEval {
   // final QuestionType type;
   final String id;
+  final int cnum;
+  final int tnum;
   final String cpsgrpId;
   final double weight;
   final String title;
   final String desc;
-  final List<DataQuestion> questionList;
+  DataQuestion dataQuestion;
 
   DataQuestionPageMain({
     required super.evalMode,
-    required this.questionList,
     required this.id,
+    required this.dataQuestion,
+    required this.cnum,
+    required this.tnum,
     required this.cpsgrpId,
     required this.weight,
     required this.title,
@@ -368,16 +372,11 @@ class DataQuestionPageMain extends DataQuestionEval {
   // 把所有题目内容变成一个String, 方便界面显示.
   @override
   String toSingleString({bool withScore = false}) {
-    if (questionList.isEmpty) {
-      return '';
-    }
-    String ret = '';
-    for (final question in questionList) {
-      List<String> lines = question.label.split('\\n');
-      for (String line in lines) {
-        ret += (super.evalMode == 4 ? '     ' : '') + line;
-        ret += '\n';
-      }
+    String ret = '第${this.tnum}大题第${this.cnum}小题' + '\n';
+    List<String> lines = dataQuestion.label.split('\\n');
+    for (String line in lines) {
+      ret += (super.evalMode == 4 ? '     ' : '') + line;
+      ret += '\n';
     }
     return ret;
   }
@@ -390,7 +389,9 @@ class DataQuestion {
   final int evalMode;
   final String cpsgrpId;
   final String topicId;
+  final double wordWeight;
   const DataQuestion({
+    required this.wordWeight,
     required this.id,
     required this.label,
     required this.cpsgrpId,
@@ -399,6 +400,8 @@ class DataQuestion {
   });
   factory DataQuestion.fromJson(Map<String, dynamic> json) {
     return DataQuestion(
+      wordWeight:
+          json['wordWeight'] != null ? json['wordWeight'] as double : 0.0,
       id: json['id'] as String,
       label: json['refText'] as String,
       cpsgrpId: json['cpsgrpId'] as String,
