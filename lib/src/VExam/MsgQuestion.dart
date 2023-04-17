@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:project_soe/src/VExam/DataQuestion.dart';
@@ -19,18 +20,22 @@ class MsgMgrQuestion {
     List<DataQuestionPageMain> retList = List.empty(growable: true);
     for (var topicMap in parsed) {
       int tnum = topicMap['tNum'];
-      for (var json in topicMap['subCpsrcds']) {
+      double score = topicMap['score'];
+      List<dynamic> subCpsrcds = topicMap['subCpsrcds'];
+      if (!subCpsrcds.isEmpty) {
+        score = score / subCpsrcds.length;
+      }
+      for (var json in subCpsrcds) {
         DataQuestion dataQuestion = DataQuestion.fromJson(json);
         DataQuestionPageMain dataPage = DataQuestionPageMain(
-          // type: getQuestionTypeFromInt(topicMap['type']),
-          // type: getQuestionTypeFromInt(questionList[0].evalMode),
+          audioUri: (json['audioUrl'] == null) ? '' : json['audioUrl'],
           dataQuestion: dataQuestion,
           evalMode: dataQuestion.evalMode,
           cnum: json['cNum'],
           tnum: tnum,
           cpsgrpId: topicMap['cpsgrpId'],
           id: topicMap['id'],
-          weight: topicMap['score'],
+          weight: score,
           desc: topicMap['description'],
           title: topicMap['title'],
         );

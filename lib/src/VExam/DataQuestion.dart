@@ -330,20 +330,20 @@ class DataQuestionEval {
 }
 
 // 跟读页的每页题目数据
-class DataQuestionPageFollow {
-  String followFilePath;
-  final String title;
-  final String desc;
-  DataQuestionEval dataEval;
-  final List<DataQuestion> questionList;
-  DataQuestionPageFollow({
-    required this.questionList,
-    required this.dataEval,
-    this.desc = '',
-    this.title = '',
-    this.followFilePath = '',
-  });
-}
+// class DataQuestionPageFollow {
+//   String followFilePath;
+//   final String title;
+//   final String desc;
+//   DataQuestionEval dataEval;
+//   final List<DataQuestion> questionList;
+//   DataQuestionPageFollow({
+//     required this.questionList,
+//     required this.dataEval,
+//     this.desc = '',
+//     this.title = '',
+//     this.followFilePath = '',
+//   });
+// }
 
 // 每一页题目的数据.
 class DataQuestionPageMain extends DataQuestionEval {
@@ -357,6 +357,29 @@ class DataQuestionPageMain extends DataQuestionEval {
   final String desc;
   DataQuestion dataQuestion;
 
+  // 可以播放的录音, 为空的时候代表没有示例
+  final String audioUri;
+  bool _isPlayingExample = false;
+  bool _isStartPlaying = false;
+  // 播放进度
+  double playingProgress = 0.0;
+
+  bool isStartPlaying() {
+    return _isStartPlaying;
+  }
+
+  void setStartPlaying(bool bStart) {
+    _isStartPlaying = bStart;
+  }
+
+  bool isPlayingExample() {
+    return _isPlayingExample;
+  }
+
+  void setPlayingExample(bool bPlayingExample) {
+    _isPlayingExample = bPlayingExample;
+  }
+
   DataQuestionPageMain({
     required super.evalMode,
     required this.id,
@@ -367,6 +390,7 @@ class DataQuestionPageMain extends DataQuestionEval {
     required this.weight,
     required this.title,
     required this.desc,
+    required this.audioUri,
   });
 
   // 把所有题目内容变成一个String, 方便界面显示.
