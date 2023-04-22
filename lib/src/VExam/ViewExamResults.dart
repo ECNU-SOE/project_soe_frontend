@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 
@@ -91,6 +92,15 @@ class ViewExamResult extends StatelessWidget {
     }
   }
 
+  void _handleScoreList(List<Widget> rows, List<ItemResult> itemList) {
+    rows.add(_textWrap('分小题得分', gViewExamResultSubtitleStyle));
+    for (final item in itemList) {
+      rows.add(_textWrap(
+          '第${item.tNum}大题第${item.cNum}小题, 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
+          gViewExamResultTextStyle));
+    }
+  }
+
   Widget _generateScaffoldBodyXf(ParsedResultsXf data) {
     if (data.resultList.isEmpty) {
       return const Center(
@@ -140,6 +150,7 @@ class ViewExamResult extends StatelessWidget {
       _textWrap('增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
           gViewExamResultTextStyle),
     ]);
+    _handleScoreList(rows, data.itemList);
     _handleTable(rows, '声母', data.wrongShengs);
     _handleTable(rows, '韵母', data.wrongYuns);
     // 声调需要和声母韵母分开处理
@@ -209,7 +220,7 @@ class ViewExamResult extends StatelessWidget {
               child: ElevatedButton(
                 child: const Text("结束"),
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, args.endingRoute);
+                  Navigator.pushNamed(context, args.endingRoute);
                 },
               ),
             ),

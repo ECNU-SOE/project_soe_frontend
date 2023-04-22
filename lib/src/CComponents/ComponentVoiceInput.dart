@@ -218,7 +218,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       ),
       Center(
         child: Padding(
-          padding: const EdgeInsets.only(top: 12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Text(
             widget.dataPage.toSingleString(),
             style: gViewExamTextStyle,
@@ -231,7 +231,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
-          '${widget.dataPage.title} 本题满分:${widget.dataPage.weight}',
+          '${widget.dataPage.title}',
           style: gViewExamSubTitleStyle,
         ),
       ),
@@ -263,17 +263,20 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    (!widget.dataPage.hasRecordFile() ||
-                            widget.dataPage.resultXf == null)
-                        ? '点击开始录音'
-                        : '此题已有评测结果',
-                    style: gViewExamSubTitleStyle,
-                  ),
-                  IconButton(
-                    icon: _recordIcon(),
-                    onPressed: _cbkRecordStop,
-                  ),
+                  TextButton(
+                      onPressed: _cbkRecordStop,
+                      child: Row(
+                        children: [
+                          Text(
+                            (!widget.dataPage.hasRecordFile() ||
+                                    widget.dataPage.resultXf == null)
+                                ? '点击开始录音'
+                                : '此题已有评测结果',
+                            style: gViewExamSubTitleStyle,
+                          ),
+                          _recordIcon(),
+                        ],
+                      )),
                   IconButton(
                     icon: _retryIcon(),
                     onPressed: _cbkRetry,

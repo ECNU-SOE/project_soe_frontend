@@ -38,7 +38,7 @@ class ViewClassDetail extends StatelessWidget {
       ),
       TextButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, ViewExam.routeName,
+            Navigator.pushNamed(context, ViewExam.routeName,
                 arguments: ArgsViewExam(
                     homeWorkInfo.cpsgrpId, '作业', ViewClassDetail.routeName));
           },

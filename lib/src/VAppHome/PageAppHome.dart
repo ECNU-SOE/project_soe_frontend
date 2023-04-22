@@ -8,6 +8,7 @@ import 'package:project_soe/src/LNavigation/LogicNavigation.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/VPracticePage/ViewPracticeFollow.dart';
+import 'package:project_soe/src/VUnImplemented/ViewUnimplemented.dart';
 
 // FIXME 22.12.7 temp
 List<String> horizontalScrollImages = [
@@ -72,7 +73,7 @@ class HomePage extends StatelessWidget {
                       ),
                       onPressed: () {
                         Navigator.pushNamed(
-                            context, ViewPracticeFollow.routeName);
+                            context, ViewUnimplemented.routeName);
                       },
                     )),
                 Text(
@@ -102,8 +103,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
         onPressed: () {
-          Navigator.of(context)
-              .pushReplacementNamed(ViewNativeLanuageChoose.routeName);
+          Navigator.of(context).pushNamed(ViewNativeLanuageChoose.routeName);
         },
         style: gViewAppHomeEntranceButtonStyle,
       ),

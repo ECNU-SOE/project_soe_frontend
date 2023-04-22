@@ -56,4 +56,6 @@
         "xtree": "cpp",
         "xutility": "cpp"
     },
+    "dart.sdkPath": "D:\\Flutter\\bin\\cache\\dart-sdk",
+    "dart.flutterSdkPath": "D:\\Flutter",
 }

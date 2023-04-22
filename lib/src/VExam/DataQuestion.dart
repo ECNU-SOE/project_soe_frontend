@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:mime/mime.dart' as mime;
 import 'package:http/http.dart' as http;
@@ -122,6 +123,8 @@ int getMonoToneIntFromMsgString(String monoTone) {
 
 // 评测之后返回的数据经解析的结果
 class ParsedResultsXf {
+  // TODO 23.4.22 dart有tuple可以使用, 但此处不研究这么开启. 只使用两个list
+  List<ItemResult> itemList;
   List<DataResultXf> resultList;
   double weightedScore;
   double totalWeight;
@@ -130,6 +133,7 @@ class ParsedResultsXf {
   Map<String, List<WrongMonoTone>> wrongMonos;
 
   ParsedResultsXf({
+    required this.itemList,
     required this.resultList,
     required this.weightedScore,
     required this.totalWeight,
@@ -186,6 +190,8 @@ class ParsedResultsXf {
   factory ParsedResultsXf.fromQuestionPageDataList(
       List<DataQuestionPageMain> dataList) {
     List<DataResultXf> list = List.empty(growable: true);
+
+    List<ItemResult> itemList = List.empty(growable: true);
     double weightedScore = 0.0;
     double totalWeight = 0.0;
     for (var pageData in dataList) {
@@ -193,8 +199,23 @@ class ParsedResultsXf {
       totalWeight += pageWeight;
       if (pageData.resultXf != null) {
         list.add(pageData.resultXf!);
-        weightedScore += pageData.resultXf!.totalScore * pageWeight;
+        double gotScore = pageData.resultXf!.totalScore * pageWeight;
+        weightedScore += gotScore;
+        itemList.add(ItemResult(
+            gotScore: gotScore,
+            fullScore: pageWeight,
+            tNum: pageData.tnum,
+            cNum: pageData.cnum));
+      } else {
+        itemList.add(ItemResult(
+            gotScore: 0.0,
+            fullScore: pageWeight,
+            tNum: pageData.tnum,
+            cNum: pageData.cnum));
       }
+    }
+    for (ItemResult item in itemList) {
+      item.gotScore /= totalWeight;
     }
     Map<String, List<WrongPhone>> wrongShengs = Map.identity();
     Map<String, List<WrongPhone>> wrongYuns = Map.identity();
@@ -227,6 +248,7 @@ class ParsedResultsXf {
       }
     }
     return ParsedResultsXf(
+      itemList: itemList,
       weightedScore: (weightedScore / totalWeight),
       totalWeight: totalWeight,
       resultList: list,
@@ -396,7 +418,9 @@ class DataQuestionPageMain extends DataQuestionEval {
   // 把所有题目内容变成一个String, 方便界面显示.
   @override
   String toSingleString({bool withScore = false}) {
-    String ret = '第${this.tnum}大题第${this.cnum}小题' + '\n';
+    String ret = '第${this.tnum}大题第${this.cnum}小题' +
+        '(本题满分:${weight.toStringAsFixed(1)})' +
+        '\n';
     List<String> lines = dataQuestion.label.split('\\n');
     for (String line in lines) {
       ret += (super.evalMode == 4 ? '     ' : '') + line;
@@ -666,6 +690,30 @@ class WrongMonoTone {
       'word': word,
       'tone': tone,
       'pinyin': pinyinString,
+    };
+    return jsonEncode(map);
+  }
+}
+
+// 小题情况
+class ItemResult {
+  double gotScore;
+  final double fullScore;
+  final int tNum;
+  final int cNum;
+  ItemResult({
+    required this.gotScore,
+    required this.fullScore,
+    required this.tNum,
+    required this.cNum,
+  });
+
+  String toJson() {
+    final map = {
+      'gotScore': gotScore,
+      'fullScore': fullScore,
+      'tNum': tNum,
+      'cNum': cNum,
     };
     return jsonEncode(map);
   }

@@ -7,7 +7,7 @@ import Foundation
 
 import audioplayers_darwin
 import ffmpeg_kit_flutter_audio
-import path_provider_macos
+import path_provider_foundation
 import record_macos
 import url_launcher_macos
 

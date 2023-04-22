@@ -22,8 +22,71 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
   List<ComponentVoiceInput>? _voiceInputs;
   final ValueNotifier<double> _process = ValueNotifier<double>(0.0);
 
+  void _onExitClick() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        actions: [
+          TextButton(
+            child: Text(
+              "确定",
+              style: gViewExamTextStyle,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              '取消',
+              style: gViewExamTextStyle,
+            ),
+          ),
+        ],
+        content: Container(
+          height: 52.0,
+          child: Text(
+            "你还没有提交, 确定要退出吗?",
+            style: gViewExamTextStyle,
+          ),
+        ),
+      ),
+    );
+    return;
+  }
+
   void _forward() {
     if (_index <= 0) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Container(
+            height: 48.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // CircularProgressIndicator(),
+                Column(
+                  children: [
+                    Text(
+                      "已达到第一题.",
+                      style: gViewExamTextStyle,
+                    ),
+                    Text(
+                      '(点击空白处关闭提示)',
+                      style: gViewExamTextStyle,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
       return;
     } else {
       if (_voiceInputs == null) {
@@ -41,6 +104,31 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
 
   void _next() {
     if (_index >= (_listSize - 1)) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Container(
+            height: 48.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      "已达到最后一题.",
+                      style: gViewExamTextStyle,
+                    ),
+                    Text(
+                      '(点击空白处关闭提示)',
+                      style: gViewExamTextStyle,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
       return;
     } else {
       if (_voiceInputs == null) {
@@ -154,8 +242,10 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
+        // bottom: ,
         toolbarHeight: 60.0,
         title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
@@ -170,6 +260,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
             ElevatedButton(
               onPressed: _next,
               child: Icon(Icons.arrow_right),
+              style: gViewExamNavButtonStyle,
+            ),
+            ElevatedButton(
+              onPressed: _onExitClick,
+              child: Icon(Icons.exit_to_app),
               style: gViewExamNavButtonStyle,
             ),
           ],

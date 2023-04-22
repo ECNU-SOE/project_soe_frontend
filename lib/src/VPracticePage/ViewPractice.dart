@@ -131,7 +131,7 @@ class PracticePage extends StatelessWidget {
       ),
       TextButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, ViewExam.routeName,
+            Navigator.pushNamed(context, ViewExam.routeName,
                 arguments: ArgsViewExam(data.id, '作业', ViewAppHome.routeName));
           },
           child: Text(
