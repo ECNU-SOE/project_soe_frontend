@@ -56,8 +56,7 @@ class MsgMgrQuestion {
       body: jsonEncode(bodyMap),
       headers: {
         "Content-Type": "application/json",
-        // FIXME 23.3.29 暂时使用TempToken
-        'token': token,
+        'token': AuthritionState.get().getToken(),
       },
       encoding: Encoding.getByName('utf-8'),
     );
