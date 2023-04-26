@@ -4,13 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:audioplayers/audioplayers.dart' as ap;
-import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:quiver/strings.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
 
+import 'package:project_soe/src/s_o_e_icons_icons.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
+import 'package:project_soe/src/CComponents/ComponentShadowedContainer.dart';
+import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 
 // 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
@@ -41,8 +44,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       // widget.dataPage.hasRecordFile()
       // ? Icons.play_arrow
       // :
-      widget.dataPage.isRecording() ? Icons.stop : Icons.mic,
-      color: widget.dataPage.hasRecordFile() ? Colors.grey : Colors.amber,
+      widget.dataPage.isRecording() ? SOEIcons.pause : SOEIcons.mic,
+      color: widget.dataPage.hasRecordFile() ? Colors.grey : gColor749FC4,
       size: 32.0,
     );
   }
@@ -50,8 +53,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   Icon _retryIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: (widget.dataPage.hasRecordFile()) ? Colors.amber : Colors.grey,
-      size: 32.0,
+      color: (widget.dataPage.hasRecordFile()) ? gColor749FC4 : Colors.grey,
+      size: 17.0,
     );
   }
 
@@ -172,80 +175,120 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
 
   Icon _playPauseExampleIcon() {
     return Icon(
-      (widget.dataPage.isPlayingExample() ? Icons.pause : Icons.play_arrow),
-      color: Colors.amber,
-      size: 32.0,
+      (widget.dataPage.isPlayingExample()
+          ? SOEIcons.pause
+          : SOEIcons.right_vector),
+      color: gColor749FC4,
+      size: 16.0,
     );
   }
 
   Icon _stopExmapleIcon() {
     return Icon(
       Icons.restart_alt_sharp,
-      color: widget.dataPage.isStartPlaying() ? Colors.amber : Colors.grey,
-      size: 32.0,
+      color: widget.dataPage.isStartPlaying() ? gColor749FC4 : Colors.grey,
+      size: 16.0,
     );
   }
 
-  List<Widget> _buildExampleAudioPlayer(BuildContext context) {
+  Widget _buildExampleAudioPlayer(BuildContext context) {
     if (widget.dataPage.audioUri.isEmpty || widget.dataPage.audioUri == '') {
-      return [Subtitle(label: '没有示例语音')];
+      return Subtitle(
+        label: '没有示例语音',
+        style: gSubtitleStyle,
+      );
     }
-    return [
-      Row(
-        children: [
-          Subtitle(label: '示例语音'),
-          IconButton(
-              onPressed: _cbkExamplePlayPause, icon: _playPauseExampleIcon()),
-          IconButton(onPressed: _cbkExampleStop, icon: _stopExmapleIcon()),
-        ],
-      ),
-    ];
+    return Row(
+      children: [
+        Subtitle(
+          label: '示例语音',
+          style: gSubtitleStyle,
+        ),
+        ComponentCircleButton(
+          func: _cbkExamplePlayPause,
+          color: gColorCAE4F1RGBA,
+          child: _playPauseExampleIcon(),
+          size: 24,
+        ),
+        ComponentCircleButton(
+          func: _cbkExampleStop,
+          color: gColorCAE4F1RGBA,
+          child: _stopExmapleIcon(),
+          size: 24,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> children = List.empty(growable: true);
-    children.addAll(_buildExampleAudioPlayer(context));
-    children.addAll([
-      Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text(
-            widget.dataPage.desc,
-            style: gViewExamSubTitleStyle,
+    children.addAll(
+      [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
+            child: Text(
+              widget.dataPage.desc,
+              style: gSubtitleStyle,
+            ),
           ),
         ),
-      ),
-      Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+        Center(
           child: Text(
-            widget.dataPage.toSingleString(),
-            style: gViewExamTextStyle,
+            widget.dataPage.getScoreDescString(),
+            style: gInfoTextStyle,
           ),
         ),
-      ),
-    ]);
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Text(
+              widget.dataPage.toSingleString(),
+              style: gInfoTextStyle,
+            ),
+          ),
+        ),
+      ],
+    );
     return Scaffold(
+      backgroundColor: gColorE1EBF5RGBA,
       appBar: AppBar(
+        shadowColor: Color.fromARGB(0, 0, 0, 0),
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: Text(
-          '${widget.dataPage.title}',
-          style: gViewExamSubTitleStyle,
+        backgroundColor: gColorE1EBF5RGBA,
+        toolbarHeight: 100.0,
+        title: Row(
+          children: [
+            Subtitle(
+              label: '${widget.dataPage.title}',
+              style: gTitleStyle,
+            ),
+            _buildExampleAudioPlayer(context),
+          ],
         ),
       ),
-      body: ListView(children: children),
+      body: Center(
+        child: ComponentShadowedContainer(
+          color: gColorFFFFFFRGBA,
+          shadowColor: gColorE1EBF5RGBA,
+          edgesHorizon: 26.5,
+          edgesVertical: 50,
+          child: ListView(
+            children: children,
+          ),
+        ),
+      ),
       bottomNavigationBar: Container(
-        height: 55.0,
-        color: Colors.white,
+        height: 60.0,
+        color: gColorE1EBF5RGBA,
         child: widget.dataPage.isUploading()
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    strokeWidth: 1.0,
+                    strokeWidth: 4.0,
                     // semanticsLabel: '',
                   ),
                   Center(
@@ -253,7 +296,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       padding: EdgeInsets.all(15.0),
                       child: (Text(
                         '评测进行中, 请稍等...',
-                        style: gViewExamSubTitleStyle,
+                        style: gSubtitleStyle,
                       )),
                     ),
                   ),
@@ -262,24 +305,31 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  TextButton(
-                      onPressed: _cbkRecordStop,
-                      child: Row(
-                        children: [
-                          Text(
-                            (!widget.dataPage.hasRecordFile() ||
-                                    widget.dataPage.resultXf == null)
-                                ? '点击开始录音'
-                                : '此题已有评测结果',
-                            style: gViewExamSubTitleStyle,
-                          ),
-                          _recordIcon(),
-                        ],
-                      )),
-                  IconButton(
-                    icon: _retryIcon(),
-                    onPressed: _cbkRetry,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        (!widget.dataPage.hasRecordFile() ||
+                                widget.dataPage.resultXf == null)
+                            ? (widget.dataPage.isRecording()
+                                ? '正在录音'
+                                : '点击开始录音')
+                            : '此题已有评测结果',
+                        style: gSubtitleStyle,
+                      ),
+                      ComponentCircleButton(
+                        func: _cbkRecordStop,
+                        child: _recordIcon(),
+                        size: 50,
+                        color: gColorE3EDF7RGBA,
+                      ),
+                    ],
+                  ),
+                  ComponentCircleButton(
+                    func: _cbkRetry,
+                    child: _retryIcon(),
+                    size: 18,
+                    color: gColorE3EDF7RGBA,
                   ),
                 ],
               ),

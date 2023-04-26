@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
-import 'package:project_soe/src/CComponents/Componentsubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/VClassPage/DataClass.dart';
 import 'package:project_soe/src/VClassPage/ViewClassDetail.dart';
 
@@ -61,7 +61,7 @@ class ClassPage extends StatelessWidget {
                     )),
                 Text(
                   data.label,
-                  style: gClassPageListitemStyle,
+                  style: gInfoTextStyle,
                 ),
               ],
             ),
@@ -78,14 +78,17 @@ class ClassPage extends StatelessWidget {
           Navigator.pushNamed(context, ViewClassDetail.routeName,
               arguments: (courseInfo.classId));
         },
-        child: Text(courseInfo.classId, style: gClassPageTextStyle));
+        child: Text(courseInfo.classId, style: gInfoTextStyle));
   }
 
   List<Widget> _buildMyClassWidget(
       BuildContext context, DataClassPageInfo classPageInfo) {
     if (classPageInfo.pickedCourses.isEmpty) {
       return [
-        Subtitle(label: '你没有选择的课堂'),
+        Subtitle(
+          label: '你没有选择的课堂',
+          style: gSubtitleStyle,
+        ),
       ];
     }
     List<TextButton> buttons = List.empty(growable: true);
@@ -99,8 +102,14 @@ class ClassPage extends StatelessWidget {
       BuildContext context, DataClassPageInfo classPageInfo) {
     List<Widget> children = List.empty(growable: true);
     children.addAll([
-      const Subtitle(label: '快速入口'),
-      const Subtitle(label: '我的课堂'),
+      const Subtitle(
+        label: '快速入口',
+        style: gSubtitleStyle,
+      ),
+      const Subtitle(
+        label: '我的课堂',
+        style: gSubtitleStyle,
+      ),
     ]);
     children.addAll(_buildMyClassWidget(context, classPageInfo));
     return Scaffold(

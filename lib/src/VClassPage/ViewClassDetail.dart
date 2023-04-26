@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
-import 'package:project_soe/src/CComponents/Componentsubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/VClassPage/DataClass.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VExam/ViewExam.dart';
@@ -16,24 +16,25 @@ class ViewClassDetail extends StatelessWidget {
       Container(
         child: Subtitle(
           label: homeWorkInfo.title,
+          style: gSubtitleStyle,
         ),
       ),
       Container(
         child: Text(
           homeWorkInfo.desc,
-          style: gClassPageTextStyle,
+          style: gInfoTextStyle,
         ),
       ),
       Container(
         child: Text(
           '开始时间${homeWorkInfo.startTime.toString()}',
-          style: gClassPageTextStyle,
+          style: gInfoTextStyle,
         ),
       ),
       Container(
         child: Text(
           '结束时间${homeWorkInfo.endTime.toString()}',
-          style: gClassPageTextStyle,
+          style: gInfoTextStyle,
         ),
       ),
       TextButton(
@@ -44,7 +45,7 @@ class ViewClassDetail extends StatelessWidget {
           },
           child: Text(
             '进入作业',
-            style: gClassPageTextStyle,
+            style: gInfoTextStyle,
           )),
     ];
   }
@@ -52,11 +53,19 @@ class ViewClassDetail extends StatelessWidget {
   Widget _buildViewClassDetailImpl(
       BuildContext context, List<DataHomeworkInfo> homeworkList) {
     List<Widget> children = List.empty(growable: true);
-    children.add(Subtitle(label: '作业列表'));
+    children.add(Subtitle(
+      label: '作业列表',
+      style: gSubtitleStyle,
+    ));
     if (homeworkList.isEmpty) {
       return Scaffold(
         body: ListView(
-          children: [Subtitle(label: '暂无作业')],
+          children: [
+            Subtitle(
+              label: '暂无作业',
+              style: gSubtitleStyle,
+            )
+          ],
         ),
       );
     }

@@ -121,12 +121,13 @@ class PracticePage extends StatelessWidget {
       Container(
         child: Subtitle(
           label: data.title,
+          style: gSubtitleStyle0,
         ),
       ),
       Container(
         child: Text(
           data.desc,
-          style: gPracticePageSubtitleStyle,
+          style: gSubtitleStyle,
         ),
       ),
       TextButton(
@@ -136,7 +137,7 @@ class PracticePage extends StatelessWidget {
           },
           child: Text(
             '进入作业',
-            style: gPracticePageTextStyle,
+            style: gInfoTextStyle,
           )),
     ];
   }

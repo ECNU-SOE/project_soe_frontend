@@ -3,16 +3,19 @@ import 'package:project_soe/src/GGlobalParams/styles.dart';
 
 class Subtitle extends StatelessWidget {
   final String label;
-  const Subtitle({super.key, required this.label});
+  final TextStyle style;
+  const Subtitle({super.key, required this.label, required this.style});
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.all(18.0),
+          padding: const EdgeInsets.only(left: 12.0, bottom: 4.0, top: 4.0),
           child: Text(
             label,
-            style: gSubtitleStyle,
+            style: style,
           ),
         ),
       ],

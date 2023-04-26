@@ -58,24 +58,24 @@ class ViewExamResult extends StatelessWidget {
 
   void _handleTable(List<Widget> rows, String iconText,
       Map<String, List<WrongPhone>> wrongMap) {
-    rows.add(_textWrap('$iconText情况', gViewExamResultSubtitleStyle));
+    rows.add(_textWrap('$iconText情况', gSubtitleStyle));
     if (wrongMap.isEmpty) {
-      rows.add(_textWrap('你没有读错的$iconText', gViewExamResultSubtitleStyle));
+      rows.add(_textWrap('你没有读错的$iconText', gSubtitleStyle));
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误$iconText', gViewExamResultTextStyle),
-        _tableTextWrap('次数', gViewExamResultTextStyle),
-        _tableTextWrap('错误字词', gViewExamResultTextStyle),
+        _tableTextWrap('错误$iconText', gInfoTextStyle),
+        _tableTextWrap('次数', gInfoTextStyle),
+        _tableTextWrap('错误字词', gInfoTextStyle),
       ]));
       for (String wrongPhone in wrongMap.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongPhone, gViewExamResultTextStyle),
-          _tableTextWrap(wrongMap[wrongPhone]!.length.toString(),
-              gViewExamResultTextStyle),
+          _tableTextWrap(wrongPhone, gInfoTextStyle),
+          _tableTextWrap(
+              wrongMap[wrongPhone]!.length.toString(), gInfoTextStyle),
           _tableTextWrap(
               getStringLabelFromWrongPhoneList(wrongMap[wrongPhone]!),
-              gViewExamResultTextStyle),
+              gInfoTextStyle),
         ]));
       }
       final table = Table(
@@ -93,11 +93,11 @@ class ViewExamResult extends StatelessWidget {
   }
 
   void _handleScoreList(List<Widget> rows, List<ItemResult> itemList) {
-    rows.add(_textWrap('分小题得分', gViewExamResultSubtitleStyle));
+    rows.add(_textWrap('分小题得分', gSubtitleStyle));
     for (final item in itemList) {
       rows.add(_textWrap(
           '第${item.tNum}大题第${item.cNum}小题, 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
-          gViewExamResultTextStyle));
+          gInfoTextStyle));
     }
   }
 
@@ -108,7 +108,7 @@ class ViewExamResult extends StatelessWidget {
           padding: EdgeInsets.all(15.0),
           child: Text(
             '您没有进行测试，不生成报告。',
-            style: gViewExamResultSubtitleStyle,
+            style: gSubtitleStyle,
           ),
         ),
       );
@@ -137,41 +137,38 @@ class ViewExamResult extends StatelessWidget {
     final averageFluency = sumFluency / data.resultList.length;
     List<Widget> rows = List.empty(growable: true);
     rows.addAll([
-      _textWrap('全面测试结果', gViewExamResultSubtitleStyle),
+      _textWrap('全面测试结果', gSubtitleStyle),
       _textWrap(
           '您的得分:${data.weightedScore.toStringAsFixed(1)}/总分:${data.totalWeight}',
-          gViewExamResultSubtitleStyle),
-      _textWrap('声调得分:${averageTone.toStringAsFixed(1)}',
-          gViewExamResultSubtitleStyle),
-      _textWrap('发音得分:${averagePhone.toStringAsFixed(1)}',
-          gViewExamResultSubtitleStyle),
-      _textWrap('流畅得分:${averageFluency.toStringAsFixed(1)}',
-          gViewExamResultSubtitleStyle),
+          gSubtitleStyle),
+      _textWrap('声调得分:${averageTone.toStringAsFixed(1)}', gSubtitleStyle),
+      _textWrap('发音得分:${averagePhone.toStringAsFixed(1)}', gSubtitleStyle),
+      _textWrap('流畅得分:${averageFluency.toStringAsFixed(1)}', gSubtitleStyle),
       _textWrap('增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
-          gViewExamResultTextStyle),
+          gInfoTextStyle),
     ]);
     _handleScoreList(rows, data.itemList);
     _handleTable(rows, '声母', data.wrongShengs);
     _handleTable(rows, '韵母', data.wrongYuns);
     // 声调需要和声母韵母分开处理
-    rows.add(_textWrap('声调情况', gViewExamResultSubtitleStyle));
+    rows.add(_textWrap('声调情况', gSubtitleStyle));
     if (data.wrongMonos.isEmpty) {
-      rows.add(_textWrap('你没有读错的声调。', gViewExamResultSubtitleStyle));
+      rows.add(_textWrap('你没有读错的声调。', gSubtitleStyle));
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误声调', gViewExamResultTextStyle),
-        _tableTextWrap('次数', gViewExamResultTextStyle),
-        _tableTextWrap('错误字词', gViewExamResultTextStyle),
+        _tableTextWrap('错误声调', gInfoTextStyle),
+        _tableTextWrap('次数', gInfoTextStyle),
+        _tableTextWrap('错误字词', gInfoTextStyle),
       ]));
       for (String wrongMono in data.wrongMonos.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongMono, gViewExamResultTextStyle),
-          _tableTextWrap(data.wrongMonos[wrongMono]!.length.toString(),
-              gViewExamResultTextStyle),
+          _tableTextWrap(wrongMono, gInfoTextStyle),
+          _tableTextWrap(
+              data.wrongMonos[wrongMono]!.length.toString(), gInfoTextStyle),
           _tableTextWrap(
               getStringLabelFromWrongMonoList(data.wrongMonos[wrongMono]!),
-              gViewExamResultTextStyle),
+              gInfoTextStyle),
         ]));
       }
       final monoTable = Table(

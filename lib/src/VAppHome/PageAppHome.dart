@@ -78,7 +78,7 @@ class HomePage extends StatelessWidget {
                     )),
                 Text(
                   data.label,
-                  style: gViewAppHomeListitemStyle,
+                  style: gInfoTextStyle,
                 ),
               ],
             ),
@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
       body: ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          const Subtitle(label: '初次使用，体验全面评测。'),
+          // const Subtitle(label: '初次使用，体验全面评测。'),
           _buildFullExamEntranceWidget(context),
           // _buildSubtitle('推荐内容'),
           Container(
@@ -132,10 +132,10 @@ class HomePage extends StatelessWidget {
               children: _buildHorizontalScrollWidget(),
             ),
           ),
-          const Subtitle(label: '快速入口'),
+          // const Subtitle(label: '快速入口'),
           _buildRecWidget(homeRecDatasFirst, context),
           _buildRecWidget(homeRecDatasSecond, context),
-          const Subtitle(label: '练习'),
+          // const Subtitle(label: '练习'),
           _buildExerciseWidget(),
         ],
       ),

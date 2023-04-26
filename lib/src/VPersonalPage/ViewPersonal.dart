@@ -2,8 +2,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
-import 'package:project_soe/src/GGlobalParams/styles.dart';
 import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
@@ -52,7 +52,7 @@ class PersonalPage extends StatelessWidget {
                     )),
                 Text(
                   data.label,
-                  style: gClassPageListitemStyle,
+                  style: gInfoTextStyle,
                 ),
               ],
             ),
@@ -71,14 +71,14 @@ class PersonalPage extends StatelessWidget {
         padding: EdgeInsets.only(left: 12.0, right: 12.0),
         child: Text(
           details[i],
-          style: gPersonalPageDetailStyle,
+          style: gInfoTextStyle,
         ),
       ));
       chi.add(Padding(
         padding: EdgeInsets.only(left: 12.0, right: 12.0),
         child: Text(
           labels[i],
-          style: gPersonalPageLabelStyle,
+          style: gInfoTextStyle,
         ),
       ));
     }
@@ -107,18 +107,20 @@ class PersonalPage extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(personalData.nickName!,
-                      style: gPersonalPageNicknameStyle),
+                  Text(personalData.nickName!, style: gInfoTextStyle),
                   Text(
                     '个性签名:${personalData.sign!}',
-                    style: gPersonalPageLabelStyle,
+                    style: gInfoTextStyle,
                   )
                 ],
               ),
             ],
           ),
         ),
-        const Subtitle(label: '详细信息'),
+        const Subtitle(
+          label: '详细信息',
+          style: gSubtitleStyle0,
+        ),
         _buildDetailLine(['电话号码'], [personalData.phone!]),
         _buildDetailLine(['邮箱'], [personalData.email!]),
         _buildDetailLine([
@@ -171,7 +173,7 @@ class PersonalPage extends StatelessWidget {
                   style: gPersonalPageLoginButtonStyle,
                   child: Text(
                     '尚未登录, 点击登录',
-                    style: gPersonalPageNicknameStyle,
+                    style: gSubtitleStyle,
                   ),
                 ),
               ],
@@ -216,7 +218,10 @@ class PersonalPage extends StatelessWidget {
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 _buildDetailsPanel(snapshot.data!),
-                const Subtitle(label: '推荐内容'),
+                const Subtitle(
+                  label: '推荐内容',
+                  style: gSubtitleStyle0,
+                ),
                 _buildRecWidget(personalRecDatasFirst),
                 _buildRecWidget(personalRecDatasSecond),
               ],

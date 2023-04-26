@@ -417,16 +417,21 @@ class DataQuestionPageMain extends DataQuestionEval {
 
   // 把所有题目内容变成一个String, 方便界面显示.
   @override
-  String toSingleString({bool withScore = false}) {
-    String ret = '第${this.tnum}大题第${this.cnum}小题' +
-        '(本题满分:${weight.toStringAsFixed(1)})' +
-        '\n';
+  String toSingleString() {
+    String ret = '';
     List<String> lines = dataQuestion.label.split('\\n');
     for (String line in lines) {
       ret += (super.evalMode == 4 ? '     ' : '') + line;
       ret += '\n';
     }
     return ret;
+  }
+
+  // 获取得分信息
+  String getScoreDescString() {
+    return '第${this.tnum}大题第${this.cnum}小题' +
+        '(本题满分:${weight.toStringAsFixed(1)})' +
+        '\n';
   }
 }
 

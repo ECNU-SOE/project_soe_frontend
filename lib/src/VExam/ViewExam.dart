@@ -10,9 +10,11 @@ import 'package:project_soe/src/VExam/MsgQuestion.dart';
 import 'package:project_soe/src/VExam/ViewExamResults.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/src/GGlobalParams/LabelText.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
+import 'package:project_soe/src/s_o_e_icons_icons.dart';
 
 class _ViewExamBodyState extends State<_ViewExamBody> {
   _ViewExamBodyState();
@@ -30,7 +32,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
           TextButton(
             child: Text(
               "确定",
-              style: gViewExamTextStyle,
+              style: gInfoTextStyle,
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -43,7 +45,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
             },
             child: Text(
               '取消',
-              style: gViewExamTextStyle,
+              style: gInfoTextStyle,
             ),
           ),
         ],
@@ -51,7 +53,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
           height: 52.0,
           child: Text(
             "你还没有提交, 确定要退出吗?",
-            style: gViewExamTextStyle,
+            style: gInfoTextStyle,
           ),
         ),
       ),
@@ -74,11 +76,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   children: [
                     Text(
                       "已达到第一题.",
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                     Text(
                       '(点击空白处关闭提示)',
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                   ],
                 ),
@@ -116,11 +118,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   children: [
                     Text(
                       "已达到最后一题.",
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                     Text(
                       '(点击空白处关闭提示)',
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                   ],
                 ),
@@ -159,11 +161,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   children: [
                     Text(
                       "请等待语音评测完成.",
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                     Text(
                       '(点击空白处关闭提示)',
-                      style: gViewExamTextStyle,
+                      style: gInfoTextStyle,
                     ),
                   ],
                 ),
@@ -205,7 +207,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
         child: ElevatedButton(
           child: Text(
             "提   交",
-            style: gViewExamSubTitleStyle,
+            style: gSubtitleStyle,
           ),
           style: gViewExamSubButtonStyle,
           onPressed: onSubmitButtonPressed,
@@ -240,7 +242,8 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
     _listSize = widget._dataList.length;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: gColorE1EBF5RGBA,
+        shadowColor: Color.fromARGB(0, 0, 0, 0),
         automaticallyImplyLeading: false,
         // bottom: ,
         toolbarHeight: 60.0,
@@ -248,24 +251,54 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: _forward,
-              child: Icon(Icons.arrow_left),
-              style: gViewExamNavButtonStyle,
+            Padding(
+              padding: EdgeInsets.all(4.0),
+              child: ComponentRoundButton(
+                func: _forward,
+                child: Icon(
+                  SOEIcons.left_vector,
+                  size: 18.0,
+                  color: gColor749FC4,
+                ),
+                height: 24.0,
+                width: 24.0,
+                radius: 5.0,
+                color: gColorCAE4F1RGBA,
+              ),
             ),
             Text(
               widget._args.title,
-              style: gViewExamTitleStyle,
+              style: gTitleStyle,
             ),
-            ElevatedButton(
-              onPressed: _next,
-              child: Icon(Icons.arrow_right),
-              style: gViewExamNavButtonStyle,
+            Padding(
+              padding: EdgeInsets.all(4.0),
+              child: ComponentRoundButton(
+                func: _next,
+                child: Icon(
+                  SOEIcons.left_vector,
+                  color: gColor749FC4,
+                  size: 18.0,
+                ),
+                height: 24.0,
+                width: 24.0,
+                radius: 5.0,
+                color: gColorCAE4F1RGBA,
+              ),
             ),
-            ElevatedButton(
-              onPressed: _onExitClick,
-              child: Icon(Icons.exit_to_app),
-              style: gViewExamNavButtonStyle,
+            Padding(
+              padding: EdgeInsets.all(4.0),
+              child: ComponentRoundButton(
+                func: _onExitClick,
+                child: Icon(
+                  SOEIcons.home,
+                  color: gColor749FC4,
+                  size: 18.0,
+                ),
+                height: 24.0,
+                width: 24.0,
+                radius: 5.0,
+                color: gColorCAE4F1RGBA,
+              ),
             ),
           ],
         ),

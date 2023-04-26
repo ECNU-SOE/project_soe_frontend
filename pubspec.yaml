@@ -61,7 +61,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
 
+flutter_launcher_icons:
+  image_path: "assets/汉语正音logo.png"
+  android: "launcher_icon"
+  ios: "launcher_icon"
+  remove_alpha_ios: true
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -72,6 +79,19 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+    - family: SourceSans
+      fonts:
+        - asset: fonts\SourceHanSansCN-VF.ttf
+          weight: 700
+    - family: SourceSerif
+      fonts:
+        - asset: fonts\SourceHanSerifCN-VF.ttf
+          weight: 700
+    - family:  SOEIcons
+      fonts:
+        - asset: fonts/SOEIcons.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -15,7 +15,7 @@ class ProjectSOE extends StatelessWidget {
     return MaterialApp(
       title: 'Project SoE Demo',
       initialRoute: ViewAppHome.routeName,
-      // initialRoute: ViewExamResult.routeName,
+      theme: ThemeData(fontFamily: 'SourceSans'),
       routes: sNavigationRoutes,
     );
   }

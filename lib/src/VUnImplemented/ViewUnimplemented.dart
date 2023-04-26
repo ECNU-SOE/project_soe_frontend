@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
 class ViewUnimplemented extends StatelessWidget {
   static String routeName = 'Unimplemented';
@@ -8,7 +9,10 @@ class ViewUnimplemented extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: true),
       body: Container(
-        child: Subtitle(label: '内容尚在开发中, 尽请期待...'),
+        child: Subtitle(
+          label: '内容尚在开发中, 尽请期待...',
+          style: gTitleStyle,
+        ),
       ),
     );
   }

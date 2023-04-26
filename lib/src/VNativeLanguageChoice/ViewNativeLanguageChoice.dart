@@ -44,7 +44,7 @@ class _ViewNativeLanuageChooseImpl extends StatelessWidget {
             title: Text(
               _title,
               textAlign: TextAlign.center,
-              style: gViewChooseNativeLanuageTitleStyle,
+              style: gTitleStyle,
             ),
           );
         }
@@ -53,7 +53,7 @@ class _ViewNativeLanuageChooseImpl extends StatelessWidget {
             title: Text(
               _info,
               textAlign: TextAlign.center,
-              style: gViewChooseNativeLanuageInfoStyle,
+              style: gTitleStyle,
             ),
           );
         }
@@ -63,7 +63,7 @@ class _ViewNativeLanuageChooseImpl extends StatelessWidget {
         return ListTile(
           title: Text(
             nativeLanguages[index].label,
-            style: gViewChooseNativeLanuageListStyle,
+            style: gSubtitleStyle,
             textAlign: TextAlign.center,
           ),
           trailing: const Icon(
