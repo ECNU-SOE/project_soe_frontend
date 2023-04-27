@@ -85,7 +85,7 @@ class ClassPage extends StatelessWidget {
       BuildContext context, DataClassPageInfo classPageInfo) {
     if (classPageInfo.pickedCourses.isEmpty) {
       return [
-        Subtitle(
+        ComponentSubtitle(
           label: '你没有选择的课堂',
           style: gSubtitleStyle,
         ),
@@ -102,11 +102,11 @@ class ClassPage extends StatelessWidget {
       BuildContext context, DataClassPageInfo classPageInfo) {
     List<Widget> children = List.empty(growable: true);
     children.addAll([
-      const Subtitle(
+      const ComponentSubtitle(
         label: '快速入口',
         style: gSubtitleStyle,
       ),
-      const Subtitle(
+      const ComponentSubtitle(
         label: '我的课堂',
         style: gSubtitleStyle,
       ),
@@ -117,6 +117,7 @@ class ClassPage extends StatelessWidget {
         scrollDirection: Axis.vertical,
         children: children,
       ),
+      backgroundColor: gColorE3EDF7RGBA,
     );
   }
 

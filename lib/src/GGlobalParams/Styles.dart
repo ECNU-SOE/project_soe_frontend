@@ -47,8 +47,17 @@ const TextStyle gInfoTextStyle1 = TextStyle(
   fontSize: 12.0,
 );
 
+// 思源黑体18号 颜色 1, 41, 50,
+const TextStyle gInfoTextStyle2 = TextStyle(
+  color: Color.fromARGB(255, 1, 41, 50),
+  fontFamily: 'SourceSans',
+  fontSize: 16.0,
+);
+
 // RGBA white 100
 const Color gColorFFFFFFRGBA = Color.fromARGB(255, 255, 255, 255);
+// RGBA 232 243 251 100
+const Color gColorE8F3FBRGBA = Color.fromARGB(255, 232, 243, 251);
 // RGBA 227 237 247 100
 const Color gColorE3EDF7RGBA = Color.fromARGB(255, 227, 237, 247);
 // RGBA 225 235 245 100

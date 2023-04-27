@@ -117,7 +117,7 @@ class PersonalPage extends StatelessWidget {
             ],
           ),
         ),
-        const Subtitle(
+        const ComponentSubtitle(
           label: '详细信息',
           style: gSubtitleStyle0,
         ),
@@ -218,7 +218,7 @@ class PersonalPage extends StatelessWidget {
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 _buildDetailsPanel(snapshot.data!),
-                const Subtitle(
+                const ComponentSubtitle(
                   label: '推荐内容',
                   style: gSubtitleStyle0,
                 ),

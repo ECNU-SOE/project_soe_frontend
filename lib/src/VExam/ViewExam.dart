@@ -11,6 +11,7 @@ import 'package:project_soe/src/VExam/ViewExamResults.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 import 'package:project_soe/src/GGlobalParams/LabelText.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
@@ -203,15 +204,18 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
   Widget _buildBottomWidget() {
     if (_index == (_listSize - 1)) {
       return Container(
-        height: 60.0,
-        child: ElevatedButton(
-          child: Text(
-            "提   交",
-            style: gSubtitleStyle,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 100),
+          child: ComponentRoundButton(
+            func: onSubmitButtonPressed,
+            color: gColorE3EDF7RGBA,
+            child: ComponentTitle(label: '提   交', style: gSubtitleStyle),
+            height: 64,
+            width: 200,
+            radius: 6,
           ),
-          style: gViewExamSubButtonStyle,
-          onPressed: onSubmitButtonPressed,
         ),
+        color: gColorE3EDF7RGBA,
       );
     } else {
       return LinearProgressIndicator(
@@ -260,8 +264,8 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   size: 18.0,
                   color: gColor749FC4,
                 ),
-                height: 24.0,
-                width: 24.0,
+                height: 32.0,
+                width: 32.0,
                 radius: 5.0,
                 color: gColorCAE4F1RGBA,
               ),
@@ -279,8 +283,8 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   color: gColor749FC4,
                   size: 18.0,
                 ),
-                height: 24.0,
-                width: 24.0,
+                height: 32.0,
+                width: 32.0,
                 radius: 5.0,
                 color: gColorCAE4F1RGBA,
               ),
@@ -294,8 +298,8 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                   color: gColor749FC4,
                   size: 18.0,
                 ),
-                height: 24.0,
-                width: 24.0,
+                height: 32.0,
+                width: 32.0,
                 radius: 5.0,
                 color: gColorCAE4F1RGBA,
               ),

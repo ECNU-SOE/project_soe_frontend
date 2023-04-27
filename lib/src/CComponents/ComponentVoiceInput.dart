@@ -193,28 +193,35 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
 
   Widget _buildExampleAudioPlayer(BuildContext context) {
     if (widget.dataPage.audioUri.isEmpty || widget.dataPage.audioUri == '') {
-      return Subtitle(
+      return ComponentSubtitle(
         label: '没有示例语音',
         style: gSubtitleStyle,
       );
     }
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Subtitle(
+        ComponentSubtitle(
           label: '示例语音',
           style: gSubtitleStyle,
         ),
-        ComponentCircleButton(
-          func: _cbkExamplePlayPause,
-          color: gColorCAE4F1RGBA,
-          child: _playPauseExampleIcon(),
-          size: 24,
+        Padding(
+          padding: EdgeInsets.all(3.0),
+          child: ComponentCircleButton(
+            func: _cbkExamplePlayPause,
+            color: gColorCAE4F1RGBA,
+            child: _playPauseExampleIcon(),
+            size: 32,
+          ),
         ),
-        ComponentCircleButton(
-          func: _cbkExampleStop,
-          color: gColorCAE4F1RGBA,
-          child: _stopExmapleIcon(),
-          size: 24,
+        Padding(
+          padding: EdgeInsets.all(3.0),
+          child: ComponentCircleButton(
+            func: _cbkExampleStop,
+            color: gColorCAE4F1RGBA,
+            child: _stopExmapleIcon(),
+            size: 32,
+          ),
         ),
       ],
     );
@@ -257,10 +264,10 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         shadowColor: Color.fromARGB(0, 0, 0, 0),
         automaticallyImplyLeading: false,
         backgroundColor: gColorE1EBF5RGBA,
-        toolbarHeight: 100.0,
-        title: Row(
+        toolbarHeight: 80.0,
+        title: Column(
           children: [
-            Subtitle(
+            ComponentSubtitle(
               label: '${widget.dataPage.title}',
               style: gTitleStyle,
             ),
@@ -317,19 +324,25 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                             : '此题已有评测结果',
                         style: gSubtitleStyle,
                       ),
-                      ComponentCircleButton(
-                        func: _cbkRecordStop,
-                        child: _recordIcon(),
-                        size: 50,
-                        color: gColorE3EDF7RGBA,
+                      Padding(
+                        padding: EdgeInsets.all(6.0),
+                        child: ComponentCircleButton(
+                          func: _cbkRecordStop,
+                          child: _recordIcon(),
+                          size: 56,
+                          color: gColorE3EDF7RGBA,
+                        ),
                       ),
                     ],
                   ),
-                  ComponentCircleButton(
-                    func: _cbkRetry,
-                    child: _retryIcon(),
-                    size: 18,
-                    color: gColorE3EDF7RGBA,
+                  Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: ComponentCircleButton(
+                      func: _cbkRetry,
+                      child: _retryIcon(),
+                      size: 32,
+                      color: gColorE3EDF7RGBA,
+                    ),
                   ),
                 ],
               ),

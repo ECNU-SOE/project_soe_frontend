@@ -14,7 +14,7 @@ class ViewClassDetail extends StatelessWidget {
       BuildContext context, DataHomeworkInfo homeWorkInfo) {
     return [
       Container(
-        child: Subtitle(
+        child: ComponentSubtitle(
           label: homeWorkInfo.title,
           style: gSubtitleStyle,
         ),
@@ -53,7 +53,7 @@ class ViewClassDetail extends StatelessWidget {
   Widget _buildViewClassDetailImpl(
       BuildContext context, List<DataHomeworkInfo> homeworkList) {
     List<Widget> children = List.empty(growable: true);
-    children.add(Subtitle(
+    children.add(ComponentSubtitle(
       label: '作业列表',
       style: gSubtitleStyle,
     ));
@@ -61,7 +61,7 @@ class ViewClassDetail extends StatelessWidget {
       return Scaffold(
         body: ListView(
           children: [
-            Subtitle(
+            ComponentSubtitle(
               label: '暂无作业',
               style: gSubtitleStyle,
             )
@@ -72,7 +72,10 @@ class ViewClassDetail extends StatelessWidget {
     for (DataHomeworkInfo homeworkInfo in homeworkList) {
       children.addAll(_buildHomeworkBlock(context, homeworkInfo));
     }
-    return Scaffold(body: ListView(children: children));
+    return Scaffold(
+      body: ListView(children: children),
+      backgroundColor: gColorE3EDF7RGBA,
+    );
   }
 
   @override

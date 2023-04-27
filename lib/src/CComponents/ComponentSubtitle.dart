@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:project_soe/src/GGlobalParams/styles.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
-class Subtitle extends StatelessWidget {
+class ComponentSubtitle extends StatelessWidget {
   final String label;
   final TextStyle style;
-  const Subtitle({super.key, required this.label, required this.style});
+  const ComponentSubtitle(
+      {super.key, required this.label, required this.style});
   @override
   Widget build(BuildContext context) {
     return Row(

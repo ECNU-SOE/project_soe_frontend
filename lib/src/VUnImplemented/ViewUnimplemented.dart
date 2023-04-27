@@ -9,7 +9,7 @@ class ViewUnimplemented extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: true),
       body: Container(
-        child: Subtitle(
+        child: ComponentSubtitle(
           label: '内容尚在开发中, 尽请期待...',
           style: gTitleStyle,
         ),

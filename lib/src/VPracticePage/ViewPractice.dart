@@ -119,7 +119,7 @@ class PracticePage extends StatelessWidget {
   List<Widget> _buildPracticeButton(BuildContext context, DataPractice data) {
     return [
       Container(
-        child: Subtitle(
+        child: ComponentSubtitle(
           label: data.title,
           style: gSubtitleStyle0,
         ),
@@ -145,11 +145,11 @@ class PracticePage extends StatelessWidget {
   Widget _buildViewPracticePageImpl(
       BuildContext context, DataPracticePage dataPage) {
     List<Widget> children = List.empty(growable: true);
-    // const Subtitle(label: '声韵调练习'),
+    // const ComponentSubtitle(label: '声韵调练习'),
     // _buildDoubleWordListChild0(tempTitles2[0], tempCount2[0]),
     // _buildDoubleWordListChild0(tempTitles2[1], tempCount2[1]),
     // _buildDoubleWordListChild0(tempTitles2[2], tempCount2[2]),
-    // const Subtitle(label: '专项训练'),
+    // const ComponentSubtitle(label: '专项训练'),
     // Row(
     //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     // children: [
@@ -158,13 +158,16 @@ class PracticePage extends StatelessWidget {
     // _buildDoubleWordRowChild0(tempTitle3[2]),
     // ],
     // ),
-    // const Subtitle(label: '个性化训练'),
+    // const ComponentSubtitle(label: '个性化训练'),
     // ];
     for (final item in dataPage.dataList) {
       children.addAll(_buildPracticeButton(context, item));
     }
     var _listView = ListView(children: children);
-    return _listView;
+    return Scaffold(
+      backgroundColor: gColorE3EDF7RGBA,
+      body: _listView,
+    );
   }
 
   // Widget _buildArticlePage() {

@@ -26,9 +26,9 @@ class ComponentShadowedContainer extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: shadowColor,
-                spreadRadius: 5,
-                blurRadius: 2,
-                offset: Offset(0, 2), // changes position of shadow
+                spreadRadius: 1,
+                blurRadius: 1,
+                offset: Offset(1, 2), // changes position of shadow
               ),
             ],
           ),

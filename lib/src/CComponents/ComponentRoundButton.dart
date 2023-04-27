@@ -16,13 +16,12 @@ class ComponentCircleButton extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: size,
         height: size,
-        child: ElevatedButton(
+        child: TextButton(
           onPressed: func,
           style: ElevatedButton.styleFrom(
             elevation: 3,
             shape: CircleBorder(),
             backgroundColor: color,
-            shadowColor: gColor7BCBE6RGBA48,
           ),
           child: child,
         ),
@@ -36,6 +35,7 @@ class ComponentRoundButton extends StatelessWidget {
   double height;
   double width;
   double radius;
+  bool shadowIn = false;
   ComponentRoundButton({
     required this.func,
     required this.color,
@@ -43,21 +43,52 @@ class ComponentRoundButton extends StatelessWidget {
     required this.height,
     required this.width,
     required this.radius,
+    this.shadowIn = false,
   });
   @override
   Widget build(BuildContext context) => Container(
         width: width,
         height: height,
-        child: ElevatedButton(
+        child: TextButton(
           onPressed: func,
-          style: ElevatedButton.styleFrom(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(radius))),
-            backgroundColor: color,
-            shadowColor: gColor7BCBE6RGBA48,
-          ),
+          // style: ElevatedButton.styleFrom(
+          //   elevation: 3,
+          // ),
           child: child,
+        ),
+        decoration: BoxDecoration(
+          // backgroundBlendMode: BlendMode.,
+          borderRadius: BorderRadius.circular(27),
+          color: color,
+          boxShadow: shadowIn
+              ? [
+                  BoxShadow(
+                    color: Color(0x7f000000),
+                    spreadRadius: -1,
+                    blurRadius: 1,
+                    offset: Offset(-1, -1),
+                  ),
+                  BoxShadow(
+                    color: Color(0x6fAEAEC0),
+                    spreadRadius: -1,
+                    blurRadius: 1,
+                    offset: Offset(-1, -1),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Color(0x7f000000),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(1, 1),
+                  ),
+                  BoxShadow(
+                    color: Color(0x6fAEAEC0),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(-1, -1), // changes position of shadow
+                  ),
+                ],
         ),
       );
 }

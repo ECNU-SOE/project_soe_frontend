@@ -8,7 +8,10 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/src/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 
@@ -58,24 +61,28 @@ class ViewExamResult extends StatelessWidget {
 
   void _handleTable(List<Widget> rows, String iconText,
       Map<String, List<WrongPhone>> wrongMap) {
-    rows.add(_textWrap('$iconText情况', gSubtitleStyle));
+    rows.add(ComponentSubtitle(label: '$iconText情况', style: gSubtitleStyle0));
     if (wrongMap.isEmpty) {
-      rows.add(_textWrap('你没有读错的$iconText', gSubtitleStyle));
+      rows.add(ComponentTitle(
+        label: '你没有读错的$iconText',
+        style: gInfoTextStyle2,
+      ));
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误$iconText', gInfoTextStyle),
-        _tableTextWrap('次数', gInfoTextStyle),
-        _tableTextWrap('错误字词', gInfoTextStyle),
+        ComponentTitle(label: '错误$iconText', style: gInfoTextStyle2),
+        ComponentTitle(label: '次数', style: gInfoTextStyle2),
+        ComponentTitle(label: '错误字词', style: gInfoTextStyle2),
       ]));
       for (String wrongPhone in wrongMap.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongPhone, gInfoTextStyle),
-          _tableTextWrap(
-              wrongMap[wrongPhone]!.length.toString(), gInfoTextStyle),
-          _tableTextWrap(
-              getStringLabelFromWrongPhoneList(wrongMap[wrongPhone]!),
-              gInfoTextStyle),
+          ComponentTitle(label: wrongPhone, style: gInfoTextStyle2),
+          ComponentTitle(
+              label: wrongMap[wrongPhone]!.length.toString(),
+              style: gInfoTextStyle2),
+          ComponentTitle(
+              label: getStringLabelFromWrongPhoneList(wrongMap[wrongPhone]!),
+              style: gInfoTextStyle2),
         ]));
       }
       final table = Table(
@@ -88,16 +95,20 @@ class ViewExamResult extends StatelessWidget {
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: tableRows,
       );
-      rows.add(table);
+      rows.add(Padding(padding: EdgeInsets.all(20.0), child: table));
     }
   }
 
   void _handleScoreList(List<Widget> rows, List<ItemResult> itemList) {
-    rows.add(_textWrap('分小题得分', gSubtitleStyle));
+    rows.add(ComponentSubtitle(
+      label: '分小题得分',
+      style: gSubtitleStyle0,
+    ));
     for (final item in itemList) {
-      rows.add(_textWrap(
-          '第${item.tNum}大题第${item.cNum}小题, 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
-          gInfoTextStyle));
+      rows.add(ComponentTitle(
+          label:
+              '第${item.tNum}大题第${item.cNum}小题, 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
+          style: gInfoTextStyle2));
     }
   }
 
@@ -137,38 +148,82 @@ class ViewExamResult extends StatelessWidget {
     final averageFluency = sumFluency / data.resultList.length;
     List<Widget> rows = List.empty(growable: true);
     rows.addAll([
-      _textWrap('全面测试结果', gSubtitleStyle),
-      _textWrap(
-          '您的得分:${data.weightedScore.toStringAsFixed(1)}/总分:${data.totalWeight}',
-          gSubtitleStyle),
-      _textWrap('声调得分:${averageTone.toStringAsFixed(1)}', gSubtitleStyle),
-      _textWrap('发音得分:${averagePhone.toStringAsFixed(1)}', gSubtitleStyle),
-      _textWrap('流畅得分:${averageFluency.toStringAsFixed(1)}', gSubtitleStyle),
-      _textWrap('增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
-          gInfoTextStyle),
+      ComponentSubtitle(label: '全面测试结果', style: gTitleStyle),
+      ComponentShadowedContainer(
+        child: ComponentTitle(
+            label:
+                '您的得分:${data.weightedScore.toStringAsFixed(1)}/总分:${data.totalWeight}',
+            style: gInfoTextStyle),
+        color: gColor7BCBE6RGBA48,
+        shadowColor: Color.fromARGB(0, 0, 0, 0),
+        edgesHorizon: 38.5,
+        edgesVertical: 12.0,
+      ),
+      ComponentShadowedContainer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ComponentTitle(
+                label: '声调得分:${averageTone.toStringAsFixed(1)}',
+                style: gInfoTextStyle),
+            ComponentTitle(
+                label: '发音得分:${averagePhone.toStringAsFixed(1)}',
+                style: gInfoTextStyle),
+            ComponentTitle(
+                label: '流畅得分:${averageFluency.toStringAsFixed(1)}',
+                style: gInfoTextStyle),
+          ],
+        ),
+        color: gColorE8F3FBRGBA,
+        shadowColor: Color(0x00000000),
+        edgesHorizon: 38.5,
+        edgesVertical: 12.0,
+      ),
+      Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
+        child: Center(
+          child: Text(
+            '增读:$sumMore, 漏读:$sumLess, 回读:$sumRetro, 替换:$sumRepl',
+            style: gInfoTextStyle1,
+          ),
+        ),
+      ),
     ]);
-    _handleScoreList(rows, data.itemList);
-    _handleTable(rows, '声母', data.wrongShengs);
-    _handleTable(rows, '韵母', data.wrongYuns);
+    List<Widget> _children = List.empty(growable: true);
+    _handleScoreList(_children, data.itemList);
+    _handleTable(_children, '声母', data.wrongShengs);
+    _handleTable(_children, '韵母', data.wrongYuns);
     // 声调需要和声母韵母分开处理
-    rows.add(_textWrap('声调情况', gSubtitleStyle));
+    _children.add(
+      ComponentSubtitle(
+        label: '声调情况',
+        style: gSubtitleStyle0,
+      ),
+    );
     if (data.wrongMonos.isEmpty) {
-      rows.add(_textWrap('你没有读错的声调。', gSubtitleStyle));
+      _children.add(
+        ComponentTitle(
+          label: '你没有读错的声调。',
+          style: gSubtitleStyle0,
+        ),
+      );
     } else {
       List<TableRow> tableRows = List.empty(growable: true);
       tableRows.add(TableRow(children: [
-        _tableTextWrap('错误声调', gInfoTextStyle),
-        _tableTextWrap('次数', gInfoTextStyle),
-        _tableTextWrap('错误字词', gInfoTextStyle),
+        ComponentTitle(label: '错误声调', style: gInfoTextStyle2),
+        ComponentTitle(label: '次数', style: gInfoTextStyle2),
+        ComponentTitle(label: '错误字词', style: gInfoTextStyle2),
       ]));
       for (String wrongMono in data.wrongMonos.keys) {
         tableRows.add(TableRow(children: [
-          _tableTextWrap(wrongMono, gInfoTextStyle),
-          _tableTextWrap(
-              data.wrongMonos[wrongMono]!.length.toString(), gInfoTextStyle),
-          _tableTextWrap(
-              getStringLabelFromWrongMonoList(data.wrongMonos[wrongMono]!),
-              gInfoTextStyle),
+          ComponentTitle(label: wrongMono, style: gInfoTextStyle2),
+          ComponentTitle(
+              label: data.wrongMonos[wrongMono]!.length.toString(),
+              style: gInfoTextStyle2),
+          ComponentTitle(
+              label:
+                  getStringLabelFromWrongMonoList(data.wrongMonos[wrongMono]!),
+              style: gInfoTextStyle2),
         ]));
       }
       final monoTable = Table(
@@ -181,20 +236,47 @@ class ViewExamResult extends StatelessWidget {
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: tableRows,
       );
-      rows.add(monoTable);
+      _children.add(Padding(padding: EdgeInsets.all(20.0), child: monoTable));
     }
-    final listView = ListView(
+    rows.add(
+      Expanded(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 84),
+          child: ComponentShadowedContainer(
+            color: Color(0xffffffff),
+            shadowColor: Color.fromARGB(0, 0, 0, 0),
+            edgesHorizon: 27,
+            edgesVertical: 20,
+            child: ListView(
+              children: _children,
+            ),
+          ),
+        ),
+      ),
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: rows,
     );
-    return listView;
   }
 
   Widget? _showEnterApp(BuildContext context, bool isShow) {
-    return ElevatedButton(
-      child: Text(isShow ? "进入APP" : "返回APP"),
-      onPressed: () {
-        Navigator.pushNamed(context, ViewAppHome.routeName);
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        children: [
+          ComponentRoundButton(
+            func: () => Navigator.pushNamed(context, ViewAppHome.routeName),
+            color: gColorE3EDF7RGBA,
+            child: ComponentTitle(
+                label: isShow ? "进入APP" : "返回APP", style: gTitleStyle),
+            height: 64,
+            width: 200,
+            radius: 6,
+          ),
+        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+      ),
     );
   }
 
@@ -213,14 +295,22 @@ class ViewExamResult extends StatelessWidget {
         } else if (snapshot.hasData) {
           return Scaffold(
             body: _generateScaffoldBodyXf(snapshot.data!),
-            bottomNavigationBar: Container(
-              child: ElevatedButton(
-                child: const Text("结束"),
-                onPressed: () {
-                  Navigator.pushNamed(context, args.endingRoute);
-                },
-              ),
-            ),
+            bottomSheet: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: [
+                    ComponentRoundButton(
+                      func: () =>
+                          Navigator.pushNamed(context, args.endingRoute),
+                      color: gColorE3EDF7RGBA,
+                      child: ComponentTitle(label: '结束', style: gTitleStyle),
+                      height: 64,
+                      width: 200,
+                      radius: 6,
+                    ),
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                )),
           );
         } else {
           return const Center(
