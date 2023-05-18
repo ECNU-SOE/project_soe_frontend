@@ -642,7 +642,20 @@ class DataResultXf {
     phoneScore = resultJson['phone_score'];
     totalScore = resultJson['total_score'];
     toneScore = resultJson['tone_score'];
-    for (var sentanceJson in resultJson['sentence']) {
+
+    // hacks:使用try处理json不能被迭代的情况.
+    try {
+      for (var sentanceJson in resultJson['sentence']) {
+        if (_isJsonList(sentanceJson['word'])) {
+          for (var wordJson in sentanceJson['word']) {
+            _parseWord(wordJson);
+          }
+        } else {
+          _parseWord(sentanceJson['word']);
+        }
+      }
+    } catch (_) {
+      var sentanceJson = resultJson['sentence'];
       if (_isJsonList(sentanceJson['word'])) {
         for (var wordJson in sentanceJson['word']) {
           _parseWord(wordJson);
@@ -651,6 +664,7 @@ class DataResultXf {
         _parseWord(sentanceJson['word']);
       }
     }
+
     jsonParsed = true;
   }
 }

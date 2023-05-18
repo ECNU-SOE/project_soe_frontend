@@ -18,7 +18,9 @@ Future<DataPracticePage> postGetDataPracticePage() async {
       Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/list');
   final response = await client.post(
     uri,
-    body: jsonEncode({}),
+    body: jsonEncode({
+      'isPrivate': 0,
+    }),
     headers: {"Content-Type": "application/json"},
     encoding: Encoding.getByName('utf-8'),
   );
