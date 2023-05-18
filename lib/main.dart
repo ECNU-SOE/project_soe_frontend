@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 
 import 'src/LNavigation/LogicNavigation.dart';
 
@@ -14,7 +14,7 @@ class ProjectSOE extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Project SoE Demo',
-      initialRoute: ViewAppHome.routeName,
+      initialRoute: ViewLogin.routeName,
       theme: ThemeData(fontFamily: 'SourceSans'),
       routes: sNavigationRoutes,
     );

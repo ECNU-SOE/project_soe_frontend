@@ -48,7 +48,11 @@ class MsgMgrQuestion {
   // 客户端解析后的数据上传至服务器
   Future<void> postResultToServer(ParsedResultsXf parsedResultsXf) async {
     final client = http.Client();
-    final bodyMap = {'resJson': parsedResultsXf.toJson()};
+    final bodyMap = {
+      'resJson': parsedResultsXf.toJson(),
+      'cpsgrpId': parsedResultsXf.cpsgrpId,
+      'suggestedScore': parsedResultsXf.weightedScore
+    };
     final token = await AuthritionState.get().getToken();
     final response = client.post(
       Uri.parse(
@@ -60,6 +64,7 @@ class MsgMgrQuestion {
       },
       encoding: Encoding.getByName('utf-8'),
     );
+    // final responseBytes = utf8.decode((await response).bodyBytes);
   }
 
   // 将语音数据发往服务器并评测

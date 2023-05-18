@@ -260,7 +260,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
               child: ComponentRoundButton(
                 func: _forward,
                 child: Icon(
-                  SOEIcons.left_vector,
+                  SOEIcons.left_arrow,
                   size: 18.0,
                   color: gColor749FC4,
                 ),
@@ -279,7 +279,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
               child: ComponentRoundButton(
                 func: _next,
                 child: Icon(
-                  SOEIcons.left_vector,
+                  SOEIcons.right_arrow,
                   color: gColor749FC4,
                   size: 18.0,
                 ),

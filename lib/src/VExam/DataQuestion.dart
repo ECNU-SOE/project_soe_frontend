@@ -123,6 +123,7 @@ int getMonoToneIntFromMsgString(String monoTone) {
 
 // 评测之后返回的数据经解析的结果
 class ParsedResultsXf {
+  String cpsgrpId;
   // TODO 23.4.22 dart有tuple可以使用, 但此处不研究这么开启. 只使用两个list
   List<ItemResult> itemList;
   List<DataResultXf> resultList;
@@ -133,6 +134,7 @@ class ParsedResultsXf {
   Map<String, List<WrongMonoTone>> wrongMonos;
 
   ParsedResultsXf({
+    required this.cpsgrpId,
     required this.itemList,
     required this.resultList,
     required this.weightedScore,
@@ -188,7 +190,7 @@ class ParsedResultsXf {
   }
 
   factory ParsedResultsXf.fromQuestionPageDataList(
-      List<DataQuestionPageMain> dataList) {
+      List<DataQuestionPageMain> dataList, String cpsgrpId) {
     List<DataResultXf> list = List.empty(growable: true);
 
     List<ItemResult> itemList = List.empty(growable: true);
@@ -252,6 +254,7 @@ class ParsedResultsXf {
       weightedScore: (weightedScore / totalWeight),
       totalWeight: totalWeight,
       resultList: list,
+      cpsgrpId: cpsgrpId,
       wrongShengs: wrongShengs,
       wrongYuns: wrongYuns,
       wrongMonos: wrongMonos,

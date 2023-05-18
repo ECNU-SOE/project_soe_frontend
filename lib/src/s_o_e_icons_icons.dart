@@ -23,13 +23,14 @@ class SOEIcons {
 
   static const IconData gamepad = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData right_arrow = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData left_vector = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData mic = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData movie = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pause = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData person = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData practice = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData retry = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData left_arrow = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData right_vector = IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData school = IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData sidebar = IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);

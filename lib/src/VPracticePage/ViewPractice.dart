@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VPracticePage/DataPractice.dart';
 import 'package:project_soe/src/VExam/ViewExam.dart';
+import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 
 // FIXME 22.12.4 Temp
 List<String> tempTitles = [
@@ -116,7 +120,8 @@ class PracticePage extends StatelessWidget {
   //   );
   // }
 
-  List<Widget> _buildPracticeButton(BuildContext context, DataPractice data) {
+  List<Widget> _buildPracticeButton(BuildContext context, DataPractice data,
+      {bool loggedIn = true}) {
     return [
       Container(
         child: ComponentSubtitle(
@@ -131,10 +136,51 @@ class PracticePage extends StatelessWidget {
         ),
       ),
       TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, ViewExam.routeName,
-                arguments: ArgsViewExam(data.id, '作业', ViewAppHome.routeName));
-          },
+          onPressed: loggedIn
+              ? () => Navigator.pushNamed(
+                    context,
+                    ViewExam.routeName,
+                    arguments:
+                        ArgsViewExam(data.id, '作业', ViewAppHome.routeName),
+                  )
+              : () => showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: Container(
+                        height: 64.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            // CircularProgressIndicator(),
+                            Column(
+                              children: [
+                                ComponentTitle(
+                                  label: "登录账号以解锁更多内容.",
+                                  style: gInfoTextStyle,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                                  child: ComponentRoundButton(
+                                    func: () => Navigator.of(context)
+                                        .pushReplacementNamed(
+                                            ViewLogin.routeName),
+                                    color: gColorE1EBF5RGBA,
+                                    child: ComponentTitle(
+                                      label: '点击登录',
+                                      style: gInfoTextStyle,
+                                    ),
+                                    height: 32.0,
+                                    width: 64.0,
+                                    radius: 5.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
           child: Text(
             '进入作业',
             style: gInfoTextStyle,
@@ -160,8 +206,24 @@ class PracticePage extends StatelessWidget {
     // ),
     // const ComponentSubtitle(label: '个性化训练'),
     // ];
-    for (final item in dataPage.dataList) {
-      children.addAll(_buildPracticeButton(context, item));
+    if (!dataPage.dataList.isEmpty) {
+      final loggedIn = AuthritionState.get().hasToken();
+      if (loggedIn) {
+        for (final item in dataPage.dataList) {
+          children.addAll(_buildPracticeButton(context, item));
+        }
+      } else {
+        children.addAll(_buildPracticeButton(context, dataPage.dataList[0]));
+        for (int iter = 1; iter < dataPage.dataList.length; ++iter) {
+          children.addAll(
+            _buildPracticeButton(
+              context,
+              dataPage.dataList[iter],
+              loggedIn: false,
+            ),
+          );
+        }
+      }
     }
     var _listView = ListView(children: children);
     return Scaffold(

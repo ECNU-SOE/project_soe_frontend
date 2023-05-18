@@ -30,7 +30,8 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
 
 Future<ParsedResultsXf> parseAndPostResultsXf(
     List<DataQuestionPageMain> dataList, String id) async {
-  final parsedResultsXf = ParsedResultsXf.fromQuestionPageDataList(dataList);
+  final parsedResultsXf =
+      ParsedResultsXf.fromQuestionPageDataList(dataList, id);
   await MsgMgrQuestion().postResultToServer(parsedResultsXf);
   return parsedResultsXf;
 }
