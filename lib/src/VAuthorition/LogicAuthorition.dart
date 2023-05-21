@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:project_soe/src/GGlobalParams/Keywords.dart';
+
 import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
 
 // String gAuthorithionToken = '';
@@ -29,15 +32,20 @@ class AuthritionState {
     return _authoritionToken!;
   }
 
-  void setlogIn(DataCredentials data, String token) {
-    _authoritionToken = token;
-    if (!data.saveCredentials) {
-      // 23.5.20 TODO : 实现存取
-      return;
-    }
+  Future<void> clearCredentials() async {
+    final storage = new FlutterSecureStorage();
+    storage.delete(key: s_passwordKey);
+    storage.delete(key: s_userNameKey);
   }
 
-  void clearCredentials() {}
+  Future<void> setlogIn(DataCredentials data, String token) async {
+    _authoritionToken = token;
+    if (data.saveCredentials) {
+      final storage = new FlutterSecureStorage();
+      storage.write(key: s_passwordKey, value: data.userName);
+      storage.write(key: s_userNameKey, value: data.password);
+    }
+  }
 
   static AuthritionState get instance => _instance;
 }
