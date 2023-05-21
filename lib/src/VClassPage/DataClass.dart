@@ -20,9 +20,9 @@ Future<DataClassPageInfo> postGetDataClassInfo() async {
   //   classPageInfo.parseJson(json);
   //   return classPageInfo;
   // }
-  final hasLoggedIn = AuthritionState.get().hasToken();
+  final hasLoggedIn = AuthritionState.instance.hasToken();
   if (!hasLoggedIn) return DataClassPageInfo();
-  final token = AuthritionState.get().getToken();
+  final token = AuthritionState.instance.getToken();
   final client = http.Client();
   final uri = Uri.parse(
       'http://47.101.58.72:8888/user-server/api/class/v1/list_usr_class');
@@ -79,7 +79,7 @@ Future<List<DataHomeworkInfo>> postGetHomeworkInfoList(String courseId) async {
 }
 
 Future<void> postAddUserCourseInfo(int courseId) async {
-  final token = AuthritionState.get().getToken();
+  final token = AuthritionState.instance.getToken();
   final client = http.Client();
   final uri = Uri.parse(
       "http://47.101.58.72:8888/user-server/api/course/v1/add_user_cour");

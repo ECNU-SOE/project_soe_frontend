@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VAuthorition/ViewSignup.dart';
+import 'package:project_soe/src/VAuthorition/ViewSignupSuccess.dart';
 import 'package:project_soe/src/VClassPage/ViewClassDetail.dart';
 import 'package:project_soe/src/VExam/ViewExam.dart';
 import 'package:project_soe/src/VExam/ViewExamResults.dart';
@@ -18,4 +20,6 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewLogin.routeName: (context) => ViewLogin(),
   ViewPracticeFollow.routeName: (context) => ViewPracticeFollow(),
   ViewUnimplemented.routeName: (context) => ViewUnimplemented(),
+  ViewSignup.routeName: (context) => ViewSignup(),
+  ViewSignupSuccess.routeName: (context) => ViewSignupSuccess(),
 };

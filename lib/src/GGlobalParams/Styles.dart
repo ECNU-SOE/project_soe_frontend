@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 
 // const TextStyle gTextStyleTitle = TextStyle(
 //   fontFamily:
@@ -24,6 +23,13 @@ const TextStyle gSubtitleStyle = TextStyle(
   color: Color.fromARGB(255, 1, 41, 50),
   fontFamily: 'SourceSerif',
   fontSize: 18.0,
+);
+
+// 思源黑体14号 颜色 46, 71, 110
+const TextStyle gSubtitleStyle1 = TextStyle(
+  color: Color.fromARGB(255, 46, 71, 110),
+  fontFamily: 'SourceSans',
+  fontSize: 14.0,
 );
 
 // 思源黑体14号 颜色 1, 41, 50,

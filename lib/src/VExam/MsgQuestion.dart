@@ -53,14 +53,14 @@ class MsgMgrQuestion {
       'cpsgrpId': parsedResultsXf.cpsgrpId,
       'suggestedScore': parsedResultsXf.weightedScore
     };
-    final token = await AuthritionState.get().getToken();
+    final token = await AuthritionState.instance.getToken();
     final response = client.post(
       Uri.parse(
           'http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/save_transcript'),
       body: jsonEncode(bodyMap),
       headers: {
         "Content-Type": "application/json",
-        'token': AuthritionState.get().getToken(),
+        'token': AuthritionState.instance.getToken(),
       },
       encoding: Encoding.getByName('utf-8'),
     );

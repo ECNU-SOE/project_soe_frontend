@@ -2,68 +2,160 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
+import 'package:project_soe/src/CComponents/ComponentEditBox.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentTitle.dart';
+import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
 import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
+import 'package:project_soe/src/VAuthorition/ViewSignup.dart';
 
-class ViewLogin extends StatelessWidget {
-  const ViewLogin({super.key});
-
-  Duration get loginTime => Duration(milliseconds: 2000);
-  // 这里用的LoginData & SignupData不是soe项目定义的, 而是package:flutter_login里定义的
-  Future<String?> _authUser(LoginData data) async {
-    return MsgAuthorition().postUserAuthorition(data);
-  }
-
-  Future<String?> _signupUser(SignupData data) async {
-    return MsgAuthorition().postSignupUser(data);
-  }
-
-  // TODO 22.11.16 目前不支持找回密码.
-  Future<String?> _recoverPassword(String name) async {
-    return '暂不支持';
-  }
-
-  String? _userValidator(String? name) {
-    if (name!.length != 11) {
-      return '手机号长度不正确';
-    }
-    if (int.tryParse(name) == null) {
-      return '无效的手机号';
-    }
-    return null;
-  }
-
-  String? _passwordValidator(String? password) {
-    if (password!.length > 16) {
-      return '密码过长';
-    }
-    if (password.length < 8) {
-      return '密码过短';
-    }
-    return null;
-  }
-
+// 在自动登录的情况下, 是不会进入登录界面的, 直接发协议登录即可.
+// 故如果进入了登录界面, 那肯定没有自动登录. 所以登录数据不从db取, 而是直接用空的
+class ViewLogin extends StatefulWidget {
   static const String routeName = 'Login';
+  DataCredentials _dataCredentials = DataCredentials('', '');
+  @override
+  State<ViewLogin> createState() => _ViewLoginState();
+}
+
+class _ViewLoginState extends State<ViewLogin> {
+  ComponentEditBox _password =
+      ComponentEditBox(hintInfo: '请输入密码', height: 50, width: 327);
+  ComponentEditBox _userName = ComponentEditBox(
+    hintInfo: '请输入手机号或账号',
+    height: 50,
+    width: 327,
+    hideWord: false,
+  );
+
+  void onSigninClick(BuildContext context) async {
+    setState(() {
+      widget._dataCredentials.userName = _userName.getValue();
+      widget._dataCredentials.password = _password.getValue();
+    });
+    String? msg =
+        await MsgAuthorition().postUserAuthorition(widget._dataCredentials);
+    if (null == msg) {
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Container(
+            height: 48.0,
+            child: Column(
+              children: [
+                Text(
+                  msg,
+                  style: gInfoTextStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: '登录',
-      loginAfterSignUp: false,
-      onLogin: _authUser,
-      onSignup: _signupUser,
-      userType: LoginUserType.phone,
-      userValidator: _userValidator,
-      passwordValidator: _passwordValidator,
-      onSubmitAnimationCompleted: () {
-        Navigator.pushReplacementNamed(context, ViewAppHome.routeName);
-      },
-      onRecoverPassword: _recoverPassword,
-      theme: sLoginTheme,
-      messages: sLoginMessages,
+    return Scaffold(
+      appBar: AppBar(
+        title: ComponentTitle(label: '登录', style: gTitleStyle),
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xffE4F0FA),
+        // foregroundColor: Color(0xE4F0FAFF),
+        shadowColor: Color(0x00ffffff),
+      ),
+      backgroundColor: Color(0xffE4F0FA),
+      body: Column(children: [
+        Padding(
+          padding: EdgeInsets.only(top: 30),
+          child: Center(
+            child: _userName,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: Center(
+            child: _password,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 40),
+              child: Checkbox(
+                value: widget._dataCredentials.saveCredentials,
+                onChanged: (_) => setState(() =>
+                    widget._dataCredentials.saveCredentials =
+                        !widget._dataCredentials.saveCredentials),
+              ),
+            ),
+            Text(
+              '保持登录状态',
+              style: gInfoTextStyle1,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 80, right: 33),
+              child: Text(
+                '忘记密码？',
+                style: gInfoTextStyle1,
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 20, bottom: 23),
+          child: ComponentRoundButton(
+            func: () {
+              onSigninClick(context);
+            },
+            color: Color(0xff7BCBE6),
+            child: Text(
+              '登录',
+              style: gSubtitleStyle1,
+            ),
+            height: 45,
+            width: 289,
+            radius: 14,
+          ),
+        ),
+        ComponentRoundButton(
+          func: () {
+            Navigator.of(context).pushNamed(ViewSignup.routeName);
+          },
+          color: Color(0xffE4F0FA),
+          child: Text(
+            '注册',
+            style: gSubtitleStyle1,
+          ),
+          height: 45,
+          width: 289,
+          radius: 14,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 40),
+                child: Checkbox(value: false, onChanged: (_) {}),
+              ),
+              Text(
+                '暂无用户协议, 此空预留',
+                style: gInfoTextStyle,
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.start,
+          ),
+        )
+      ]),
     );
   }
 }

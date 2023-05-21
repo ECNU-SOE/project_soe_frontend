@@ -39,7 +39,6 @@ dependencies:
   audioplayers : ^1.1.1
   cupertino_icons: ^1.0.2
   ffmpeg_kit_flutter_audio: ^5.1.0
-  flutter_login: ^4.1.0
   get_it : ^7.2.0
   http : ^0.13.5
   path_to_regexp: ^0.4.0
@@ -79,7 +78,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  assets:
+    - assets/
   fonts:
     - family: SourceSans
       fonts:

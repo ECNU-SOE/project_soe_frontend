@@ -61,7 +61,7 @@ class PersonalPage extends StatelessWidget {
     );
   }
 
-  bool _hasToken() => AuthritionState.get().hasToken();
+  bool _hasToken() => AuthritionState.instance.hasToken();
 
   Widget _buildDetailLine(List<String> details, List<String> labels) {
     List<Widget> chi = [];
@@ -166,7 +166,7 @@ class PersonalPage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (!AuthritionState.get().hasToken()) {
+                    if (!AuthritionState.instance.hasToken()) {
                       Navigator.pushNamed(context, ViewLogin.routeName);
                     }
                   },
@@ -206,7 +206,7 @@ class PersonalPage extends StatelessWidget {
   Widget _buildLoggedinPage(BuildContext context) {
     return FutureBuilder<DataUserInfo?>(
       future:
-          MsgAuthorition().getDataUserInfo(AuthritionState.get().getToken()),
+          MsgAuthorition().getDataUserInfo(AuthritionState.instance.getToken()),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
