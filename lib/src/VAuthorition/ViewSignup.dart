@@ -38,6 +38,26 @@ class _ViewSignupState extends State<ViewSignup> {
       widget._dataSignup.userName = _userName.getValue();
       widget._dataSignup.password = _password.getValue();
     });
+    final psLen = _password.getValue().length;
+    if (psLen <= 7 || psLen >= 16) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Container(
+            height: 48.0,
+            child: Column(
+              children: [
+                Text(
+                  '密码需在8-15位之间',
+                  style: gInfoTextStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     String? msg = await MsgAuthorition().postSignupUser(widget._dataSignup);
     if (null == msg) {
       Navigator.of(context).pushReplacementNamed(ViewSignupSuccess.routeName);

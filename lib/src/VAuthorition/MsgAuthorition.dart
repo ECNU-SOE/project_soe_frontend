@@ -86,8 +86,9 @@ class MsgAuthorition {
     final u8decoded = utf8.decode(response.bodyBytes);
     final decoded = jsonDecode(u8decoded);
     final accountId = decoded['data']['accountNo'];
-    var userInfo = DataUserInfo(token, accountId);
+    var userInfo = DataUserInfo(accountId);
     userInfo.parseJson(decoded['data']);
+    AuthritionState.instance.setUserInfo(userInfo);
     return userInfo;
   }
 }

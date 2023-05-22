@@ -8,6 +8,7 @@ import 'package:project_soe/src/VExam/ViewExam.dart';
 import 'package:project_soe/src/VExam/ViewExamResults.dart';
 import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
+import 'package:project_soe/src/VPersonalPage/ViewEditPersonal.dart';
 import 'package:project_soe/src/VPracticePage/ViewPracticeFollow.dart';
 import 'package:project_soe/src/VUnImplemented/ViewUnimplemented.dart';
 
@@ -22,4 +23,5 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewUnimplemented.routeName: (context) => ViewUnimplemented(),
   ViewSignup.routeName: (context) => ViewSignup(),
   ViewSignupSuccess.routeName: (context) => ViewSignupSuccess(),
+  ViewEditPersonal.routeName: (context) => ViewEditPersonal(),
 };

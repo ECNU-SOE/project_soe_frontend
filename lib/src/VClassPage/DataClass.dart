@@ -50,16 +50,6 @@ Future<DataClassPageInfo> postGetDataClassInfo() async {
 
 // 获取某一课堂的数据 (作业列表)
 Future<List<DataHomeworkInfo>> postGetHomeworkInfoList(String courseId) async {
-  // if (kDebugMode) {
-  //   final decodedList = jsonDecode(
-  //           '    {  "code": 0,  "data": {    "total": 4,    "size": 50,    "current": 1,    "records": [      {        "id": "cpsgrp_1588063086856769536",        "courseId": "2",        "title": "阿里嘎多",        "description": "阿里嘎多美羊羊桑",        "type": 2,        "difficulty": -1,        "isPublic": 0,        "startTime": "2022-11-05T00:00:00.000+00:00",        "endTime": "2022-11-06T00:00:00.000+00:00",        "creator": "user_1587395702114357248"      },      {        "id": "cpsgrp_1588871928125460480",        "courseId": "1",        "title": "入门测试",        "description": "注册测试用试卷",        "type": -1,        "difficulty": -1,        "isPublic": -1,        "startTime": "2023-03-31T16:00:01.000+00:00",        "endTime": "2023-04-09T16:00:01.000+00:00",        "creator": "user_1587422999043248128"      },      {        "id": "cpsgrp_1591049214371172352",        "courseId": "1",        "title": "",        "description": "这是创建测试",        "type": 1,        "difficulty": -1,        "isPublic": 0,        "startTime": "2022-11-06T00:00:00.000+00:00",        "endTime": "2022-11-06T00:00:00.000+00:00",        "creator": "user_1587395702114357248"      },      {        "id": "cpsgrp_1637713951192125440",        "courseId": "2",        "title": "第二套试卷",        "description": "国汉学院第二套试卷，（生，生态）",        "type": 1,        "difficulty": -1,        "isPublic": 0,        "startTime": "2022-11-04T16:00:00.000+00:00",        "endTime": "2022-11-05T04:00:00.000+00:00",        "creator": "user_1587422999043248128"      }    ]  },  "msg": null}')[
-  //       'data']['records'];
-  //   List<DataHomeworkInfo> list = List.empty(growable: true);
-  //   for (final item in decodedList) {
-  //     list.add(DataHomeworkInfo.formJson(item));
-  //   }
-  //   return list;
-  // }
   final uri =
       Uri.parse("http://47.101.58.72:8888/user-server/api/course/v1/list_test");
   final client = http.Client();

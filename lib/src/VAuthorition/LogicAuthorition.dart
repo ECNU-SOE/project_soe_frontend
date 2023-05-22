@@ -47,5 +47,18 @@ class AuthritionState {
     }
   }
 
+  Future<void> setLogout() async {
+    _authoritionToken = null;
+    final storage = new FlutterSecureStorage();
+    storage.delete(key: s_passwordKey);
+    storage.delete(key: s_userNameKey);
+  }
+
+  void setUserInfo(DataUserInfo info) {
+    _personalData = info;
+  }
+
+  DataUserInfo? getUserInfo() => _personalData;
+
   static AuthritionState get instance => _instance;
 }

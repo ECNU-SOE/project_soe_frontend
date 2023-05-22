@@ -13,7 +13,7 @@ class ViewSignupSuccess extends StatelessWidget {
       backgroundColor: Color(0xffE4F0FA),
       body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Image(
-          image: AssetImage('assets/signup_success.bmp'),
+          image: AssetImage('assets/signup_success.png'),
         ),
       ]),
       // ),

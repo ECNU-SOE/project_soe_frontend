@@ -147,19 +147,19 @@ class ParsedResultsXf {
   String toJson() {
     String ret = '';
     ret += '{';
-    ret += 'wrongSheng:{';
+    ret += '"wrongSheng":{';
     for (final wrongSheng in wrongShengs.keys) {
       ret += wrongSheng + ':[';
       final lst = wrongShengs[wrongSheng];
       if (lst != null) {
         for (final ws in lst) {
-          ret += '{${ws.toJson()}},';
+          ret += '${ws.toJson()},';
         }
       }
       ret += '],';
     }
     ret += '},';
-    ret += 'wrongYun:{';
+    ret += '"wrongYun":{';
 
     for (final wys in wrongYuns.keys) {
       ret += wys + ':[';
@@ -172,14 +172,14 @@ class ParsedResultsXf {
       ret += '],';
     }
     ret += '},';
-    ret += 'wrongMono:{';
+    ret += '"wrongMono":{';
 
     for (final wms in wrongMonos.keys) {
       ret += wms + ':[';
       final lst = wrongShengs[wms];
       if (lst != null) {
         for (final wm in lst) {
-          ret += '{${wm.toJson()}},';
+          ret += '${wm.toJson()},';
         }
       }
       ret += '],';

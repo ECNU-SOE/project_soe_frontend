@@ -41,6 +41,7 @@ class _ViewLoginState extends State<ViewLogin> {
     String? msg =
         await MsgAuthorition().postUserAuthorition(widget._dataCredentials);
     if (null == msg) {
+      Navigator.pushReplacementNamed(context, ViewAppHome.routeName);
     } else {
       showDialog(
         context: context,

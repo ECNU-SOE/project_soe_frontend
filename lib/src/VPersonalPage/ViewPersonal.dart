@@ -2,6 +2,9 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/src/GGlobalParams/Keywords.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
 import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
@@ -9,57 +12,11 @@ import 'package:project_soe/src/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
 import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
-
-// FIXME 22.12.7 temp
-class PersonalRecData {
-  String label;
-  IconData icon;
-  Function()? onPressed;
-  PersonalRecData(this.label, this.icon, this.onPressed);
-}
-
-// FIXME 22.12.7 temp
-List<PersonalRecData> personalRecDatasFirst = [
-  PersonalRecData('快速入口1', Icons.book, null),
-  PersonalRecData('快速入口2', Icons.book, null),
-  PersonalRecData('快速入口3', Icons.book, null),
-];
-List<PersonalRecData> personalRecDatasSecond = [
-  PersonalRecData('快速入口4', Icons.book, null),
-  PersonalRecData('快速入口5', Icons.book, null),
-  PersonalRecData('快速入口6', Icons.book, null),
-];
+import 'package:project_soe/src/VPersonalPage/ViewEditPersonal.dart';
 
 class PersonalPage extends StatelessWidget {
   const PersonalPage({super.key});
   static const String routeName = 'personal';
-
-  Widget _buildRecWidget(List<PersonalRecData> datalist) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: datalist
-          .map(
-            (data) => Column(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: IconButton(
-                      icon: Icon(
-                        data.icon,
-                        color: Colors.black87,
-                      ),
-                      onPressed: data.onPressed,
-                    )),
-                Text(
-                  data.label,
-                  style: gInfoTextStyle,
-                ),
-              ],
-            ),
-          )
-          .toList(),
-    );
-  }
 
   bool _hasToken() => AuthritionState.instance.hasToken();
 
@@ -203,6 +160,15 @@ class PersonalPage extends StatelessWidget {
     );
   }
 
+  void _onEditPersonal(BuildContext context) {
+    Navigator.of(context).pushNamed(ViewEditPersonal.routeName);
+  }
+
+  void _onSignout(BuildContext context) {
+    AuthritionState.instance.setLogout();
+    Navigator.of(context).pushReplacementNamed(ViewLogin.routeName);
+  }
+
   Widget _buildLoggedinPage(BuildContext context) {
     return FutureBuilder<DataUserInfo?>(
       future:
@@ -214,16 +180,42 @@ class PersonalPage extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           return Scaffold(
-            body: ListView(
-              scrollDirection: Axis.vertical,
+            backgroundColor: Color(0xffE4F0FA),
+            body: Column(
               children: <Widget>[
                 _buildDetailsPanel(snapshot.data!),
-                const ComponentSubtitle(
-                  label: '推荐内容',
-                  style: gSubtitleStyle0,
+                Padding(
+                  padding: EdgeInsets.only(top: 20, bottom: 23),
+                  child: ComponentRoundButton(
+                    func: () {
+                      _onEditPersonal(context);
+                    },
+                    color: Color(0xffE4F0FA),
+                    child: Text(
+                      '修改个人信息',
+                      style: gSubtitleStyle1,
+                    ),
+                    height: 45,
+                    width: 289,
+                    radius: 14,
+                  ),
                 ),
-                _buildRecWidget(personalRecDatasFirst),
-                _buildRecWidget(personalRecDatasSecond),
+                Padding(
+                  padding: EdgeInsets.only(top: 0, bottom: 23),
+                  child: ComponentRoundButton(
+                    func: () {
+                      _onSignout(context);
+                    },
+                    color: Color(0xff7BCBE6),
+                    child: Text(
+                      '登出',
+                      style: gSubtitleStyle1,
+                    ),
+                    height: 45,
+                    width: 289,
+                    radius: 14,
+                  ),
+                ),
               ],
             ),
           );
