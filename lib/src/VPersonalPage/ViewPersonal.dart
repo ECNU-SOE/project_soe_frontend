@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/src/GGlobalParams/Keywords.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
@@ -14,8 +15,8 @@ import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/VPersonalPage/ViewEditPersonal.dart';
 
-class PersonalPage extends StatelessWidget {
-  const PersonalPage({super.key});
+class ViewPersonal extends StatelessWidget {
+  const ViewPersonal({super.key});
   static const String routeName = 'personal';
 
   bool _hasToken() => AuthritionState.instance.hasToken();
@@ -218,6 +219,8 @@ class PersonalPage extends StatelessWidget {
                 ),
               ],
             ),
+            bottomNavigationBar:
+                ComponentBottomNavigator(curRouteName: ViewPersonal.routeName),
           );
         } else {
           return const Center(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/CComponents/ComponentEditBox.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
@@ -107,6 +108,8 @@ class _ViewEditPersonalState extends State<ViewEditPersonal> {
       ),
       backgroundColor: Color(0xffE4F0FA),
       body: _buildEditPersonalDataImpl(context),
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewEditPersonal.routeName),
     );
   }
 }

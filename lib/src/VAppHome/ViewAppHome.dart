@@ -1,81 +1,162 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
+import 'package:project_soe/src/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
 import 'package:project_soe/src/VPersonalPage/ViewPersonal.dart';
 import 'package:project_soe/src/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/src/VClassPage/ViewClass.dart';
+import 'package:project_soe/src/VUnImplemented/ViewUnimplemented.dart';
 import 'package:project_soe/src/s_o_e_icons_icons.dart';
 
-import 'PageAppHome.dart';
+import 'package:project_soe/src/VAppHome/ViewGuide.dart';
+
+class HomeRecData {
+  String label;
+  IconData icon;
+  String routeName;
+  HomeRecData(this.label, this.icon, this.routeName);
+}
+
+List<HomeRecData> ListHomeRecData = [
+  HomeRecData('课前评测', SOEIcons.practice, ViewUnimplemented.routeName),
+  HomeRecData('如何上课', SOEIcons.practice, ViewGuide.routeName),
+  HomeRecData('邀请好友', SOEIcons.person, ViewUnimplemented.routeName),
+  HomeRecData('加入社群', SOEIcons.add_group, ViewUnimplemented.routeName),
+];
 
 class ViewAppHome extends StatelessWidget {
   static const String routeName = 'apphome';
   ViewAppHome({super.key});
-  @override
-  Widget build(BuildContext context) => _ViewAppHomeImpl();
-}
-
-class _ViewAppHomeImpl extends StatefulWidget {
-  const _ViewAppHomeImpl({super.key});
-  @override
-  State<_ViewAppHomeImpl> createState() => _ViewAppHomeImplState();
-}
-
-class _ViewAppHomeImplState extends State<_ViewAppHomeImpl> {
-  int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    PracticePage(),
-    ClassPage(),
-    PersonalPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  Widget _buildSelectedIcon(IconData iconData, int index) {
+  Widget _buildRectWidget(int retId, BuildContext context, Function() func) {
     return ComponentRoundButton(
-      func: () => _onItemTapped(index),
-      color: gColorE3EDF7RGBA,
-      child: Icon(
-        iconData,
-        color:
-            (index == _selectedIndex) ? Color(0x749FC4ff) : Color(0x749FC4ff),
-      ),
-      shadowIn: (index == _selectedIndex),
-      height: 36,
-      width: 64,
-      radius: 5,
-    );
+        func: func,
+        color: gColorE3EDF7RGBA,
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  ListHomeRecData[retId].icon,
+                  color: Color.fromARGB(255, 155, 185, 211),
+                ),
+                ComponentTitle(
+                    label: ListHomeRecData[retId].label, style: gInfoTextStyle)
+              ],
+            ),
+          ),
+        ),
+        height: 137,
+        width: 137,
+        radius: 32);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomSheet: Container(
-        color: gColorE3EDF7RGBA,
-        child: Padding(
-          padding: EdgeInsets.only(top: 7, bottom: 14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+      body: ListView(
+        scrollDirection: Axis.vertical,
+        children: <Widget>[
+          // const ComponentSubtitle(label: '初次使用，体验全面评测。'),
+          // _buildFullExamEntranceWidget(context),
+          // _buildSubtitle('推荐内容'),
+          ComponentShadowedContainer(
+              color: gColorE3EDF7RGBA,
+              shadowColor: Color(0x9797977f),
+              edgesHorizon: 32,
+              edgesVertical: 32,
+              child: ComponentTitle(
+                label: '今天是你学习的第0天',
+                style: gInfoTextStyle0,
+              )),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildSelectedIcon(SOEIcons.home, 0),
-              _buildSelectedIcon(SOEIcons.edit, 1),
-              _buildSelectedIcon(SOEIcons.add_group, 2),
-              _buildSelectedIcon(SOEIcons.person, 3),
+              ComponentShadowedContainer(
+                child: Padding(
+                  padding: EdgeInsets.all(25.0),
+                  child: ComponentTitle(
+                      label: 'MON\n  27', style: gSubtitleStyle0),
+                ),
+                color: gColorE8F3FBRGBA,
+                shadowColor: Color(0x9797977f),
+                edgesHorizon: 0,
+                edgesVertical: 20,
+              ),
+              ComponentShadowedContainer(
+                child: Padding(
+                  padding: EdgeInsets.all(25.0),
+                  child: ComponentTitle(
+                      label: 'MON\n  27', style: gSubtitleStyle0),
+                ),
+                color: gColorE8F3FBRGBA,
+                shadowColor: Color(0x9797977f),
+                edgesHorizon: 0,
+                edgesVertical: 20,
+              ),
+              ComponentShadowedContainer(
+                child: Padding(
+                  padding: EdgeInsets.all(25.0),
+                  child: ComponentTitle(
+                      label: 'MON\n  27', style: gSubtitleStyle0),
+                ),
+                color: gColorE8F3FBRGBA,
+                shadowColor: Color(0x9797977f),
+                edgesHorizon: 0,
+                edgesVertical: 20,
+              ),
+              ComponentShadowedContainer(
+                child: Padding(
+                  padding: EdgeInsets.all(25.0),
+                  child: ComponentTitle(
+                      label: 'MON\n  27', style: gSubtitleStyle0),
+                ),
+                color: gColorE8F3FBRGBA,
+                shadowColor: Color(0x9797977f),
+                edgesHorizon: 0,
+                edgesVertical: 20,
+              ),
             ],
           ),
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRectWidget(
+                  0,
+                  context,
+                  () => Navigator.of(context)
+                      .pushNamed(ViewUnimplemented.routeName)),
+              _buildRectWidget(1, context,
+                  () => Navigator.of(context).pushNamed(ViewGuide.routeName)),
+            ],
+          ),
+          Padding(padding: EdgeInsets.only(top: 30)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRectWidget(
+                  2,
+                  context,
+                  () => Navigator.of(context)
+                      .pushNamed(ViewUnimplemented.routeName)),
+              _buildRectWidget(
+                  3,
+                  context,
+                  () => Navigator.of(context)
+                      .pushNamed(ViewUnimplemented.routeName)),
+            ],
+          ),
+        ],
       ),
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewAppHome.routeName),
       backgroundColor: gColorE3EDF7RGBA,
     );
   }

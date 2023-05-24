@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
-
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
@@ -43,8 +43,8 @@ List<String> tempTitle3 = [
   '专项练习3',
 ];
 
-class PracticePage extends StatelessWidget {
-  const PracticePage({super.key});
+class ViewPractice extends StatelessWidget {
+  const ViewPractice({super.key});
   static const String routeName = 'practice';
 
   List<Widget> _buildPracticeButton(BuildContext context, DataPractice data,
@@ -115,7 +115,7 @@ class PracticePage extends StatelessWidget {
     ];
   }
 
-  Widget _buildViewPracticePageImpl(
+  Widget _buildViewPracticeImpl(
       BuildContext context, DataPracticePage dataPage) {
     List<Widget> children = List.empty(growable: true);
 
@@ -143,6 +143,8 @@ class PracticePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: gColorE3EDF7RGBA,
       body: _listView,
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewPractice.routeName),
     );
   }
 
@@ -152,7 +154,7 @@ class PracticePage extends StatelessWidget {
         future: postGetDataPracticePage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return _buildViewPracticePageImpl(context, snapshot.data!);
+            return _buildViewPracticeImpl(context, snapshot.data!);
           } else {
             return const Center(
               child: CircularProgressIndicator(),

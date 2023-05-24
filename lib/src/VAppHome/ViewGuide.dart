@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/src/CComponents/ComponentTitle.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
@@ -32,6 +33,8 @@ class ViewGuide extends StatelessWidget {
         edgesHorizon: 33,
         edgesVertical: 25,
       ),
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewGuide.routeName),
     );
   }
 }

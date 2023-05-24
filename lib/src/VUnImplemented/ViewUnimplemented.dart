@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 
@@ -14,6 +15,8 @@ class ViewUnimplemented extends StatelessWidget {
           style: gTitleStyle,
         ),
       ),
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewUnimplemented.routeName),
     );
   }
 }

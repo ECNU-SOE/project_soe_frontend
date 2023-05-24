@@ -39,8 +39,8 @@ class ClassRecData {
   ClassRecData(this.label, this.icon, this.onPressed);
 }
 
-class ClassPage extends StatelessWidget {
-  const ClassPage({super.key});
+class ViewClass extends StatelessWidget {
+  const ViewClass({super.key});
   static const String routeName = 'class';
 
   Widget _buildClassRecWidget(List<ClassRecData> datalist) {
@@ -98,7 +98,7 @@ class ClassPage extends StatelessWidget {
     return buttons;
   }
 
-  Widget _buildViewClassPageBody(
+  Widget _buildViewClassBody(
       BuildContext context, DataClassPageInfo classPageInfo) {
     List<Widget> children = List.empty(growable: true);
     children.addAll([
@@ -127,7 +127,7 @@ class ClassPage extends StatelessWidget {
       future: postGetDataClassInfo(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _buildViewClassPageBody(context, snapshot.data!);
+          return _buildViewClassBody(context, snapshot.data!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
 import 'package:project_soe/src/CComponents/ComponentSubtitle.dart';
+import 'package:project_soe/src/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/src/VClassPage/DataClass.dart';
 import 'package:project_soe/src/VExam/DataQuestion.dart';
 import 'package:project_soe/src/VExam/ViewExam.dart';
@@ -67,6 +68,8 @@ class ViewClassDetail extends StatelessWidget {
             )
           ],
         ),
+        bottomNavigationBar:
+            ComponentBottomNavigator(curRouteName: ViewClassDetail.routeName),
       );
     }
     for (DataHomeworkInfo homeworkInfo in homeworkList) {
@@ -75,6 +78,8 @@ class ViewClassDetail extends StatelessWidget {
     return Scaffold(
       body: ListView(children: children),
       backgroundColor: gColorE3EDF7RGBA,
+      bottomNavigationBar:
+          ComponentBottomNavigator(curRouteName: ViewClassDetail.routeName),
     );
   }
 
