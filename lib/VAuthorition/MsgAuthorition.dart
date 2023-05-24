@@ -74,21 +74,4 @@ class MsgAuthorition {
       return _convertErrCodetoString(decoded['code']);
     }
   }
-
-  Future<DataUserInfo?> getDataUserInfo(String token) async {
-    final client = http.Client();
-    final response = await client.get(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/info'),
-      headers: {
-        'token': token,
-      },
-    );
-    final u8decoded = utf8.decode(response.bodyBytes);
-    final decoded = jsonDecode(u8decoded);
-    final accountId = decoded['data']['accountNo'];
-    var userInfo = DataUserInfo(accountId);
-    userInfo.parseJson(decoded['data']);
-    AuthritionState.instance.setUserInfo(userInfo);
-    return userInfo;
-  }
 }

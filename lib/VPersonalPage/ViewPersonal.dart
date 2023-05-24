@@ -171,8 +171,7 @@ class ViewPersonal extends StatelessWidget {
 
   Widget _buildLoggedinPage(BuildContext context) {
     return FutureBuilder<DataUserInfo?>(
-      future:
-          MsgAuthorition().getDataUserInfo(AuthritionState.instance.getToken()),
+      future: AuthritionState.instance.getUserInfo(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_soe/src/GGlobalParams/styles.dart';
+import 'package:project_soe/GGlobalParams/styles.dart';
 
 class ComponentEditBox extends StatefulWidget {
   bool hideWord;

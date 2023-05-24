@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentAppBar.dart';
 import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
@@ -58,21 +59,22 @@ class ViewAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        scrollDirection: Axis.vertical,
+      appBar: ComponentAppBar(),
+      body: Column(
         children: <Widget>[
           // const ComponentSubtitle(label: '初次使用，体验全面评测。'),
           // _buildFullExamEntranceWidget(context),
           // _buildSubtitle('推荐内容'),
           ComponentShadowedContainer(
               color: gColorE3EDF7RGBA,
-              shadowColor: Color(0x9797977f),
+              shadowColor: Color.fromARGB(150, 153, 153, 147),
               edgesHorizon: 32,
-              edgesVertical: 32,
+              edgesVertical: 0,
               child: ComponentTitle(
                 label: '今天是你学习的第0天',
                 style: gInfoTextStyle0,
               )),
+          Padding(padding: EdgeInsets.only(bottom: 32)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

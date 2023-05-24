@@ -31,6 +31,9 @@ class _ComponentBottomNavigatorState extends State<ComponentBottomNavigator> {
   }
 
   void _onItemTapped(BuildContext context, String dest) {
+    if (dest == widget.curRouteName) {
+      return;
+    }
     final curRouteKey = _findKey(widget.curRouteName);
     setState(() {
       widget.curRouteName = dest;

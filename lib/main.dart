@@ -19,8 +19,8 @@ class ProjectSOE extends StatelessWidget {
 
   Future<bool> _storageCredentials() async {
     final storage = new FlutterSecureStorage();
-    final String? savedUserName = await storage.read(key: s_passwordKey);
-    final String? savedPassword = await storage.read(key: s_userNameKey);
+    final String? savedUserName = await storage.read(key: sPasswordKey);
+    final String? savedPassword = await storage.read(key: sUserNameKey);
     if (null == savedPassword || null == savedUserName) {
       return false;
     }

@@ -8,17 +8,11 @@ import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/VAuthorition/DataAuthorition.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
 
-class ViewEditPersonal extends StatefulWidget {
-  static const String routeName = 'personalEdit';
-  DataUserInfo? userInfo;
-  @override
-  State<StatefulWidget> createState() {
-    userInfo = AuthritionState.instance.getUserInfo()!;
-    return _ViewEditPersonalState();
-  }
-}
+// FIXME 23.5.24 已修改的个人信息如何返回系统中
 
-class _ViewEditPersonalState extends State<ViewEditPersonal> {
+class ViewEditPersonal extends StatelessWidget {
+  static const String routeName = 'personalEdit';
+
   List<Widget> _buildRow(DataUserInfo info, String title, String field) {
     return [
       ComponentSubtitle(label: title, style: gSubtitleStyle0),
@@ -37,7 +31,7 @@ class _ViewEditPersonalState extends State<ViewEditPersonal> {
               style: gInfoTextStyle,
             ),
             onPressed: () {
-              // TODO 23.5.22 修改个人信息
+              AuthritionState.instance.setUserInfoDirty();
               Navigator.of(context).pop();
             },
           ),
@@ -63,17 +57,16 @@ class _ViewEditPersonalState extends State<ViewEditPersonal> {
     return;
   }
 
-  Widget _buildEditPersonalDataImpl(BuildContext context) {
-    final info = widget.userInfo!;
+  Widget _buildEditPersonalDataImpl(BuildContext context, DataUserInfo info) {
     List<Widget> children = List.empty(growable: true);
     // children.addAll(_buildRow(info, '用户id', info.identifyId!));
-    children.addAll(_buildRow(info, '昵称', info.nickName!));
-    children.addAll(_buildRow(info, '真实姓名', info.realName!));
-    children.addAll(_buildRow(info, '性别', DataUserInfo.sexToString(info.sex!)));
+    children.addAll(_buildRow(info, '昵称', info.nickName));
+    children.addAll(_buildRow(info, '真实姓名', info.realName));
+    children.addAll(_buildRow(info, '性别', DataUserInfo.sexToString(info.sex)));
     children
-        .addAll(_buildRow(info, '生日', DataUserInfo.birthToString(info.birth!)));
-    children.addAll(_buildRow(info, '个性签名', info.sign!));
-    children.addAll(_buildRow(info, '电话号码', info.phone!));
+        .addAll(_buildRow(info, '生日', DataUserInfo.birthToString(info.birth)));
+    children.addAll(_buildRow(info, '个性签名', info.sign));
+    children.addAll(_buildRow(info, '电话号码', info.phone));
     children.add(
       Padding(
         padding: EdgeInsets.only(top: 23, bottom: 23),
@@ -97,19 +90,30 @@ class _ViewEditPersonalState extends State<ViewEditPersonal> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: ComponentTitle(label: '编辑个人信息  ', style: gTitleStyle),
-        automaticallyImplyLeading: true,
-        foregroundColor: Color(0xff6E81A0),
-        backgroundColor: Color(0xffE4F0FA),
-        // foregroundColor: Color(0xE4F0FAFF),
-        shadowColor: Color(0x00ffffff),
-      ),
-      backgroundColor: Color(0xffE4F0FA),
-      body: _buildEditPersonalDataImpl(context),
-      bottomNavigationBar:
-          ComponentBottomNavigator(curRouteName: ViewEditPersonal.routeName),
+    return FutureBuilder<DataUserInfo>(
+      future: AuthritionState.instance.getUserInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: ComponentTitle(label: '编辑个人信息  ', style: gTitleStyle),
+              automaticallyImplyLeading: true,
+              foregroundColor: Color(0xff6E81A0),
+              backgroundColor: Color(0xffE4F0FA),
+              // foregroundColor: Color(0xE4F0FAFF),
+              shadowColor: Color(0x00ffffff),
+            ),
+            backgroundColor: Color(0xffE4F0FA),
+            body: _buildEditPersonalDataImpl(context, snapshot.data!),
+            bottomNavigationBar: ComponentBottomNavigator(
+                curRouteName: ViewEditPersonal.routeName),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

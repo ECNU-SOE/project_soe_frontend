@@ -1,4 +1,4 @@
 import 'package:flutter/material.dart';
 
-final String s_passwordKey = 'sc_password';
-final String s_userNameKey = 'sc_userName';
+final String sPasswordKey = 'sc_password';
+final String sUserNameKey = 'sc_userName';

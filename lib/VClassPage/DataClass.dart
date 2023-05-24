@@ -73,8 +73,8 @@ Future<void> postAddUserCourseInfo(int courseId) async {
   final client = http.Client();
   final uri = Uri.parse(
       "http://47.101.58.72:8888/user-server/api/course/v1/add_user_cour");
-  final userInfo = await MsgAuthorition().getDataUserInfo(token);
-  final bodyMap = {'accountNo': userInfo!.accountId, 'courseId': courseId};
+  final userInfo = await AuthritionState.instance.getUserInfo();
+  final bodyMap = {'accountNo': userInfo.accountId, 'courseId': courseId};
   final response = await client.post(
     uri,
     body: jsonEncode(bodyMap),
