@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/src/VAppHome/ViewGuide.dart';
 import 'package:project_soe/src/VAuthorition/ViewSignup.dart';
 import 'package:project_soe/src/VAuthorition/ViewSignupSuccess.dart';
 import 'package:project_soe/src/VClassPage/ViewClassDetail.dart';
@@ -24,4 +25,5 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewSignup.routeName: (context) => ViewSignup(),
   ViewSignupSuccess.routeName: (context) => ViewSignupSuccess(),
   ViewEditPersonal.routeName: (context) => ViewEditPersonal(),
+  ViewGuide.routeName: (context) => ViewGuide(),
 };

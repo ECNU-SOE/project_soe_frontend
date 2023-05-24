@@ -64,7 +64,7 @@ const TextStyle gInfoTextStyle2 = TextStyle(
 const Color gColorFFFFFFRGBA = Color.fromARGB(255, 255, 255, 255);
 // RGBA 232 243 251 100
 const Color gColorE8F3FBRGBA = Color.fromARGB(255, 232, 243, 251);
-// RGBA 227 237 247 100
+// RGBA 227 237 247 100 (背景颜色 主题色)
 const Color gColorE3EDF7RGBA = Color.fromARGB(255, 227, 237, 247);
 // RGBA 225 235 245 100
 const Color gColorE1EBF5RGBA = Color.fromARGB(255, 225, 235, 245);

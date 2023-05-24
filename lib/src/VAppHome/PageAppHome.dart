@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:project_soe/src/CComponents/ComponentRoundButton.dart';
 
 import 'package:project_soe/src/GGlobalParams/Styles.dart';
+import 'package:project_soe/src/VAppHome/ViewGuide.dart';
 import 'package:project_soe/src/s_o_e_icons_icons.dart';
 import 'package:project_soe/src/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/src/CComponents/ComponentTitle.dart';
@@ -14,53 +15,25 @@ import 'package:project_soe/src/LNavigation/LogicNavigation.dart';
 import 'package:project_soe/src/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/src/VPracticePage/ViewPracticeFollow.dart';
 import 'package:project_soe/src/VUnImplemented/ViewUnimplemented.dart';
+import 'package:project_soe/src/VAppHome/ViewGuide.dart';
 
 class HomeRecData {
   String label;
   IconData icon;
-  HomeRecData(this.label, this.icon);
+  String routeName;
+  HomeRecData(this.label, this.icon, this.routeName);
 }
 
 List<HomeRecData> ListHomeRecData = [
-  HomeRecData('课前评测', SOEIcons.practice),
-  HomeRecData('如何上课', SOEIcons.practice),
-  HomeRecData('邀请好友', SOEIcons.person),
-  HomeRecData('加入社群', SOEIcons.add_group),
+  HomeRecData('课前评测', SOEIcons.practice, ViewUnimplemented.routeName),
+  HomeRecData('如何上课', SOEIcons.practice, ViewGuide.routeName),
+  HomeRecData('邀请好友', SOEIcons.person, ViewUnimplemented.routeName),
+  HomeRecData('加入社群', SOEIcons.add_group, ViewUnimplemented.routeName),
 ];
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   static const String routeName = 'home';
-
-  Widget _buildRecWidget(List<HomeRecData> datalist, BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: datalist
-          .map(
-            (data) => Column(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: IconButton(
-                      icon: Icon(
-                        data.icon,
-                        color: Colors.black87,
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, ViewUnimplemented.routeName);
-                      },
-                    )),
-                Text(
-                  data.label,
-                  style: gInfoTextStyle,
-                ),
-              ],
-            ),
-          )
-          .toList(),
-    );
-  }
 
   Widget _buildRectWidget(int retId, BuildContext context, Function() func) {
     return ComponentRoundButton(
@@ -163,11 +136,8 @@ class HomePage extends StatelessWidget {
                   context,
                   () => Navigator.of(context)
                       .pushNamed(ViewUnimplemented.routeName)),
-              _buildRectWidget(
-                  1,
-                  context,
-                  () => Navigator.of(context)
-                      .pushNamed(ViewUnimplemented.routeName)),
+              _buildRectWidget(1, context,
+                  () => Navigator.of(context).pushNamed(ViewGuide.routeName)),
             ],
           ),
           Padding(padding: EdgeInsets.only(top: 30)),
