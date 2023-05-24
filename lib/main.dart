@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:project_soe/src/CComponents/ComponentEditBox.dart';
-import 'package:project_soe/src/VAppHome/ViewAppHome.dart';
-import 'package:project_soe/src/VAuthorition/DataAuthorition.dart';
-import 'package:project_soe/src/VAuthorition/MsgAuthorition.dart';
-import 'package:project_soe/src/VAuthorition/ViewLogin.dart';
-import 'package:project_soe/src/VAuthorition/ViewSignupSuccess.dart';
+import 'package:project_soe/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/VAuthorition/DataAuthorition.dart';
+import 'package:project_soe/VAuthorition/MsgAuthorition.dart';
+import 'package:project_soe/VAuthorition/ViewLogin.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'src/LNavigation/LogicNavigation.dart';
-import 'src/GGlobalParams/Keywords.dart';
+import 'LNavigation/LogicNavigation.dart';
+import 'GGlobalParams/Keywords.dart';
 
 void main() {
   runApp(ProjectSOE());

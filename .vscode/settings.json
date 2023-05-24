@@ -58,4 +58,7 @@
     },
     "dart.sdkPath": "D:\\Flutter\\bin\\cache\\dart-sdk",
     "dart.flutterSdkPath": "D:\\Flutter",
+    "cSpell.ignoreWords": [
+        "Authorition"
+    ],
 }
