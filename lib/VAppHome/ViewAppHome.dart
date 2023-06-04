@@ -7,6 +7,7 @@ import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
+import 'package:project_soe/VAppHome/ViewUserSign.dart';
 import 'package:project_soe/VPersonalPage/ViewPersonal.dart';
 import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VClassPage/ViewClass.dart';
@@ -62,68 +63,8 @@ class ViewAppHome extends StatelessWidget {
       appBar: ComponentAppBar(),
       body: Column(
         children: <Widget>[
-          // const ComponentSubtitle(label: '初次使用，体验全面评测。'),
-          // _buildFullExamEntranceWidget(context),
-          // _buildSubtitle('推荐内容'),
-          ComponentShadowedContainer(
-              color: gColorE3EDF7RGBA,
-              shadowColor: Color.fromARGB(150, 153, 153, 147),
-              edgesHorizon: 32,
-              edgesVertical: 0,
-              child: ComponentTitle(
-                label: '今天是你学习的第0天',
-                style: gInfoTextStyle0,
-              )),
-          Padding(padding: EdgeInsets.only(bottom: 32)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ComponentShadowedContainer(
-                child: Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: ComponentTitle(
-                      label: 'MON\n  27', style: gSubtitleStyle0),
-                ),
-                color: gColorE8F3FBRGBA,
-                shadowColor: Color(0x9797977f),
-                edgesHorizon: 0,
-                edgesVertical: 20,
-              ),
-              ComponentShadowedContainer(
-                child: Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: ComponentTitle(
-                      label: 'MON\n  27', style: gSubtitleStyle0),
-                ),
-                color: gColorE8F3FBRGBA,
-                shadowColor: Color(0x9797977f),
-                edgesHorizon: 0,
-                edgesVertical: 20,
-              ),
-              ComponentShadowedContainer(
-                child: Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: ComponentTitle(
-                      label: 'MON\n  27', style: gSubtitleStyle0),
-                ),
-                color: gColorE8F3FBRGBA,
-                shadowColor: Color(0x9797977f),
-                edgesHorizon: 0,
-                edgesVertical: 20,
-              ),
-              ComponentShadowedContainer(
-                child: Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: ComponentTitle(
-                      label: 'MON\n  27', style: gSubtitleStyle0),
-                ),
-                color: gColorE8F3FBRGBA,
-                shadowColor: Color(0x9797977f),
-                edgesHorizon: 0,
-                edgesVertical: 20,
-              ),
-            ],
-          ),
+          ViewUserSign(),
+          Padding(padding: EdgeInsets.only(top: 30)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
