@@ -1,4 +1,4 @@
-// TODO 11.2 实现此类.
+ // TODO 11.2 实现此类.
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -64,9 +64,9 @@ class ViewPersonal extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(personalData.nickName!, style: gInfoTextStyle),
+                  Text(personalData.nickName, style: gInfoTextStyle),
                   Text(
-                    '个性签名:${personalData.sign!}',
+                    '个性签名:${personalData.sign}',
                     style: gInfoTextStyle,
                   )
                 ],
@@ -78,21 +78,21 @@ class ViewPersonal extends StatelessWidget {
           label: '详细信息',
           style: gSubtitleStyle0,
         ),
-        _buildDetailLine(['电话号码'], [personalData.phone!]),
-        _buildDetailLine(['邮箱'], [personalData.email!]),
+        _buildDetailLine(['电话号码'], [personalData.phone]),
+        _buildDetailLine(['邮箱'], [personalData.email]),
         _buildDetailLine([
           '实名',
           '性别',
         ], [
-          personalData.realName!,
-          DataUserInfo.sexToString(personalData.sex!),
+          personalData.realName,
+          DataUserInfo.sexToString(personalData.sex),
         ]),
         _buildDetailLine([
           '母语',
           '生日',
         ], [
-          personalData.nativeLanguage!,
-          DataUserInfo.birthToString(personalData.birth!),
+          personalData.nativeLanguage,
+          DataUserInfo.birthToString(personalData.birth),
         ]),
       ],
     );
