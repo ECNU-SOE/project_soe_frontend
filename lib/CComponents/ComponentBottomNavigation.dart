@@ -43,7 +43,6 @@ class _ComponentBottomNavigatorState extends State<ComponentBottomNavigator> {
       Navigator.of(context).pushReplacementNamed(dest);
       return;
     }
-    // TODO 23.5.24 可能需要更细致的route规则
     if (destIsKey && curRouteKey != dest) {
     } else {
       Navigator.of(context).pushReplacementNamed(dest);
@@ -84,8 +83,7 @@ class _ComponentBottomNavigatorState extends State<ComponentBottomNavigator> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildSelectedIcon(context, SOEIcons.home, ViewAppHome.routeName),
-              _buildSelectedIcon(
-                  context, SOEIcons.edit, ViewPractice.routeName),
+              _buildSelectedIcon(context, SOEIcons.edit, ViewClass.routeName),
               _buildSelectedIcon(
                   context, SOEIcons.person, ViewPersonal.routeName),
             ],

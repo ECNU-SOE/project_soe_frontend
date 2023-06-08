@@ -1,30 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:project_soe/VAuthorition/DataAuthorition.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/s_o_e_icons_icons.dart';
 
 class ComponentAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget? title;
-  ComponentAppBar({super.key, this.title});
+  bool hasBackButton;
+  ComponentAppBar({super.key, this.title, this.hasBackButton = false});
 
   Widget _buildImpl(BuildContext context, DataUserInfo info) {
     return Container(
-      height: 125.0,
+      height: 100.0,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              hasBackButton
+                  ? Padding(
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        bottom: 10,
+                      ),
+                      child: Center(
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          iconSize: 35,
+                          color: Color(0xff23529A),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: EdgeInsets.only(left: 10),
+                    ),
               Padding(
-                padding: EdgeInsets.only(left: 30, bottom: 20),
+                padding: EdgeInsets.only(
+                  left: 20,
+                  bottom: 10,
+                ),
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(info.avatarUri),
                 ),
               ),
+              Spacer(),
               (title != null)
-                  ? title!
-                  : Padding(
-                      padding: EdgeInsets.only(left: 50.0),
-                    ),
+                  ? Center(
+                      child: title!,
+                    )
+                  : Spacer(),
+              Spacer(),
               Padding(
                 padding: EdgeInsets.only(right: 30, bottom: 20),
                 child: IconButton(
@@ -35,7 +61,6 @@ class ComponentAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
         ],
-        mainAxisAlignment: MainAxisAlignment.end,
       ),
     );
   }

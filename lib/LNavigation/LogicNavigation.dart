@@ -6,6 +6,7 @@ import 'package:project_soe/VAuthorition/ViewSignup.dart';
 import 'package:project_soe/VAuthorition/ViewSignupSuccess.dart';
 import 'package:project_soe/VClassPage/ViewClass.dart';
 import 'package:project_soe/VClassPage/ViewClassDetail.dart';
+import 'package:project_soe/VClassPage/ViewMyClass.dart';
 import 'package:project_soe/VExam/ViewExam.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VAuthorition/ViewLogin.dart';
@@ -31,6 +32,8 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewSignup.routeName: (context) => ViewSignup(),
   ViewSignupSuccess.routeName: (context) => ViewSignupSuccess(),
   ViewUnimplemented.routeName: (context) => ViewUnimplemented(),
+  ViewMyClass.routeName: (context) => ViewMyClass(),
+  ViewClass.routeName: (context) => ViewClass(),
 };
 
 Map<String, List<String>> sRouteMap = {
@@ -39,10 +42,11 @@ Map<String, List<String>> sRouteMap = {
     ViewGuide.routeName,
     ViewUnimplemented.routeName
   ],
-  ViewPractice.routeName: [
+  ViewClass.routeName: [
     ViewPractice.routeName,
     ViewClass.routeName,
-    ViewClassDetail.routeName
+    ViewClassDetail.routeName,
+    ViewMyClass.routeName,
   ],
   ViewPersonal.routeName: [ViewPersonal.routeName, ViewEditPersonal.routeName],
 };

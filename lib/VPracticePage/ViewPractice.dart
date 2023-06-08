@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentAppBar.dart';
 import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentSubtitle.dart';
@@ -125,22 +126,16 @@ class ViewPractice extends StatelessWidget {
       for (final item in dataPage.dataList) {
         children.addAll(_buildPracticeButton(context, item));
       }
-      // }
-      // else {
-      //   children.addAll(_buildPracticeButton(context, dataPage.dataList[0]));
-      //   for (int iter = 1; iter < dataPage.dataList.length; ++iter) {
-      //     children.addAll(
-      //       _buildPracticeButton(
-      //         context,
-      //         dataPage.dataList[iter],
-      //         loggedIn: false,
-      //       ),
-      //     );
-      //   }
-      // }
     }
     var _listView = ListView(children: children);
     return Scaffold(
+      appBar: ComponentAppBar(
+        title: ComponentTitle(
+          label: '公共练习',
+          style: gTitleStyle,
+        ),
+        hasBackButton: true,
+      ),
       backgroundColor: gColorE3EDF7RGBA,
       body: _listView,
       bottomNavigationBar:

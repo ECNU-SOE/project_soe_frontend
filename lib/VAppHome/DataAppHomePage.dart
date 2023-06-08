@@ -18,7 +18,7 @@ class MsgSign {
     final token = AuthritionState.instance.getToken();
     final client = http.Client();
     final uri = Uri.parse(
-        "http://47.101.58.72:8888/user-server/api/user/v1/sign_info?month=${month}");
+        "http://47.101.58.72:8888/user-server/api/user/v1/sign_info?year=${year}&&month=${month}");
     final response = await client.get(
       uri,
       headers: {

@@ -60,7 +60,12 @@ class ViewAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ComponentAppBar(),
+      appBar: ComponentAppBar(
+        title: ComponentTitle(
+          label: '首页',
+          style: gTitleStyle,
+        ),
+      ),
       body: Column(
         children: <Widget>[
           ViewUserSign(),
