@@ -1,139 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentAppBar.dart';
+import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
+import 'package:project_soe/CComponents/ComponentRoundButton.dart';
+import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
+import 'package:project_soe/CComponents/ComponentTitle.dart';
 
 import 'package:project_soe/GGlobalParams/Styles.dart';
 import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/VClassPage/DataClass.dart';
 import 'package:project_soe/VClassPage/ViewClassDetail.dart';
+import 'package:project_soe/VClassPage/ViewMyClass.dart';
+import 'package:project_soe/VPracticePage/ViewPractice.dart';
+import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
+import 'package:project_soe/s_o_e_icons_icons.dart';
 
-// FIXME 22.12.7 temp
-class HorizontalScrollData {
-  String label;
-  Color color;
-  HorizontalScrollData(
-    this.label,
-    this.color,
-  );
-}
-
-// FIXME 22.12.7 temp
-List<HorizontalScrollData> horizontalScrollDatas = [
-  HorizontalScrollData(
-    '推荐内容1',
-    Colors.red,
-  ),
-  HorizontalScrollData(
-    '推荐内容2',
-    Colors.blue,
-  ),
-  HorizontalScrollData(
-    '推荐内容3',
-    Colors.yellow,
-  ),
-];
-
-// FIXME 22.12.7 temp
 class ClassRecData {
   String label;
   IconData icon;
-  Function()? onPressed;
-  ClassRecData(this.label, this.icon, this.onPressed);
+  String routeName;
+  ClassRecData(this.label, this.icon, this.routeName);
 }
+
+List<ClassRecData> ListClassRecData = [
+  ClassRecData('我的课程', SOEIcons.practice, ViewMyClass.routeName),
+  ClassRecData('公共练习', SOEIcons.practice, ViewPractice.routeName),
+  ClassRecData('专向推送', SOEIcons.person, ViewUnimplemented.routeName),
+  ClassRecData('做题记录', SOEIcons.add_group, ViewUnimplemented.routeName),
+];
 
 class ViewClass extends StatelessWidget {
   const ViewClass({super.key});
   static const String routeName = 'class';
 
-  Widget _buildClassRecWidget(List<ClassRecData> datalist) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: datalist
-          .map(
-            (data) => Column(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: IconButton(
-                      icon: Icon(
-                        data.icon,
-                        color: Colors.black87,
-                      ),
-                      onPressed: data.onPressed,
-                    )),
-                Text(
-                  data.label,
-                  style: gInfoTextStyle,
-                ),
-              ],
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  // FIXME 23.4.13 哪个是Id?
-  TextButton _buildCourseTextButton(
-      BuildContext context, DataCourseInfo courseInfo) {
-    return TextButton(
-        onPressed: () {
-          Navigator.pushNamed(context, ViewClassDetail.routeName,
-              arguments: (courseInfo.classId));
-        },
-        child: Text(courseInfo.classId, style: gInfoTextStyle));
-  }
-
-  List<Widget> _buildMyClassWidget(
-      BuildContext context, DataClassPageInfo classPageInfo) {
-    if (classPageInfo.pickedCourses.isEmpty) {
-      return [
-        ComponentSubtitle(
-          label: '你没有选择的课堂',
-          style: gSubtitleStyle,
+  Widget _buildRectWidget(int retId, BuildContext context) {
+    return ComponentRoundButton(
+      func: () {
+        Navigator.of(context).pushNamed(ListClassRecData[retId].routeName);
+      },
+      color: gColorE3EDF7RGBA,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                ListClassRecData[retId].icon,
+                color: Color.fromARGB(255, 155, 185, 211),
+              ),
+              ComponentTitle(
+                  label: ListClassRecData[retId].label, style: gInfoTextStyle)
+            ],
+          ),
         ),
-      ];
-    }
-    List<TextButton> buttons = List.empty(growable: true);
-    for (final courseInfo in classPageInfo.pickedCourses) {
-      buttons.add(_buildCourseTextButton(context, courseInfo));
-    }
-    return buttons;
-  }
-
-  Widget _buildViewClassBody(
-      BuildContext context, DataClassPageInfo classPageInfo) {
-    List<Widget> children = List.empty(growable: true);
-    children.addAll([
-      const ComponentSubtitle(
-        label: '快速入口',
-        style: gSubtitleStyle,
       ),
-      const ComponentSubtitle(
-        label: '我的课堂',
-        style: gSubtitleStyle,
-      ),
-    ]);
-    children.addAll(_buildMyClassWidget(context, classPageInfo));
-    return Scaffold(
-      body: ListView(
-        scrollDirection: Axis.vertical,
-        children: children,
-      ),
-      backgroundColor: gColorE3EDF7RGBA,
+      height: 137,
+      width: 137,
+      radius: 32,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DataClassPageInfo>(
-      future: postGetDataClassInfo(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return _buildViewClassBody(context, snapshot.data!);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return Scaffold(
+      appBar: ComponentAppBar(
+        title: ComponentTitle(
+          label: '课程',
+          style: gTitleStyle,
+        ),
+      ),
+      body: Column(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.only(top: 30)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRectWidget(
+                0,
+                context,
+              ),
+              _buildRectWidget(
+                1,
+                context,
+              ),
+            ],
+          ),
+          Padding(padding: EdgeInsets.only(top: 30)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRectWidget(
+                2,
+                context,
+              ),
+              _buildRectWidget(
+                3,
+                context,
+              ),
+            ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: ComponentBottomNavigator(curRouteName: routeName),
+      backgroundColor: gColorE3EDF7RGBA,
     );
   }
 }
