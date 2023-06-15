@@ -17,8 +17,16 @@ class MyClassRecData {
 }
 
 List<MyClassRecData> ListMyClassRecData = [
-  MyClassRecData('已选课程', SOEIcons.practice, ViewUnimplemented.routeName),
-  MyClassRecData('选课', SOEIcons.practice, ViewUnimplemented.routeName),
+  MyClassRecData(
+    '已选课程',
+    SOEIcons.practice,
+    ViewUnimplemented.routeName,
+  ),
+  MyClassRecData(
+    '选课',
+    SOEIcons.practice,
+    ViewUnimplemented.routeName,
+  ),
 ];
 
 class ViewMyClass extends StatelessWidget {
@@ -40,7 +48,9 @@ class ViewMyClass extends StatelessWidget {
                 color: Color.fromARGB(255, 155, 185, 211),
               ),
               ComponentTitle(
-                  label: ListMyClassRecData[retId].label, style: gInfoTextStyle)
+                label: ListMyClassRecData[retId].label,
+                style: gInfoTextStyle,
+              ),
             ],
           ),
         ),
@@ -63,7 +73,9 @@ class ViewMyClass extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          Padding(padding: EdgeInsets.only(top: 30)),
+          Padding(
+            padding: EdgeInsets.only(top: 30),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

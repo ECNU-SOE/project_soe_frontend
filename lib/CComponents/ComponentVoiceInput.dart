@@ -250,10 +250,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text(
-              widget.dataPage.toSingleString(),
-              style: gInfoTextStyle,
-            ),
+            child: widget.dataPage.getRichText4Show(false),
           ),
         ),
       ],

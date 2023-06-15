@@ -49,7 +49,6 @@ class AuthritionState {
       storage.write(key: sUserNameKey, value: data.password);
     }
     getUserInfo();
-    _postUserSign();
   }
 
   Future<void> setLogout() async {
@@ -61,17 +60,6 @@ class AuthritionState {
 
   void setUserInfoDirty() {
     _userInfoDirty = true;
-  }
-
-  Future<void> _postUserSign() async {
-    final client = http.Client();
-    final response = await client.get(
-      Uri.parse('http://47.101.58.72:8888/user-server/api/user/v1/sign'),
-      headers: {
-        'token': _authoritionToken!,
-      },
-    );
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<DataUserInfo> getUserInfo() async {

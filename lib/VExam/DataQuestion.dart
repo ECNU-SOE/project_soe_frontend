@@ -3,12 +3,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 
 import 'package:project_soe/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/CComponents/LogicPingyinlizer.dart' as pinyinlizer;
+import 'package:project_soe/GGlobalParams/Styles.dart';
 import 'package:project_soe/VExam/MsgQuestion.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/LNavigation/LogicNavigation.dart';
@@ -288,6 +290,55 @@ class DataQuestionEval {
     return 100.0;
   }
 
+  TextSpan _wrongWord(String txt, int size) {
+    return TextSpan(text: txt, style: TextStyle());
+  }
+
+  TextSpan _normalWord(String txt, int size) {
+    return TextSpan(text: txt, style: TextStyle());
+  }
+
+  // 获取字体的size
+  double getAdaptiveSize(int strLen) {
+    if (strLen < 50) {
+      return 22;
+    }
+    if (strLen < 120) {
+      return 18;
+    }
+    return 14;
+  }
+
+  Widget getRichText4Show(bool showWrongs) {
+    final str = toSingleString();
+    final adaSize = getAdaptiveSize(str.length);
+    if (!showWrongs) {
+      return Text(
+        str,
+        style: TextStyle(
+          fontFamily: 'SourceSans',
+          color: Color.fromARGB(255, 1, 41, 50),
+          fontSize: adaSize,
+        ),
+      );
+    }
+    List<TextSpan> childrenSpanList = resultXf!.spanList
+        .map(
+          (spanInfo) => TextSpan(
+            text: spanInfo.label,
+            style: TextStyle(
+              fontFamily: 'SourceSans',
+              color: spanInfo.isWrong ? Color(0xefff1e1e) : Color(0xff2a2a2a),
+              fontSize: adaSize,
+            ),
+          ),
+        )
+        .toList();
+    return RichText(
+      text: TextSpan(children: childrenSpanList),
+    );
+  }
+
   // 发送结果至服务器评测
   Future<void> postAndGetResultXf() async {
     if (_filePath == '') {
@@ -417,7 +468,7 @@ class DataQuestionPageMain extends DataQuestionEval {
     required this.audioUri,
   });
 
-  // 把所有题目内容变成一个String, 方便界面显示.
+  // 用来发送评测的内容
   @override
   String toSingleString() {
     String ret = '';
@@ -472,6 +523,17 @@ class DataQuestion {
   }
 }
 
+class DataSpanInfo {
+  String label;
+  bool isWrong;
+  String symbol;
+  DataSpanInfo({
+    required this.label,
+    required this.isWrong,
+    required this.symbol,
+  });
+}
+
 // 科大讯飞评测得到的结果
 // phone_score 	声韵分
 // fluency_score 	流畅度分（暂会返回0分）
@@ -496,6 +558,7 @@ class DataResultXf {
   late List<WrongMonoTone> wrongMonotones;
   late List<WrongPhone> wrongSheng;
   late List<WrongPhone> wrongYun;
+  late List<DataSpanInfo> spanList;
   DataResultXf({
     required this.evalMode,
     required this.weight,
@@ -514,9 +577,10 @@ class DataResultXf {
     wrongMonotones = List.empty(growable: true);
     wrongSheng = List.empty(growable: true);
     wrongYun = List.empty(growable: true);
+    spanList = List.empty(growable: true);
   }
 
-  void _parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
+  bool _parsePhone(Map<String, dynamic> phone, Map<String, dynamic> syrllJson) {
     if (phone['perr_msg'] != 0) {
       if (phone['is_yun'] == 1) {
         if (phone['perr_msg'] == 1) {
@@ -573,7 +637,9 @@ class DataResultXf {
       } else {
         throw ('错误的声韵母信息');
       }
+      return true;
     }
+    return false;
   }
 
   void _parseSyrll(Map<String, dynamic> syrllJson) {
@@ -582,6 +648,7 @@ class DataResultXf {
         syrllJson['content'] == 'fil') {
       return;
     }
+    bool wrongSyrll = false;
     try {
       if (syrllJson['dp_message'] == 0) {
         // int rightMonotone =
@@ -589,10 +656,10 @@ class DataResultXf {
         final phoneJson = syrllJson['phone'];
         if (_isJsonList(phoneJson)) {
           for (var phone in phoneJson) {
-            _parsePhone(phone, syrllJson);
+            wrongSyrll = wrongSyrll || _parsePhone(phone, syrllJson);
           }
         } else {
-          _parsePhone(phoneJson, syrllJson);
+          wrongSyrll = wrongSyrll || _parsePhone(phoneJson, syrllJson);
         }
       } else {
         switch (syrllJson['dp_message']) {
@@ -613,6 +680,13 @@ class DataResultXf {
         }
       }
     } catch (_) {}
+    spanList.add(
+      DataSpanInfo(
+        label: syrllJson['content'],
+        isWrong: wrongSyrll,
+        symbol: syrllJson['symbol'],
+      ),
+    );
   }
 
   void _parseWord(Map<String, dynamic> wordJson) {
@@ -632,6 +706,42 @@ class DataResultXf {
     } else {
       return false;
     }
+  }
+
+  // 将解析后的单字spanlist合并
+  void _mergeSpanList() {
+    if (spanList.isEmpty) {
+      return;
+    }
+    List<DataSpanInfo> mergedList = List.empty(growable: true);
+    bool wrong = spanList[0].isWrong;
+    String tempStr = spanList[0].label;
+    String tempSymb = spanList[0].symbol;
+    for (int i = 1; i < (spanList.length - 1); ++i) {
+      final curSpan = spanList[i];
+      if (curSpan.isWrong != wrong) {
+        // save
+        mergedList.add(DataSpanInfo(
+          label: tempStr,
+          isWrong: wrong,
+          symbol: tempSymb,
+        ));
+        wrong = spanList[i].isWrong;
+        tempStr = spanList[i].label;
+        tempSymb = spanList[i].symbol;
+      } else {
+        // merge
+        tempStr += curSpan.label;
+        tempSymb += curSpan.symbol;
+      }
+    }
+    // save
+    mergedList.add(DataSpanInfo(
+      label: tempStr,
+      isWrong: wrong,
+      symbol: tempSymb,
+    ));
+    spanList = mergedList;
   }
 
   void parseJson(Map<String, dynamic> json) {
@@ -663,6 +773,7 @@ class DataResultXf {
         _parseWord(sentanceJson['word']);
       }
     }
+    _mergeSpanList();
 
     jsonParsed = true;
   }

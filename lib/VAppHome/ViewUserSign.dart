@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
@@ -64,7 +65,7 @@ class _ViewUserSignState extends State<ViewUserSign> {
     return m;
   }
 
-  Widget _buildImpl(BuildContext context, List<DataSignDayInfo> list) {
+  Widget _buildImpl(BuildContext context, DataViewSign dataViewSign) {
     DateTime now = DateTime(widget.year, widget.month, 10);
     final int daysThisMonth = DateTime(now.year, now.month + 1, 0).day;
     final int daysLastMonth = DateTime(now.year, now.month, 0).day;
@@ -86,7 +87,7 @@ class _ViewUserSignState extends State<ViewUserSign> {
       matrixChildren[curLine].add(
         _buildIconTxt(
           _checkHasIcon(
-            list,
+            dataViewSign.list,
             day,
             _lastMonth(now.month),
           ),
@@ -103,7 +104,7 @@ class _ViewUserSignState extends State<ViewUserSign> {
     for (int day = 1; day <= daysThisMonth; ++day) {
       matrixChildren[curLine].add(
         _buildIconTxt(
-          _checkHasIcon(list, day, now.month),
+          _checkHasIcon(dataViewSign.list, day, now.month),
           day.toString(),
           true,
         ),
@@ -119,7 +120,7 @@ class _ViewUserSignState extends State<ViewUserSign> {
       matrixChildren[curLine].add(
         _buildIconTxt(
           _checkHasIcon(
-            list,
+            dataViewSign.list,
             nextMonthDay,
             _nextMonth(now.month),
           ),
@@ -200,6 +201,25 @@ class _ViewUserSignState extends State<ViewUserSign> {
                     ))
                 .toList(),
           ),
+          ComponentRoundButton(
+            func: () {
+              if (dataViewSign.todaySigned) return;
+              MsgSign().postUserSign();
+              setState(() {});
+            },
+            height: 45,
+            width: 267,
+            radius: 14,
+            color: dataViewSign.todaySigned
+                ? Color(0xffe3edf7)
+                : Color(0xff7BCBE6),
+            child: Center(
+              child: Text(
+                dataViewSign.todaySigned ? '今日已签到' : '点击签到',
+                style: gInfoTextStyle,
+              ),
+            ),
+          ),
         ],
       ),
       color: Color(0XFFE8F3FB),
@@ -211,8 +231,8 @@ class _ViewUserSignState extends State<ViewUserSign> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<DataSignDayInfo>>(
-      future: MsgSign().getListSignDataInfo(widget.month, widget.year),
+    return FutureBuilder<DataViewSign>(
+      future: MsgSign().getViewUserSignInfo(widget.month, widget.year),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return _buildImpl(context, snapshot.data!);

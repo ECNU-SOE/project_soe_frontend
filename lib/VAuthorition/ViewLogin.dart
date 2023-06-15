@@ -117,13 +117,13 @@ class _ViewLoginState extends State<ViewLogin> {
               onSigninClick(context);
             },
             color: Color(0xff7BCBE6),
+            height: 45,
+            width: 289,
+            radius: 14,
             child: Text(
               '登录',
               style: gSubtitleStyle1,
             ),
-            height: 45,
-            width: 289,
-            radius: 14,
           ),
         ),
         ComponentRoundButton(
