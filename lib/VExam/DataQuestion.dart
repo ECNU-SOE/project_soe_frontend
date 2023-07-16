@@ -717,7 +717,7 @@ class DataResultXf {
     bool wrong = spanList[0].isWrong;
     String tempStr = spanList[0].label;
     String tempSymb = spanList[0].symbol;
-    for (int i = 1; i < (spanList.length - 1); ++i) {
+    for (int i = 1; i < spanList.length; ++i) {
       final curSpan = spanList[i];
       if (curSpan.isWrong != wrong) {
         // save
@@ -726,9 +726,9 @@ class DataResultXf {
           isWrong: wrong,
           symbol: tempSymb,
         ));
-        wrong = spanList[i].isWrong;
-        tempStr = spanList[i].label;
-        tempSymb = spanList[i].symbol;
+        wrong = curSpan.isWrong;
+        tempStr = curSpan.label;
+        tempSymb = curSpan.symbol;
       } else {
         // merge
         tempStr += curSpan.label;

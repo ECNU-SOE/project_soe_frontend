@@ -23,10 +23,10 @@ class HomeRecData {
 }
 
 List<HomeRecData> ListHomeRecData = [
-  HomeRecData('课前评测', SOEIcons.practice, ViewUnimplemented.routeName),
-  HomeRecData('如何上课', SOEIcons.practice, ViewGuide.routeName),
-  HomeRecData('邀请好友', SOEIcons.person, ViewUnimplemented.routeName),
-  HomeRecData('加入社群', SOEIcons.add_group, ViewUnimplemented.routeName),
+  HomeRecData('课前评测', SOEIcons.edit, ViewUnimplemented.routeName),
+  HomeRecData('如何上课', SOEIcons.school, ViewGuide.routeName),
+  HomeRecData('重点难点', SOEIcons.person, ViewUnimplemented.routeName),
+  HomeRecData('训练题库', SOEIcons.home_lib, ViewPractice.routeName),
 ];
 
 class ViewAppHome extends StatelessWidget {

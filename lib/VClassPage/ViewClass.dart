@@ -22,10 +22,10 @@ class ClassRecData {
 }
 
 List<ClassRecData> ListClassRecData = [
-  ClassRecData('我的课程', SOEIcons.practice, ViewMyClass.routeName),
-  ClassRecData('公共练习', SOEIcons.practice, ViewPractice.routeName),
-  ClassRecData('专向推送', SOEIcons.person, ViewUnimplemented.routeName),
-  ClassRecData('做题记录', SOEIcons.add_group, ViewUnimplemented.routeName),
+  ClassRecData('我的课程', SOEIcons.my_class, ViewMyClass.routeName),
+  ClassRecData('训练题库', SOEIcons.public_lib, ViewPractice.routeName),
+  ClassRecData('个人题库', SOEIcons.personal_lib, ViewUnimplemented.routeName),
+  ClassRecData('做题记录', SOEIcons.practice_history, ViewUnimplemented.routeName),
 ];
 
 class ViewClass extends StatelessWidget {

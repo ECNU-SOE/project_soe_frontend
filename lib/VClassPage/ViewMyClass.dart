@@ -19,12 +19,12 @@ class MyClassRecData {
 List<MyClassRecData> ListMyClassRecData = [
   MyClassRecData(
     '已选课程',
-    SOEIcons.practice,
+    SOEIcons.chosen,
     ViewUnimplemented.routeName,
   ),
   MyClassRecData(
     '选课',
-    SOEIcons.practice,
+    SOEIcons.choose,
     ViewUnimplemented.routeName,
   ),
 ];

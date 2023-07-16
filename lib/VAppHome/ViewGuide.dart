@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentAppBar.dart';
 import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
@@ -12,6 +13,9 @@ class ViewGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: ComponentAppBar(
+        hasBackButton: true,
+      ),
       backgroundColor: Color(0xffe3edf7),
       body: ComponentShadowedContainer(
         child: Column(

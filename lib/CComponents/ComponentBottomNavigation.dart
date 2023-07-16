@@ -83,7 +83,8 @@ class _ComponentBottomNavigatorState extends State<ComponentBottomNavigator> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildSelectedIcon(context, SOEIcons.home, ViewAppHome.routeName),
-              _buildSelectedIcon(context, SOEIcons.edit, ViewClass.routeName),
+              _buildSelectedIcon(
+                  context, SOEIcons.class_page, ViewClass.routeName),
               _buildSelectedIcon(
                   context, SOEIcons.person, ViewPersonal.routeName),
             ],
