@@ -10,6 +10,8 @@ import 'package:project_soe/VClassPage/ViewMyClass.dart';
 import 'package:project_soe/VExam/ViewExam.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VAuthorition/ViewLogin.dart';
+import 'package:project_soe/VMistakeBook/ViewMistakeBook.dart';
+import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 import 'package:project_soe/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/VPersonalPage/ViewEditPersonal.dart';
 import 'package:project_soe/VPersonalPage/ViewPersonal.dart';
@@ -34,6 +36,8 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewUnimplemented.routeName: (context) => ViewUnimplemented(),
   ViewMyClass.routeName: (context) => ViewMyClass(),
   ViewClass.routeName: (context) => ViewClass(),
+  ViewMistakeBook.routeName: (context) => ViewMistakeBook(),
+  ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
 };
 
 Map<String, List<String>> sRouteMap = {
@@ -47,6 +51,8 @@ Map<String, List<String>> sRouteMap = {
     ViewClass.routeName,
     ViewClassDetail.routeName,
     ViewMyClass.routeName,
+    ViewMistakeBook.routeName,
+    ViewMistakeDetail.routeName,
   ],
   ViewPersonal.routeName: [ViewPersonal.routeName, ViewEditPersonal.routeName],
 };

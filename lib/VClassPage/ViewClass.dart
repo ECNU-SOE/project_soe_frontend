@@ -10,6 +10,7 @@ import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/VClassPage/DataClass.dart';
 import 'package:project_soe/VClassPage/ViewClassDetail.dart';
 import 'package:project_soe/VClassPage/ViewMyClass.dart';
+import 'package:project_soe/VMistakeBook/ViewMistakeBook.dart';
 import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
 import 'package:project_soe/s_o_e_icons_icons.dart';
@@ -25,7 +26,7 @@ List<ClassRecData> ListClassRecData = [
   ClassRecData('我的课程', SOEIcons.my_class, ViewMyClass.routeName),
   ClassRecData('训练题库', SOEIcons.public_lib, ViewPractice.routeName),
   ClassRecData('个人题库', SOEIcons.personal_lib, ViewUnimplemented.routeName),
-  ClassRecData('做题记录', SOEIcons.practice_history, ViewUnimplemented.routeName),
+  ClassRecData('错题本', SOEIcons.practice_history, ViewMistakeBook.routeName),
 ];
 
 class ViewClass extends StatelessWidget {
