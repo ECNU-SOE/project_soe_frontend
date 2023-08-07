@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:project_soe/CComponents/ComponentAppBar.dart';
+import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
+import 'package:project_soe/CComponents/ComponentTitle.dart';
+import 'package:project_soe/GGlobalParams/Styles.dart';
 import 'package:project_soe/VMistakeBook/DataMistake.dart';
 
 class ViewMistakeDetail extends StatelessWidget {
   static String routeName = 'mistakeDetail';
   ViewMistakeDetail();
   Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
-    // TODO
-    return ListView();
+    List<Widget> children = List.empty(growable: true);
+    for (final detailItem in mistakeDetail.list) {
+      children.add(_buildItem(detailItem));
+    }
+    return ListView(
+      children: children,
+    );
+  }
+
+  Widget _buildItem(DataMistakeDetailListItem listItem) {
+    return ComponentTitle(
+      label: 'cpsrcdId${listItem.cpsrcdId!}',
+      style: gTitleStyle,
+    );
   }
 
   @override
@@ -17,9 +33,27 @@ class ViewMistakeDetail extends StatelessWidget {
     return FutureBuilder<DataMistakeDetail>(
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _buildImpl(context, snapshot.data!);
+          return Scaffold(
+            backgroundColor: gColorE3EDF7RGBA,
+            appBar: ComponentAppBar(
+              title: ComponentTitle(label: "错题详情", style: gTitleStyle),
+              hasBackButton: true,
+            ),
+            body: _buildImpl(context, snapshot.data!),
+            bottomNavigationBar: ComponentBottomNavigator(
+                curRouteName: ViewMistakeDetail.routeName),
+          );
         } else {
-          return CircularProgressIndicator();
+          return Scaffold(
+            backgroundColor: gColorE3EDF7RGBA,
+            appBar: ComponentAppBar(
+              title: ComponentTitle(label: "错题详情", style: gTitleStyle),
+              hasBackButton: true,
+            ),
+            body: CircularProgressIndicator(),
+            bottomNavigationBar: ComponentBottomNavigator(
+                curRouteName: ViewMistakeDetail.routeName),
+          );
         }
       },
       future: postGetDataMistakeDetail(mistakeTypeCode, oneWeekKey),

@@ -14,6 +14,7 @@ class ViewMistakeBook extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _ViewMistakeBookBody(),
+      backgroundColor: gColorE3EDF7RGBA,
       bottomNavigationBar: ComponentBottomNavigator(
         curRouteName: routeName,
       ),
@@ -28,35 +29,31 @@ class ViewMistakeBook extends StatelessWidget {
   }
 }
 
-class _ViewMistakeBookBody extends StatefulWidget {
-  @override
-  State<_ViewMistakeBookBody> createState() => _ViewMistakeBookBodyState();
-}
-
-class _ViewMistakeBookBodyState extends State<_ViewMistakeBookBody> {
-  Widget _buildItem(DataMistakeItem mistakeItem) => ListTile(
-        leading: ComponentTitle(
-            label: mistakeItem.mistakeTypeName, style: gTitleStyle),
+class _ViewMistakeBookBody extends StatelessWidget {
+  Widget _buildItem(BuildContext context, mistakeItem) => ListTile(
+        leading: Text(mistakeItem.mistakeTypeName, style: gTitleStyle),
         title: ComponentCircleButton(
-            func: () => Navigator.of(context).pushNamed(
-                ViewMistakeDetail.routeName,
-                arguments: [0, mistakeItem.mistakeTypeCode]),
-            color: gColor6E81A0RGBA,
-            child: ComponentSubtitle(label: '查询一周', style: gSubtitleStyle),
-            size: 25),
+          func: () => Navigator.of(context).pushNamed(
+              ViewMistakeDetail.routeName,
+              arguments: <int>[0, mistakeItem.mistakeTypeCode]),
+          color: gColor6E81A0RGBA,
+          child: ComponentSubtitle(label: '查询一周', style: gSubtitleStyle),
+          size: 25,
+        ),
         trailing: ComponentCircleButton(
-            func: () => Navigator.of(context).pushNamed(
-                ViewMistakeDetail.routeName,
-                arguments: [1, mistakeItem.mistakeTypeCode]),
-            color: gColor6E81A0RGBA,
-            child: ComponentSubtitle(label: '查询全部', style: gSubtitleStyle),
-            size: 25),
+          func: () => Navigator.of(context).pushNamed(
+              ViewMistakeDetail.routeName,
+              arguments: <int>[1, mistakeItem.mistakeTypeCode]),
+          color: gColor6E81A0RGBA,
+          child: ComponentSubtitle(label: '查询全部', style: gSubtitleStyle),
+          size: 25,
+        ),
       );
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeBook mistakeBook) {
     List<Widget> wrongList = List.empty(growable: true);
     for (DataMistakeItem mistakeItem in mistakeBook.mistakeItemList) {
-      wrongList.add(_buildItem(mistakeItem));
+      wrongList.add(_buildItem(context, mistakeItem));
     }
     final listView = ListView(
       children: wrongList,
