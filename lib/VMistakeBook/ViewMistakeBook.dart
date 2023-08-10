@@ -32,7 +32,9 @@ class ViewMistakeBook extends StatelessWidget {
 }
 
 class _ViewMistakeBookBody extends StatelessWidget {
-  Widget _buildItem(BuildContext context, mistakeItem) => ListTile(
+  // 单个错题的模板，需要重新更改
+  Widget _buildItem(BuildContext context, DataMistakeBookListItem mistakeItem) =>
+      ListTile(
         leading: Text(mistakeItem.mistakeTypeName, style: gTitleStyle),
         title: ComponentCircleButton(
           func: () => Navigator.of(context).pushNamed(
@@ -54,14 +56,32 @@ class _ViewMistakeBookBody extends StatelessWidget {
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeBook mistakeBook) {
     List<Widget> wrongList = List.empty(growable: true);
-    for (DataMistakeBookListItem mistakeItem
-        in mistakeBook.listMistakeBook) {
+    for (DataMistakeBookListItem mistakeItem in mistakeBook.listMistakeBook) {
       wrongList.add(_buildItem(context, mistakeItem));
     }
+    // 可能需要更改成滚轮
     final listView = ListView(
       children: wrongList,
     );
-    return listView;
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          backgroundColor: gColorE8F3FBRGBA,
+          appBar: TabBar(
+            labelColor: gColor6E81A0RGBA,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.black54,
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorWeight: 1.0,
+            tabs: <Widget>[Tab(text: '查询一周'), Tab(text: '查询全部')],
+          ),
+          // 单题模板修改后，将对应的listview放入下面body中
+          body: TabBarView(children: <Widget>[
+            Text("一周错题"),
+            listView,
+          ])),
+    );
   }
 
   @override
@@ -71,7 +91,6 @@ class _ViewMistakeBookBody extends StatelessWidget {
           if (snapshot.hasData) {
             return _buildBodyImpl(context, snapshot.data!);
           } else {
-            print("---------------------------------");
             return CircularProgressIndicator();
           }
         },
