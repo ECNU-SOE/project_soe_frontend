@@ -5,11 +5,13 @@ import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
-import 'package:project_soe/VMistakeBook/DataMistake.dart';
+import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 
 class ViewMistakeBook extends StatelessWidget {
+  // 静态常量字符串 routeName 给这个route命名, 这个名字是该View独有的, 要在全局的navigator里使用
   static const String routeName = 'mistake';
+  // 实现其buildfunc
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +54,8 @@ class _ViewMistakeBookBody extends StatelessWidget {
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeBook mistakeBook) {
     List<Widget> wrongList = List.empty(growable: true);
-    for (DataMistakeItem mistakeItem in mistakeBook.mistakeItemList) {
+    for (DataMistakeBookListItem mistakeItem
+        in mistakeBook.listMistakeBook) {
       wrongList.add(_buildItem(context, mistakeItem));
     }
     final listView = ListView(
@@ -68,6 +71,7 @@ class _ViewMistakeBookBody extends StatelessWidget {
           if (snapshot.hasData) {
             return _buildBodyImpl(context, snapshot.data!);
           } else {
+            print("---------------------------------");
             return CircularProgressIndicator();
           }
         },

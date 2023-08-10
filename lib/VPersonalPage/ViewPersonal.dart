@@ -106,6 +106,10 @@ class ViewPersonal extends StatelessWidget {
   }
 
   Widget _buildUnloggedinPage(BuildContext context) {
+    return Container(
+      decoration:
+            new BoxDecoration(color: Color.fromARGB(255, 176, 210, 176)),
+    );
     return Column(
       children: [
         Padding(
@@ -158,6 +162,7 @@ class ViewPersonal extends StatelessWidget {
         ),
       ],
     );
+    
   }
 
   void _onEditPersonal(BuildContext context) {

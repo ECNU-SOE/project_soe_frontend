@@ -3,14 +3,14 @@ import 'package:project_soe/CComponents/ComponentAppBar.dart';
 import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
-import 'package:project_soe/VMistakeBook/DataMistake.dart';
+import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
 
 class ViewMistakeDetail extends StatelessWidget {
   static String routeName = 'mistakeDetail';
   ViewMistakeDetail();
   Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
     List<Widget> children = List.empty(growable: true);
-    for (final detailItem in mistakeDetail.list) {
+    for (final detailItem in mistakeDetail.listMistakeDetail) {
       children.add(_buildItem(detailItem));
     }
     return ListView(
