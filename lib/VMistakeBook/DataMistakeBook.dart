@@ -47,7 +47,9 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
     },
   );
   final u8decoded = utf8.decode(response.bodyBytes);
-  final decoded = jsonDecode(u8decoded);
+  // COMMENT-8-12 服务器上目前没有我们测试账号的错题数据, 这是用来测试的临时数据, 不用注释掉即可. 不必删除
+  final decoded = jsonDecode(
+      '{    "code": 0,    "data": {        "eachMistakeTypeNumber": [             {                "mistakeNum": 3,                "mistakeTypeName": "语音评测",                "mistakeTypeCode": 0             }        ],        "mistakeTotalNumber": 3,        "stubbornMistakeNumber": 1     },    "msg": null}');
   final code = decoded['code'];
   final data = decoded['data'];
   if (code != 0) throw ("wrong return code");
@@ -79,13 +81,13 @@ class DataMistakeDetail {
 }
 
 class DataMistakeDetailListItem {
-  String? cpsrcdId; //题目的快照id，为了识别用户答的是哪道题，答题时给后端传答题结果时需要带上它
-  String? corpusId;
-  String? cpsgrpId;
-  String? topicId;
-  int? evalMode;
-  int? difficulty;
-  int? wordWeight;
+  String cpsrcdId; //题目的快照id，为了识别用户答的是哪道题，答题时给后端传答题结果时需要带上它
+  String corpusId;
+  String cpsgrpId;
+  String topicId;
+  int evalMode;
+  int difficulty;
+  int wordWeight;
   String pinyin;
   String refText;
   String audioUrl;
@@ -103,21 +105,22 @@ class DataMistakeDetailListItem {
   });
   factory DataMistakeDetailListItem.fromJson(Map<String, dynamic> json) {
     return DataMistakeDetailListItem(
-      cpsrcdId: json['cpsrcdId'],
-      corpusId: json['corpusId'],
-      cpsgrpId: json['cpsgrpId'],
-      topicId: json['topicId'],
-      evalMode: json['evalMode'],
-      difficulty: json['difficulty'],
-      wordWeight: json['wordWeight'],
-      pinyin: json['pinyin'],
-      refText: json['refText'],
-      audioUrl: json['audioUrl'],
+      cpsrcdId: json['cpsrcdId'] ?? "",
+      corpusId: json['corpusId'] ?? "",
+      cpsgrpId: json['cpsgrpId'] ?? "",
+      topicId: json['topicId'] ?? "",
+      evalMode: json['evalMode'] ?? 0,
+      difficulty: json['difficulty'] ?? 0,
+      wordWeight: json['wordWeight'] ?? 0,
+      pinyin: json['pinyin'] ?? "",
+      refText: json['refText'] ?? "",
+      audioUrl: json['audioUrl'] ?? "",
     );
   }
 }
 
-Future<DataMistakeDetail> postGetDataMistakeDetail(int mistakeTypeCode, int oneWeekKey) async {
+Future<DataMistakeDetail> postGetDataMistakeDetail(
+    int mistakeTypeCode, int oneWeekKey) async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse('http://47.101.58.72:8888/corpus-server/api/mistake/v1/getMistakes');
   final response = await http.Client().post(
