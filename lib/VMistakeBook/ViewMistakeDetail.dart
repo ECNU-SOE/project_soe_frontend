@@ -31,19 +31,22 @@ class ViewMistakeDetail extends StatelessWidget {
     int oneWeekKey = args[0];
     int mistakeTypeCode = args[1];
     return FutureBuilder<DataMistakeDetail>(
+      future: postGetDataMistakeDetail(mistakeTypeCode, oneWeekKey),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          print("postGetDataMistakeDetail succeeded");
           return Scaffold(
             backgroundColor: gColorE3EDF7RGBA,
-            appBar: ComponentAppBar(
-              title: ComponentTitle(label: "错题详情", style: gTitleStyle),
-              hasBackButton: true,
-            ),
+            // appBar: ComponentAppBar(
+            //   title: ComponentTitle(label: "错题详情", style: gTitleStyle),
+            //   hasBackButton: true,
+            // ),
             body: _buildImpl(context, snapshot.data!),
-            bottomNavigationBar: ComponentBottomNavigator(
-                curRouteName: ViewMistakeDetail.routeName),
+            // bottomNavigationBar: ComponentBottomNavigator(
+            //     curRouteName: ViewMistakeDetail.routeName),
           );
         } else {
+          print("postGetDataMistakeDetail failed");
           return Scaffold(
             backgroundColor: gColorE3EDF7RGBA,
             appBar: ComponentAppBar(
@@ -56,7 +59,6 @@ class ViewMistakeDetail extends StatelessWidget {
           );
         }
       },
-      future: postGetDataMistakeDetail(mistakeTypeCode, oneWeekKey),
     );
   }
 }

@@ -9,9 +9,7 @@ import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 
 class ViewMistakeBook extends StatelessWidget {
-  // 静态常量字符串 routeName 给这个route命名, 这个名字是该View独有的, 要在全局的navigator里使用
   static const String routeName = 'mistake';
-  // 实现其buildfunc
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,33 +31,67 @@ class ViewMistakeBook extends StatelessWidget {
 
 class _ViewMistakeBookBody extends StatelessWidget {
   // 单个错题的模板，需要重新更改
-  Widget _buildItem(BuildContext context, DataMistakeBookListItem mistakeItem) =>
-      ListTile(
-        leading: Text(mistakeItem.mistakeTypeName, style: gTitleStyle),
-        title: ComponentCircleButton(
-          func: () => Navigator.of(context).pushNamed(
-              ViewMistakeDetail.routeName,
-              arguments: <int>[0, mistakeItem.mistakeTypeCode]),
-          color: gColor6E81A0RGBA,
-          child: ComponentSubtitle(label: '查询一周', style: gSubtitleStyle),
-          size: 25,
-        ),
-        trailing: ComponentCircleButton(
-          func: () => Navigator.of(context).pushNamed(
-              ViewMistakeDetail.routeName,
-              arguments: <int>[1, mistakeItem.mistakeTypeCode]),
-          color: gColor6E81A0RGBA,
-          child: ComponentSubtitle(label: '查询全部', style: gSubtitleStyle),
-          size: 25,
+  Widget _buildItem(
+          BuildContext context, DataMistakeBookListItem mistakeItem) =>
+      Padding(
+        padding: EdgeInsets.only(left: 10, right: 10, top: 5),
+        child: Container(
+          alignment: Alignment.center,
+          height: 80,
+          decoration: new BoxDecoration(
+            color: gColorE3EDF7RGBA,
+            // borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+          ),
+          child: Scaffold(
+            backgroundColor: gColorE3EDF7RGBA,
+            appBar: AppBar(
+              toolbarHeight: 25,
+              elevation: 6.0,
+              shape: ContinuousRectangleBorder(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0),
+                  bottomLeft: Radius.circular(30.0),
+                  bottomRight: Radius.circular(30.0),
+                ),
+              ),
+              backgroundColor: gColorE8F3FBRGBA,
+              // backgroundColor: Color.fromARGB(255, 240, 240, 240),
+              leading: Text("题目id"),
+              actions: [
+                ComponentRoundButton(
+                  func: () => Navigator.of(context).pushNamed(
+                      ViewMistakeDetail.routeName,
+                      arguments: <int>[0, mistakeItem.mistakeTypeCode]),
+                  color: gColorE8F3FBRGBA,
+                  child: Text("查看"),
+                  height: 25,
+                  width: 70,
+                  radius: 0
+                ),
+              ],
+            ),
+            // body 修改“错题简略版信息”
+            body: Container(color: gColorE8F3FBRGBA, child: Text("错题简略版信息")),
+          ),
         ),
       );
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeBook mistakeBook) {
     List<Widget> wrongList = List.empty(growable: true);
+    wrongList.add(Row(children: [
+      Text(
+        '总错题数：' + mistakeBook.mistakeTotalNumber.toString(),
+        style: gSubtitleStyle,
+      ),
+      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber.toString(),
+          style: gSubtitleStyle),
+    ], mainAxisAlignment: MainAxisAlignment.spaceAround));
+
     for (DataMistakeBookListItem mistakeItem in mistakeBook.listMistakeBook) {
       wrongList.add(_buildItem(context, mistakeItem));
     }
-    // 可能需要更改成滚轮
+
     final listView = ListView(
       children: wrongList,
     );
@@ -76,11 +108,12 @@ class _ViewMistakeBookBody extends StatelessWidget {
             indicatorWeight: 1.0,
             tabs: <Widget>[Tab(text: '查询一周'), Tab(text: '查询全部')],
           ),
-          // 单题模板修改后，将对应的listview放入下面body中
-          body: TabBarView(children: <Widget>[
-            Text("一周错题"),
-            listView,
-          ])),
+          body: Container(
+            child: TabBarView(children: <Widget>[
+              listView,
+              listView,
+            ]),
+          )),
     );
   }
 
