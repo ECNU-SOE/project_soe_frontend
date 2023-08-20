@@ -47,32 +47,22 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
     },
   );
   final u8decoded = utf8.decode(response.bodyBytes);
+  // final decoded = jsonDecode(u8decoded);
   // COMMENT-8-12 服务器上目前没有我们测试账号的错题数据, 这是用来测试的临时数据, 不用注释掉即可. 不必删除
   final decoded = jsonDecode(
-      '{    "code": 0,    "data": {        "eachMistakeTypeNumber": [             {                "mistakeNum": 3,                "mistakeTypeName": "语音评测",                "mistakeTypeCode": 0             }        ],        "mistakeTotalNumber": 3,        "stubbornMistakeNumber": 1     },    "msg": null}');
+      '{ "code": 0, "data": {"eachMistakeTypeNumber": [{"mistakeNum": 3,"mistakeTypeName": "语音评测","mistakeTypeCode": 0},{"mistakeNum": 3,"mistakeTypeName": "语音评测2","mistakeTypeCode": 1}],"mistakeTotalNumber": 3,"stubbornMistakeNumber": 1},"msg": null}');
   final code = decoded['code'];
   final data = decoded['data'];
   if (code != 0) throw ("wrong return code");
   final mistakeBookListItem = data['eachMistakeTypeNumber'];
   List<DataMistakeBookListItem> listMistakeBook = List.empty(growable: true);
-  // for (final mistake in mistakeBookListItem) {
-  //   listMistakeBook.add(DataMistakeBookListItem.fromJson(mistake));
-  // }
-  // test ---
-  for(int _ = 0; _ < 5; ++ _) {
-    listMistakeBook.add(DataMistakeBookListItem.fromJson({
-      "mistakeNum": 3, "mistakeTypeName": "语音评测", "mistakeTypeCode": _
-    }));
+  for (final mistake in mistakeBookListItem) {
+    listMistakeBook.add(DataMistakeBookListItem.fromJson(mistake));
   }
   return DataMistakeBook(
-    mistakeTotalNumber: 5,
-    stubbornMistakeNumber: 1,
+    mistakeTotalNumber: data['mistakeTotalNumber'],
+    stubbornMistakeNumber: data['stubbornMistakeNumber'],
     listMistakeBook: listMistakeBook);
-  // test ---
-  // return DataMistakeBook(
-  //   mistakeTotalNumber: data['mistakeTotalNumber'],
-  //   stubbornMistakeNumber: data['stubbornMistakeNumber'],
-  //   listMistakeBook: listMistakeBook);
 }
 
 class DataMistakeDetail {

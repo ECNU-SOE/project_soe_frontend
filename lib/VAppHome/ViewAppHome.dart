@@ -60,6 +60,8 @@ class ViewAppHome extends StatelessWidget {
     );
   }
 
+  final _controller = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,49 +71,69 @@ class ViewAppHome extends StatelessWidget {
           style: gTitleStyle,
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          ViewUserSign(),
-          Padding(
-            padding: EdgeInsets.only(top: 30),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildRectWidget(
-                0,
-                context,
-                () => Navigator.of(context)
-                    .pushNamed(ViewUnimplemented.routeName),
+      body: Container(
+        child: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          slivers: <Widget>[
+            SliverList(
+              delegate: new SliverChildListDelegate(
+                [
+                  Container(
+                    child: Column(
+                      children: <Widget>[
+                        ViewUserSign(),
+                        Padding(
+                          padding: EdgeInsets.only(top: 30),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildRectWidget(
+                              0,
+                              context,
+                              () => Navigator.of(context)
+                                  .pushNamed(ViewUnimplemented.routeName),
+                            ),
+                            _buildRectWidget(
+                              1,
+                              context,
+                              () => Navigator.of(context)
+                                  .pushNamed(ViewGuide.routeName),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 30),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildRectWidget(
+                              2,
+                              context,
+                              () => Navigator.of(context)
+                                  .pushNamed(ViewUnimplemented.routeName),
+                            ),
+                            _buildRectWidget(
+                              3,
+                              context,
+                              () => Navigator.of(context)
+                                  .pushNamed(ViewUnimplemented.routeName),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 30),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                  )
+                ],
               ),
-              _buildRectWidget(
-                1,
-                context,
-                () => Navigator.of(context).pushNamed(ViewGuide.routeName),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 30),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildRectWidget(
-                2,
-                context,
-                () => Navigator.of(context)
-                    .pushNamed(ViewUnimplemented.routeName),
-              ),
-              _buildRectWidget(
-                3,
-                context,
-                () => Navigator.of(context)
-                    .pushNamed(ViewUnimplemented.routeName),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar:
           ComponentBottomNavigator(curRouteName: ViewAppHome.routeName),

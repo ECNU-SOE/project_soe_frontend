@@ -22,7 +22,8 @@ class ViewMistakeDetail extends StatelessWidget {
   }
 
   Widget _buildItem(DataMistakeDetailListItem listItem) {
-    return Container(
+    return 
+    Container(
       height: 240,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -82,10 +83,10 @@ class ViewMistakeDetail extends StatelessWidget {
           print("postGetDataMistakeDetail succeeded");
           return Scaffold(
             backgroundColor: gColorE3EDF7RGBA,
-            // appBar: ComponentAppBar(
-            //   title: ComponentTitle(label: "错题详情", style: gTitleStyle),
-            //   hasBackButton: true,
-            // ),
+            appBar: ComponentAppBar(
+              title: ComponentTitle(label: "错题详情", style: gTitleStyle),
+              hasBackButton: true,
+            ),
             body: _buildImpl(context, snapshot.data!),
             // bottomNavigationBar: ComponentBottomNavigator(
             //     curRouteName: ViewMistakeDetail.routeName),
