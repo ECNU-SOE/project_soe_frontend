@@ -237,7 +237,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
 
   @override
   Widget build(BuildContext context) {
-    _inputPage = ComponentVoiceInput(dataPage: widget._dataList[_index]);
+    _inputPage = ComponentVoiceInput(dataPage: widget._dataList[_index], titleShow: true);
     try {
       _voiceInputs![_index] = _inputPage!;
     } catch (e) {
@@ -329,6 +329,7 @@ class ViewExam extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings;
     _argsViewExam = ModalRoute.of(context)!.settings.arguments as ArgsViewExam;
+    
     return FutureBuilder<List<DataQuestionPageMain>>(
       future:
           MsgMgrQuestion().getQuestionPageMainList(_argsViewExam!.cprsgrpId),

@@ -50,7 +50,7 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
   // final decoded = jsonDecode(u8decoded);
   // COMMENT-8-12 服务器上目前没有我们测试账号的错题数据, 这是用来测试的临时数据, 不用注释掉即可. 不必删除
   final decoded = jsonDecode(
-      '{ "code": 0, "data": {"eachMistakeTypeNumber": [{"mistakeNum": 3,"mistakeTypeName": "语音评测","mistakeTypeCode": 0},{"mistakeNum": 3,"mistakeTypeName": "语音评测2","mistakeTypeCode": 1}],"mistakeTotalNumber": 3,"stubbornMistakeNumber": 1},"msg": null}');
+      '{ "code": 0, "data": {"eachMistakeTypeNumber": [{"mistakeNum": 3,"mistakeTypeName": "字词训练","mistakeTypeCode": 0},{"mistakeNum": 3,"mistakeTypeName": "常速朗读","mistakeTypeCode": 1}],"mistakeTotalNumber": 3,"stubbornMistakeNumber": 1},"msg": null}');
   final code = decoded['code'];
   final data = decoded['data'];
   if (code != 0) throw ("wrong return code");
@@ -137,8 +137,9 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(
   // for (final item in data) {
   //   listMistakeDetail.add(DataMistakeDetailListItem.fromJson(item));
   // }
+  
   listMistakeDetail.add(DataMistakeDetailListItem.fromJson({
-      "cpsrcdId": "cpsrcd_1667734326118322176",//题目的快照id，为了识别用户答的是哪道题，答题时给后端传答题结果时需要带上它
+      "cpsrcdId": "cpsrcd_1637716290204471296",//题目的快照id，为了识别用户答的是哪道题，答题时给后端传答题结果时需要带上它
       "corpusId": null,
       "cpsgrpId": "cpsgrp_1666820615325224960",//语料组id，错题模块暂时用不到，以后如果要显示该题是哪张试卷上的可能要用到
       "topicId": "topic_1667733584137555968",
@@ -152,7 +153,7 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(
       "cNum": 8 //该题目在语料组里第几题，暂时用不到
   }));
   listMistakeDetail.add(DataMistakeDetailListItem.fromJson({
-      "cpsrcdId": "cpsrcd_1667734692889235456",
+      "cpsrcdId": "cpsrcd_1637716465396355072",
       "corpusId": null,
       "cpsgrpId": "cpsgrp_1666820615325224960",
       "topicId": "topic_1667734588706918400",
@@ -166,7 +167,7 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(
       "cNum": 1
   }));
   listMistakeDetail.add(DataMistakeDetailListItem.fromJson({
-      "cpsrcdId": "cpsrcd_1667734773675724800",
+      "cpsrcdId": "cpsrcd_1637716759102492672",
       "corpusId": null,
       "cpsgrpId": "cpsgrp_1666820615325224960",
       "topicId": "topic_1667734588706918400",
@@ -179,5 +180,6 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(
       "tags": null,
       "cNum": 2
   }));
+  
   return DataMistakeDetail(listMistakeDetail: listMistakeDetail);
 }

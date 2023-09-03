@@ -32,7 +32,7 @@ class ViewMistakeBook extends StatelessWidget {
 }
 
 class _ViewMistakeBookBody extends StatelessWidget {
-  // 单个错题的模板，需要重新更改
+  int oneWeekKey = 0;
   Widget _buildItem(
           BuildContext context, DataMistakeBookListItem mistakeItem) =>
       Padding(
@@ -55,7 +55,7 @@ class _ViewMistakeBookBody extends StatelessWidget {
                 ComponentRoundButton(
                           func: () => Navigator.of(context).pushNamed(
                               ViewMistakeDetail.routeName,
-                              arguments: <int>[0, mistakeItem.mistakeTypeCode]),
+                              arguments: <int>[oneWeekKey, mistakeItem.mistakeTypeCode]),
                           color: gColorE8F3FBRGBA,
                           child: Text("查看"),
                           height: 25,
@@ -78,6 +78,8 @@ class _ViewMistakeBookBody extends StatelessWidget {
       Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber.toString(),
           style: gSubtitleStyle),
     ], mainAxisAlignment: MainAxisAlignment.spaceAround));
+
+
 
     for (DataMistakeBookListItem mistakeItem in mistakeBook.listMistakeBook) {
       wrongList.add(_buildItem(context, mistakeItem));

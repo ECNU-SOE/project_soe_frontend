@@ -309,8 +309,9 @@ class DataQuestionEval {
     return 14;
   }
 
-  Widget getRichText4Show(bool showWrongs) {
-    final str = toSingleString();
+  Widget getRichText4Show(String str, List<String> wrongSheng, bool showWrongs) {
+    // final str = toSingleString();
+    print(str.length);
     final adaSize = getAdaptiveSize(str.length);
     if (!showWrongs) {
       return Text(
@@ -322,18 +323,33 @@ class DataQuestionEval {
         ),
       );
     }
-    List<TextSpan> childrenSpanList = resultXf!.spanList
-        .map(
-          (spanInfo) => TextSpan(
-            text: spanInfo.label,
+    Map<String, int> mp = Map();
+    for(var x in wrongSheng) {
+      mp[x] = 1;
+    }
+    List<TextSpan> childrenSpanList = [];
+    for(int i = 0; i < str.length; ++ i) {
+      if(mp[str[i]] == 1) {
+        childrenSpanList.add(TextSpan(
+            text: str[i],
             style: TextStyle(
               fontFamily: 'SourceSans',
-              color: spanInfo.isWrong ? Color(0xefff1e1e) : Color(0xff2a2a2a),
+              color: Color(0xefff1e1e),
               fontSize: adaSize,
             ),
-          ),
-        )
-        .toList();
+          ));
+      } else {
+        childrenSpanList.add(TextSpan(
+            text: str[i],
+            style: TextStyle(
+              fontFamily: 'SourceSans',
+              color: Color(0xff2a2a2a),
+              fontSize: adaSize,
+            ),
+          ));
+      }
+    }
+    
     return RichText(
       text: TextSpan(children: childrenSpanList),
     );
@@ -481,10 +497,12 @@ class DataQuestionPageMain extends DataQuestionEval {
   }
 
   // 获取得分信息
-  String getScoreDescString() {
-    return '第${this.tnum}大题第${this.cnum}小题' +
-        '(本题满分:${weight.toStringAsFixed(1)})' +
-        '\n';
+  String getScoreDescString(bool scoreShowOnly) {
+    return scoreShowOnly
+        ? '(本题满分:${weight.toStringAsFixed(1)})'
+        : '第${this.tnum}大题第${this.cnum}小题' +
+            '(本题满分:${weight.toStringAsFixed(1)})' +
+            '\n';
   }
 }
 

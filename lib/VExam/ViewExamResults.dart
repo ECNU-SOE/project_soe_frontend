@@ -100,14 +100,22 @@ class ViewExamResult extends StatelessWidget {
 
   void _handleScoreList(List<Widget> rows, List<ItemResult> itemList) {
     rows.add(ComponentSubtitle(
-      label: '分小题得分',
+      label: '各小题得分',
       style: gSubtitleStyle0,
     ));
     for (final item in itemList) {
-      rows.add(ComponentTitle(
-          label:
-              '第${item.tNum}大题第${item.cNum}小题, 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
-          style: gInfoTextStyle2));
+      if(item.tNum == 1) {
+        rows.add(ComponentTitle(
+            label:
+                '朗读词语 ${item.cNum} 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
+            style: gInfoTextStyle2));
+      } else if(item.tNum == 2) {
+        rows.add(ComponentTitle(
+            label:
+                '朗读短文 得分${item.gotScore.toStringAsFixed(1)}/${item.fullScore.toStringAsFixed(1)}',
+            style: gInfoTextStyle2));
+      }
+
     }
   }
 

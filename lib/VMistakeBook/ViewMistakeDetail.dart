@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:project_soe/CComponents/ComponentAppBar.dart';
@@ -6,72 +7,84 @@ import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
+import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
+import 'package:project_soe/VExam/ViewExamResults.dart';
+import 'package:project_soe/VExam/DataQuestion.dart';
+import 'package:project_soe/CComponents/ComponentVoiceInput.dart';
+import 'package:project_soe/VMistakeBook/ViewMistakeCard.dart';
+import 'package:project_soe/s_o_e_icons_icons.dart';
+import 'package:http/http.dart' as http;
 
-class ViewMistakeDetail extends StatelessWidget {
+import 'package:element_ui/animations.dart';
+import 'package:element_ui/widgets.dart';
+
+List<DataQuestionPageMain> dataQuestionPageList = [];
+
+class ViewMistakeDetail extends StatefulWidget {
+  const ViewMistakeDetail({super.key});
   static String routeName = 'mistakeDetail';
-  ViewMistakeDetail();
-  Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
-    List<Widget> children = List.empty(growable: true);
-    for (final detailItem in mistakeDetail.listMistakeDetail) {
-      children.add(_buildItem(detailItem));
-    }
-    return ListView(
-      children: children,
-    );
-  }
-
-  Widget _buildItem(DataMistakeDetailListItem listItem) {
-    return 
-    Container(
-      height: 240,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ComponentTitle(
-              label: '题目ID:${listItem.cpsrcdId}', style: gInfoTextStyle0),
-          ComponentTitle(
-              label: '难度:${listItem.difficulty} ', style: gInfoTextStyle0),
-          ComponentTitle(
-              label: '分数:${listItem.wordWeight} ', style: gInfoTextStyle0),
-          ComponentTitle(
-              label: '拼音:${listItem.pinyin} ', style: gInfoTextStyle0),
-          ComponentTitle(
-              label: '原文:${listItem.refText} ', style: gInfoTextStyle0),
-          ComponentTitle(
-              label: '音频:${listItem.audioUrl}', style: gInfoTextStyle0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ComponentRoundButton(
-                func: () {
-                  // TODO-23-8-13 进入答题界面
-                  // 语音输入答题参考 ComponentVoiceInput
-                  // ViewExam, ViewPractice
-                  // 1. 复用ViewExam如何ComponentVoiceInput, Data(Msg)Question
-                  // 2. 参考ViewPractice如何开启答题界面, 如何和返回参数
-                },
-                color: gColorE3EDF7RGBA,
-                child: ComponentTitle(
-                  label: '点击答题',
-                  style: gInfoTextStyle0,
-                ),
-                height: 25,
-                width: 25,
-                radius: 3,
-              ),
-            ],
-          ),
-          Divider(
-            thickness: 2.0,
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
+  State<ViewMistakeDetail> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<ViewMistakeDetail> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  getGetCpsrcdDetail(String cpsrcdId, int index) async {
+    var url = Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsrcd/v1/getCpsrcdDetail?cpsrcdId=' + cpsrcdId);
+    final token = await AuthritionState.instance.getToken();
+    var response = await http.get(
+      url,
+      headers: {"token": token},
+    );
+    var data = jsonDecode(Utf8Codec().decode(response.bodyBytes))['data']; 
+
+    var dataQuestion = new DataQuestion(
+      wordWeight: data['wordWeight'],
+      id: data['id'],
+      label: data['refText'],
+      cpsgrpId: data['cpsgrpId'],
+      topicId: data['topicId'],
+      evalMode: data['evalMode']);
+
+    var dataQuestionPage = new DataQuestionPageMain(
+      evalMode: data['evalMode'],
+      id: data['id'],
+      dataQuestion: dataQuestion,
+      cnum: data['cNum'],
+      tnum: 1,
+      cpsgrpId: data['cpsgrpId'],
+      weight: data['wordWeight'] == null? 0: data['wordWeight'],
+      title: '字词训练', // 题目上面标题
+      desc: '字词训练', // 题目里面标题
+      audioUri: data['audioUrl'],
+    );
+
+    dataQuestionPageList.add(dataQuestionPage);
+  }
+
+
+  Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
+
+    final itemBuilder = (context, index) {
+      return _buildItem(dataQuestionPageList[index]);
+    };
+
+
+    return EPageView(
+      itemBuilder: itemBuilder,
+      itemCount: mistakeDetail.listMistakeDetail.length,
+    );
+  }
+
+  Widget _buildItem(DataQuestionPageMain dataQuestionPageMain) {
+    return ViewMistakeCard(dataQuestionPageMain: dataQuestionPageMain);
+  }
+
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as List<int>;
     int oneWeekKey = args[0];
@@ -80,6 +93,9 @@ class ViewMistakeDetail extends StatelessWidget {
       future: postGetDataMistakeDetail(mistakeTypeCode, oneWeekKey),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          for(var index = 0; index < snapshot.data!.listMistakeDetail.length; ++ index) {
+            getGetCpsrcdDetail(snapshot.data!.listMistakeDetail[index].cpsrcdId, index);
+          }
           print("postGetDataMistakeDetail succeeded");
           return Scaffold(
             backgroundColor: gColorE3EDF7RGBA,

@@ -1,3 +1,5 @@
+// import 'dart:js';
+
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
@@ -11,6 +13,7 @@ import 'package:project_soe/VExam/ViewExam.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeBook.dart';
+// import 'package:project_soe/VMistakeBook/ViewMistakeCard.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 import 'package:project_soe/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/VPersonalPage/ViewEditPersonal.dart';
@@ -18,6 +21,7 @@ import 'package:project_soe/VPersonalPage/ViewPersonal.dart';
 import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeFollow.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
+
 
 Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewAppHome.routeName: (context) => ViewAppHome(),
@@ -38,6 +42,7 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewClass.routeName: (context) => ViewClass(),
   ViewMistakeBook.routeName: (context) => ViewMistakeBook(),
   ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
+  // ViewMistakeCard.routeName: (context) => ViewMistakeCard()
 };
 
 Map<String, List<String>> sRouteMap = {

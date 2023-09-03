@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:audioplayers/audioplayers.dart' as ap;
+import 'package:project_soe/VMistakeBook/ViewMistakeCard.dart';
+import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 import 'package:quiver/strings.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
@@ -19,7 +22,13 @@ import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
   final DataQuestionPageMain dataPage;
-  ComponentVoiceInput({super.key, required this.dataPage});
+  final bool titleShow;
+  bool wrongsShow;
+  ComponentVoiceInput(
+      {super.key,
+      required this.dataPage,
+      required this.titleShow,
+      this.wrongsShow = false});
   @override
   State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
@@ -28,6 +37,11 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   _ComponentVoiceInputState({Key? key});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   // 析构函数
   @override
@@ -108,7 +122,9 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.dataPage.setRecording(false);
       widget.dataPage.setUploading(true);
     });
+
     await widget.dataPage.postAndGetResultXf();
+    
     setState(() {
       widget.dataPage.setUploading(false);
     });
@@ -227,30 +243,35 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     );
   }
 
+  List<String> wrongSheng = [];
+
   @override
   Widget build(BuildContext context) {
     List<Widget> children = List.empty(growable: true);
     children.addAll(
       [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
-            child: Text(
-              widget.dataPage.desc,
-              style: gSubtitleStyle,
-            ),
-          ),
-        ),
-        Center(
+        widget.titleShow
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
+                  child: Text(
+                    widget.dataPage.desc,
+                    style: gSubtitleStyle,
+                  ),
+                ),
+              )
+            : Container(),
+        Container(
+          padding: EdgeInsets.only(left: 15, bottom: 10),
           child: Text(
-            widget.dataPage.getScoreDescString(),
+            widget.dataPage.getScoreDescString(!widget.titleShow),
             style: gInfoTextStyle,
           ),
         ),
         Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: widget.dataPage.getRichText4Show(false),
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: widget.dataPage.getRichText4Show(widget.dataPage.dataQuestion.label, wrongSheng, widget.wrongsShow),
           ),
         ),
       ],
@@ -277,7 +298,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
           color: gColorFFFFFFRGBA,
           shadowColor: gColorE1EBF5RGBA,
           edgesHorizon: 26.5,
-          edgesVertical: 50,
+          edgesVertical: 10,
           child: ListView(
             children: children,
           ),
@@ -322,7 +343,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                         style: gSubtitleStyle,
                       ),
                       Padding(
-                        padding: EdgeInsets.all(6.0),
+                        padding: EdgeInsets.only(left: 6.0),
                         child: ComponentCircleButton(
                           func: _cbkRecordStop,
                           child: _recordIcon(),
@@ -333,7 +354,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.all(4.0),
+                    padding: EdgeInsets.only(left: 0.0),
                     child: ComponentCircleButton(
                       func: _cbkRetry,
                       child: _retryIcon(),
@@ -341,6 +362,34 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       color: gColorE3EDF7RGBA,
                     ),
                   ),
+                  widget.titleShow
+                      ? Container()
+                      : Padding(
+                          padding: EdgeInsets.only(left: 0),
+                          child: TextButton(
+                            child: Text('提交'),
+                            onPressed: (() {
+                              // ........
+                              setState(() {
+                                if(widget.dataPage.resultXf != null) {
+                                  wrongSheng.clear();
+                                  for(var x in widget.dataPage.resultXf!.wrongSheng) {
+                                    var tmp = x.toJson();
+                                    print(tmp[9]);
+                                    wrongSheng.add(tmp[9]);
+                                  }
+                                  widget.dataPage.setStartPlaying(false);
+                                  widget.dataPage.setRecording(false);
+                                  widget.dataPage.setFilePath('');
+                                  widget.dataPage.setUploading(false);
+                                  widget.dataPage.resultXf = null;
+                                }
+                                widget.wrongsShow = true;                                                                
+                              });
+                            }),
+                          ),
+                        )
+                      // color: gColorE3EDF7RGBA,
                 ],
               ),
       ),
