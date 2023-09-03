@@ -37,7 +37,7 @@
 1. 创建文件目录VMistakeBook, 该目录对应该错题本界面需要使用的所有文件, 包括数据, 信息收发, 界面等. 并在VMistakeBook目录下, 新建文件 ViewMistakeBook.dart (界面), DataMistake.dart (数据类),
 ![Alt text](image.png)
 2. 实现数据类以及数据解析
-    - 查询soe接口文档 <https://documenter.getpostman.com/view/11123680/2s93K1nyRT#378a68de-7db8-44dd-882a-561bb6ca675d>, 根据接口 <http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0> 返回的数据格式.
+    - 查询soe接口文档 <https://documenter.getpostman.com/view/11123680/2s93K1nyRT#378a68de-7db8-44dd-882a-561bb6ca675d>, 根据接口 <http://xxx.xxx.xxx.xxx:xxx/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0> 返回的数据格式.
     - 在文件DataMistakeBook.dart中创建并实现DataMistakeBook数据类
 
     ```json
@@ -58,7 +58,7 @@
     }
     ```
 
-    - 根据json数据, 接口<http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0> 返回的数据是```int mistakeTotalNumber,int stubbornMistakeNumber, List eachMistakeTypeNumber,``` , 其中eachMistakeTypeNumber的数据结构为```int mistakeNum, String mistakeTypeName, int mistakeTypeCode```
+    - 根据json数据, 接口<http://xxx.xxx.xxx.xxx:xxx/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0> 返回的数据是```int mistakeTotalNumber,int stubbornMistakeNumber, List eachMistakeTypeNumber,``` , 其中eachMistakeTypeNumber的数据结构为```int mistakeNum, String mistakeTypeName, int mistakeTypeCode```
     - 所以可以定义出DataMistakeListItem和DataMistakeBook
 
     ```dart
@@ -107,7 +107,7 @@
         final token = AuthritionState.instance.getToken();
         // 根据接口地址解析Uri
         final uri = Uri.parse(
-            "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0");
+            "http://xxx.xxx.xxx.xxx:xxx/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0");
         // 获取http.Client()并发送get请求
         // http.Clinet().get() 也是一个async异步函数, 所以需要await它等待其返回
         final response = await http.Client().get(
