@@ -148,9 +148,36 @@ class ParsedResultsXf {
   String toJson() {
     String ret = '';
     ret += '{';
+
+    ret += '"dataResultXf":[';
+    for(var dataResultXf in resultList) {
+      ret +='{';
+      ret += '"totalScore": '; ret += '${dataResultXf.totalScore.toString()},';
+      ret += '"fluencyScore": '; ret += '${dataResultXf.fluencyScore.toString()},';
+      ret += '"phoneScore": '; ret += '${dataResultXf.phoneScore.toString()},';
+      ret += '"toneScore": '; ret += '${dataResultXf.toneScore.toString()},';
+      ret += '"more": '; ret += '${dataResultXf.more.toString()},';
+      ret += '"less": '; ret += '${dataResultXf.less.toString()},';
+      ret += '"retro": '; ret += '${dataResultXf.retro.toString()},';
+      ret += '"repl": '; ret += '${dataResultXf.repl.toString()},';
+      ret += '},';
+    }
+    ret += '],';
+
+    ret += '"itemResult":[';
+    for(var itemResult in itemList) {
+      ret +='{';
+      ret += '"gotScore": '; ret += '${itemResult.gotScore.toString()},';
+      ret += '"fullScore": '; ret += '${itemResult.fullScore.toString()},';
+      ret += '"tNum": '; ret += '${itemResult.tNum.toString()},';
+      ret += '"cNum": '; ret += '${itemResult.cNum.toString()},';
+      ret += '},';
+    }
+    ret += '],';
+
     ret += '"wrongSheng":{';
     for (final wrongSheng in wrongShengs.keys) {
-      ret += wrongSheng + ':[';
+      ret += '"${wrongSheng}"' + ':[';
       final lst = wrongShengs[wrongSheng];
       if (lst != null) {
         for (final ws in lst) {
@@ -163,7 +190,7 @@ class ParsedResultsXf {
     ret += '"wrongYun":{';
 
     for (final wys in wrongYuns.keys) {
-      ret += wys + ':[';
+      ret += '"${wys}"' + ':[';
       final lst = wrongShengs[wys];
       if (lst != null) {
         for (final wy in lst) {
@@ -176,7 +203,7 @@ class ParsedResultsXf {
     ret += '"wrongMono":{';
 
     for (final wms in wrongMonos.keys) {
-      ret += wms + ':[';
+      ret += '"${wms}"' + ':[';
       final lst = wrongShengs[wms];
       if (lst != null) {
         for (final wm in lst) {
@@ -261,6 +288,7 @@ class ParsedResultsXf {
       wrongMonos: wrongMonos,
     );
   }
+
 }
 
 // 基类, 记录录音情况和评测内容

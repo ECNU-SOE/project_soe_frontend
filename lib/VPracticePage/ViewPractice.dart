@@ -11,6 +11,7 @@ import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/VPracticePage/DataPractice.dart';
 import 'package:project_soe/VExam/ViewExam.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeResults.dart';
 
 // FIXME 22.12.4 Temp
 List<String> tempTitles = [
@@ -127,7 +128,9 @@ class ViewPractice extends StatelessWidget {
         children.addAll(_buildPracticeButton(context, item));
       }
     }
+
     var _listView = ListView(children: children);
+
     return Scaffold(
       appBar: ComponentAppBar(
         title: ComponentTitle(
@@ -138,6 +141,18 @@ class ViewPractice extends StatelessWidget {
       ),
       backgroundColor: gColorE3EDF7RGBA,
       body: _listView,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+            Navigator.push(context, new MaterialPageRoute(builder: (
+              BuildContext context,
+            ) {
+              return new ViewPracticeResults();
+            }));
+          },
+          child: Text("查看报告"),
+          foregroundColor: Colors.black,
+          backgroundColor: gColorE8F3FBRGBA,
+      ),    
       bottomNavigationBar:
           ComponentBottomNavigator(curRouteName: ViewPractice.routeName),
     );

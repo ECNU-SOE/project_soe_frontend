@@ -48,6 +48,9 @@ class MsgMgrQuestion {
   // 客户端解析后的数据上传至服务器
   Future<void> postResultToServer(ParsedResultsXf parsedResultsXf) async {
     final client = http.Client();
+    print("------------");
+    print(parsedResultsXf.toJson());
+    print("------------");
     final bodyMap = {
       'resJson': parsedResultsXf.toJson(),
       'cpsgrpId': parsedResultsXf.cpsgrpId,

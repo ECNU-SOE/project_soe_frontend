@@ -1,5 +1,7 @@
 // import 'dart:js';
 
+// import 'dart:js';
+
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
@@ -20,6 +22,9 @@ import 'package:project_soe/VPersonalPage/ViewEditPersonal.dart';
 import 'package:project_soe/VPersonalPage/ViewPersonal.dart';
 import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeFollow.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeRandom.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeResults.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeResultsCard.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
 
 
@@ -42,7 +47,9 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewClass.routeName: (context) => ViewClass(),
   ViewMistakeBook.routeName: (context) => ViewMistakeBook(),
   ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
-  // ViewMistakeCard.routeName: (context) => ViewMistakeCard()
+  ViewPracticeRandom.routeName: (context) => ViewPracticeRandom(),
+  ViewPracticeResults.routeName: (context) => ViewPracticeResults(),
+  ViewPracticeResultsCard.routeName: (context) => ViewPracticeResultsCard()
 };
 
 Map<String, List<String>> sRouteMap = {

@@ -71,6 +71,8 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
   Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
 
     final itemBuilder = (context, index) {
+      // null, return 
+      if(dataQuestionPageList.length == 0) return Container();
       return _buildItem(dataQuestionPageList[index]);
     };
 

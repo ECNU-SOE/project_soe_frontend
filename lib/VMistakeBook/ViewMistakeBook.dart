@@ -38,39 +38,51 @@ class _ViewMistakeBookBody extends StatelessWidget {
       Padding(
         padding: EdgeInsets.only(left: 10, right: 10, top: 5),
         child: Container(
-          height: 60,
-          decoration: new BoxDecoration(
-            color: gColorE3EDF7RGBA,
-          ),
-          child: 
-            Row(
+            height: 60,
+            decoration: new BoxDecoration(
+              color: gColorE3EDF7RGBA,
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ComponentSubtitle(label: mistakeItem.mistakeTypeName, style: gSubtitleStyle0)                    
+                    ComponentSubtitle(
+                        label: mistakeItem.mistakeTypeName,
+                        style: gSubtitleStyle0)
                   ],
                 ),
                 ComponentRoundButton(
-                          func: () => Navigator.of(context).pushNamed(
+                    func: () => {
+                          // Navigator.of(context).pop(),
+                          Navigator.of(context).pushNamed(
                               ViewMistakeDetail.routeName,
-                              arguments: <int>[oneWeekKey, mistakeItem.mistakeTypeCode]),
-                          color: gColorE8F3FBRGBA,
-                          child: Text("查看"),
-                          height: 25,
-                          width: 70,
-                          radius: 0)
+                              arguments: <int>[
+                                oneWeekKey,
+                                mistakeItem.mistakeTypeCode
+                              ]),
+                          // Navigator.pop(context),
+                          // Navigator.of(context).pushReplacementNamed(
+                          //     ViewMistakeDetail.routeName,
+                          //     arguments: <int>[
+                          //       oneWeekKey,
+                          //       mistakeItem.mistakeTypeCode
+                          //     ]),
+                        },
+                    color: gColorE8F3FBRGBA,
+                    child: Text("查看"),
+                    height: 25,
+                    width: 70,
+                    radius: 0)
               ],
-            )
-          
-        ),
+            )),
       );
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeBook mistakeBook) {
-    List<Widget> wrongList = List.empty(growable: true);
-    final listMistakeBook = mistakeBook.listMistakeBook;
-    wrongList.add(Row(children: [
+    // 一周错题
+    List<Widget> wrongListOne = List.empty(growable: true);
+    wrongListOne.add(Row(children: [
       Text(
         '总错题数：' + mistakeBook.mistakeTotalNumber.toString(),
         style: gSubtitleStyle,
@@ -79,14 +91,32 @@ class _ViewMistakeBookBody extends StatelessWidget {
           style: gSubtitleStyle),
     ], mainAxisAlignment: MainAxisAlignment.spaceAround));
 
-
-
-    for (DataMistakeBookListItem mistakeItem in mistakeBook.listMistakeBook) {
-      wrongList.add(_buildItem(context, mistakeItem));
+    for (DataMistakeBookListItem mistakeItem
+        in mistakeBook.listMistakeBookOne) {
+      wrongListOne.add(_buildItem(context, mistakeItem));
     }
 
-    final listView = ListView(
-      children: wrongList,
+    final listViewOne = ListView(
+      children: wrongListOne,
+    );
+    // 全部错题
+    List<Widget> wrongListAll = List.empty(growable: true);
+    wrongListAll.add(Row(children: [
+      Text(
+        '总错题数：' + mistakeBook.mistakeTotalNumber.toString(),
+        style: gSubtitleStyle,
+      ),
+      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber.toString(),
+          style: gSubtitleStyle),
+    ], mainAxisAlignment: MainAxisAlignment.spaceAround));
+
+    for (DataMistakeBookListItem mistakeItem
+        in mistakeBook.listMistakeBookAll) {
+      wrongListAll.add(_buildItem(context, mistakeItem));
+    }
+
+    final listViewAll = ListView(
+      children: wrongListAll,
     );
 
     return DefaultTabController(
@@ -103,8 +133,8 @@ class _ViewMistakeBookBody extends StatelessWidget {
           ),
           body: Container(
             child: TabBarView(children: <Widget>[
-              listView,
-              listView,
+              listViewOne,
+              listViewAll,
             ]),
           )),
     );
