@@ -59,6 +59,73 @@
     "msg": null
 }
 
+{
+    "code": 0,
+    "data": [
+        {
+            "id": "transcript_1640698978939047936",
+            "cpsgrpId": "cpsgrp_1588871928125460480",
+            "respondent": "user_1587395702114357248",
+            "pronCompletion": 0.1,
+            "pronAccuracy": 0.1,
+            "pronFluency": 0.1,
+            "suggestedScore": 90.1,
+            "manualScore": 0.1,
+            "resJson": {
+                "dataResultXf": [
+                    {
+                        "totalScore": 0.423729,
+                        "fluencyScore": 0.1,
+                        "phoneScore": 0.847458,
+                        "toneScore": 0.1,
+                        "more": 0,
+                        "less": 58,
+                        "retro": 0,
+                        "repl": 0
+                    }
+                ],
+                "itemResult": [
+                    {
+                        "gotScore": 0.0423729,
+                        "fullScore": 0.1,
+                        "tNum": 1,
+                        "cNum": 1
+                    },
+                    {
+                        "gotScore": 0.0423729,
+                        "fullScore": 0.1,
+                        "tNum": 1,
+                        "cNum": 1
+                    }
+                ],
+                "wrongSheng": {
+                    "sh": [
+                        {
+                            "word": "山",
+                            "shengmu": "sh",
+                            "yunmu": "",
+                            "isShengWrong": true,
+                            "pinyinString": "shān"
+                        }
+                    ],
+                    "c": [
+                        {
+                            "word": "村",
+                            "shengmu": "c",
+                            "yunmu": "",
+                            "isShengWrong": true,
+                            "pinyinString": "cūn"
+                        }
+                    ]
+                }
+            },
+            "gmtCreate": "2023-03-28T12:54:54.000+00:00",
+            "gmtModified": "2023-03-28T12:54:54.000+00:00"
+        }
+    ],
+    "msg": ""
+}
+
 
 {id: transcript_1699750651271188480, cpsgrpId: cpsgrp_1647468296527810560, respondent: user_1688561556046090240, pronCompletion: null, pronAccuracy: null, pronFluency: null, suggestedScore: 2.4, manualScore: null, resJson: {dataResultXf:[{totalScore: 10.0,fluencyScore: 0.0,phoneScore: 8.75,toneScore: 11.25,more: 0,less: 70,retro: 1,repl: 2,},{totalScore: 2.396514,fluencyScore: 19.479073,phoneScore: 0.032538,toneScore: 0.065076,more: 0,less: 460,retro: 0,repl: 0,},],itemResult:[{gotScore: 1.25,fullScore: 12.5,tNum: 1,cNum: 1,},{gotScore: 0.0,fullScore: 12.5,tNum: 1,cNum: 2,},{gotScore: 0.0,fullScore: 12.5,tNum: 1,cNum: 3,},{gotScore: 0.0,fullScore: 12.5,tNum: 1,cNum: 4,},{gotScore: 1.198257,fullScore: 50.0,tNum: 2,cNum: 1,},],wrongSheng:{f:[{"word":"焚","shengmu":"f","yunmu":"","isShengWrong":true,"pinyinString":"fén"},],sh:[{"word":"收","shengmu":"sh","yunmu":"","isShengWrong":true,"pinyinString":"shōu"},],},wrongYun:{en:[],},wrongMono:{},}, gmtModified: 2023-09-07 11:45:09, gmtCreate: 2023-09-07 11:45:09}
 

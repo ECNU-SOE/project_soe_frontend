@@ -122,8 +122,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.dataPage.setRecording(false);
       widget.dataPage.setUploading(true);
     });
-
-    await widget.dataPage.postAndGetResultXf();
+    // ---------------- test !!!
+    await widget.dataPage.postAndGetResultXf(widget.dataPage.cpsgrpId);
     
     setState(() {
       widget.dataPage.setUploading(false);
@@ -208,6 +208,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Widget _buildExampleAudioPlayer(BuildContext context) {
+    // print(widget.dataPage.audioUri);
     if (widget.dataPage.audioUri.isEmpty || widget.dataPage.audioUri == '') {
       return ComponentSubtitle(
         label: '没有示例语音',

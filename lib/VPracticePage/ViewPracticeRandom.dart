@@ -15,6 +15,10 @@ import 'package:project_soe/s_o_e_icons_icons.dart';
 import 'package:element_ui/animations.dart';
 import 'package:element_ui/widgets.dart';
 
+// ------------------------------------------------
+// final Map<> map evalMode: 0,1,2,3 -> 字 词 句子 段落
+// ------------------------------------------------
+
 class ViewPracticeRandom extends StatefulWidget {
   static String routeName = 'practiceRandom';
   // DataQuestionPageMain dataQuestionPageMain;

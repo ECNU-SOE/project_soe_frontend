@@ -384,12 +384,12 @@ class DataQuestionEval {
   }
 
   // 发送结果至服务器评测
-  Future<void> postAndGetResultXf() async {
+  Future<void> postAndGetResultXf(String id) async {
     if (_filePath == '') {
       return;
     }
     _isUploading = true;
-    resultXf = await MsgMgrQuestion().postAndGetResultXf(this);
+    resultXf = await MsgMgrQuestion().postAndGetResultXf(this, id);
     // 标定状态
     _isUploading = false;
   }

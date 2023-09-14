@@ -90,8 +90,7 @@ class _ViewPracticeResults extends StatelessWidget {
               ),
               ComponentRoundButton(
                   func: () => {
-                        Navigator.of(context)
-                            .pushNamed(ViewPracticeResultsCard.routeName),
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => ViewPracticeResultsCard(dataTranscript)))
                       },
                   color: gColorE8F3FBRGBA,
                   child: Text("查看"),
@@ -108,6 +107,7 @@ class _ViewPracticeResults extends StatelessWidget {
     List<Widget> listDataResultXf = List.empty(growable: true);
     for (ResJson dataTranscript in resultsXf) {
       listDataResultXf.add(_buildItem(context, dataTranscript));
+      print(dataTranscript.itemResult);
     }
 
     final listViewAll = ListView(

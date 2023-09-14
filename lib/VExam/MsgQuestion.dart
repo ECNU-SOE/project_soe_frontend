@@ -73,7 +73,7 @@ class MsgMgrQuestion {
 
   // 将语音数据发往服务器并评测
   // 此函数只应被Data调用
-  Future<DataResultXf> postAndGetResultXf(DataQuestionEval data) async {
+  Future<DataResultXf> postAndGetResultXf(DataQuestionEval data, String id) async {
     // 指定URI
     final uri = Uri.parse(
         'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf');
@@ -87,7 +87,15 @@ class MsgMgrQuestion {
     request.fields['category'] = getXfCategoryStringByInt(data.evalMode);
     // 设置Headers
     request.headers['Content-Type'] = 'multipart/form-data';
+    // ------------------------------------------ not test !!!
+    print(id);
+    if(id != '' && id.substring(0, 6) == 'cpsrcd') {
+      print("yes yes yes");
+      // 传cpsrcdId
+      request.fields['cpsrcdId'] = id;
+    }
     // 发送 并等待返回
+    // -----------------------------------------
     final response = await request.send();
     // 将返回转换为字节流, 并解码
     final decoded = jsonDecode(utf8.decode(await response.stream.toBytes()));

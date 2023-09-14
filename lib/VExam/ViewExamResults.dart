@@ -267,6 +267,7 @@ class ViewExamResult extends StatelessWidget {
     );
   }
 
+/*
   Widget? _showEnterApp(BuildContext context, bool isShow) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
@@ -286,6 +287,7 @@ class ViewExamResult extends StatelessWidget {
       ),
     );
   }
+*/
 
   // FIXME 23.3.5 此处用的是临时界面
   @override

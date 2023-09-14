@@ -131,7 +131,11 @@ class ResJson {
   List<DataResultXfTranscript>? dataResultXf;
   List<ItemResultTranscript>? itemResult;
 
-  ResJson({this.cpsgrpId, this.dataResultXf, this.itemResult, this.pronAccuracy, this.pronCompletion, this.pronFluency, this.manualScore, this.suggestedScore, this.gmtCreate, this.gmtModified, this.title});
+  // Map<String, dynamic>? wrongSheng;
+  // Map<String, dynamic>? wrongYun;
+  // Map<String, dynamic>? wrongMono;
+
+  ResJson({this.cpsgrpId, this.dataResultXf, this.itemResult, this.pronAccuracy, this.pronCompletion, this.pronFluency, this.manualScore, this.suggestedScore, this.gmtCreate, this.gmtModified, this.title,}); // this.wrongSheng, this.wrongMono, this.wrongYun});
 
   ResJson.fromJson(Map<String, dynamic> json) {
     cpsgrpId = json['cpsgrpId'];
@@ -143,7 +147,10 @@ class ResJson {
     gmtCreate = json['gmtCreate'];
     gmtModified = json['gmtModified'];
     title = json['title'];
+    // print(json['cpsgrpId']);
+    // print(json['resJson']);
     if (json['dataResultXf'] != null) {
+      // print(1111111);
       dataResultXf = <DataResultXfTranscript>[];
       json['dataResultXf'].forEach((v) {
         dataResultXf!.add(new DataResultXfTranscript.fromJson(v));
@@ -248,6 +255,39 @@ class ItemResultTranscript {
   }
 }
 
+class WrongSheng {
+  String? word;
+  String? shengmu;
+  String? yunmu;
+  bool? isShengWrong;
+  String? pinyinString;
+
+  WrongSheng(
+      {this.word,
+      this.shengmu,
+      this.yunmu,
+      this.isShengWrong,
+      this.pinyinString});
+
+  WrongSheng.fromJson(Map<String, dynamic> json) {
+    word = json['word'];
+    shengmu = json['shengmu'];
+    yunmu = json['yunmu'];
+    isShengWrong = json['isShengWrong'];
+    pinyinString = json['pinyinString'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['word'] = this.word;
+    data['shengmu'] = this.shengmu;
+    data['yunmu'] = this.yunmu;
+    data['isShengWrong'] = this.isShengWrong;
+    data['pinyinString'] = this.pinyinString;
+    return data;
+  }
+}
+
 Future<List<ResJson>> postGetDataTranscriptPage() async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
@@ -270,23 +310,26 @@ Future<List<ResJson>> postGetDataTranscriptPage() async {
 
   for(var _data in data) {
       _data['title'] = "";
-      final response2 = await http.Client().get(
-        Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=' + _data['cpsgrpId']),
-        headers: {'token': token},
-      );
-      final u8decoded2 = utf8.decode(response2.bodyBytes);
-      final decoded2 = jsonDecode(u8decoded2);
-      final code2 = decoded2['code'];
-      final data2 = decoded2['data'];
-      if (code2 != 0) throw ("wrong return code");
-      else _data['title'] = data2['title'];
+      // final response2 = await http.Client().get(
+      //   Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=' + _data['cpsgrpId']),
+      //   headers: {'token': token},
+      // );
+      // final u8decoded2 = utf8.decode(response2.bodyBytes);
+      // final decoded2 = jsonDecode(u8decoded2);
+      // final code2 = decoded2['code'];
+      // final data2 = decoded2['data'];
+      // if (code2 != 0) throw ("wrong return code");
+      // else _data['title'] = data2['title'];
 
     listDataTranscript.add(
       ResJson.fromJson(_data)
     );
+
+    break;
+
   }
 
   print(listDataTranscript.length);
-  print(listDataTranscript);
+  print(listDataTranscript[0].dataResultXf);
   return listDataTranscript;
 }

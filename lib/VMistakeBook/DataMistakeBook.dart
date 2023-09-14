@@ -42,7 +42,7 @@ class DataMistakeBookListItem {
 Future<DataMistakeBook> getGetDataMistakeBook() async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
-      "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0");
+      "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=1");
   final response = await http.Client().get(
     uri,
     headers: {
@@ -65,7 +65,7 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
   }
 
   final _uri = Uri.parse(
-      "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=1");
+      "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0");
   final _response = await http.Client().get(
     _uri,
     headers: {

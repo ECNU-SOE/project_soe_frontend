@@ -49,7 +49,7 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
   ViewPracticeRandom.routeName: (context) => ViewPracticeRandom(),
   ViewPracticeResults.routeName: (context) => ViewPracticeResults(),
-  ViewPracticeResultsCard.routeName: (context) => ViewPracticeResultsCard()
+  // ViewPracticeResultsCard.routeName: (context) => ViewPracticeResultsCard()
 };
 
 Map<String, List<String>> sRouteMap = {
