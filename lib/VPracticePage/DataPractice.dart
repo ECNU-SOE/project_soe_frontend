@@ -310,22 +310,22 @@ Future<List<ResJson>> postGetDataTranscriptPage() async {
 
   for(var _data in data) {
       _data['title'] = "";
-      // final response2 = await http.Client().get(
-      //   Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=' + _data['cpsgrpId']),
-      //   headers: {'token': token},
-      // );
-      // final u8decoded2 = utf8.decode(response2.bodyBytes);
-      // final decoded2 = jsonDecode(u8decoded2);
-      // final code2 = decoded2['code'];
-      // final data2 = decoded2['data'];
-      // if (code2 != 0) throw ("wrong return code");
-      // else _data['title'] = data2['title'];
+      final response2 = await http.Client().get(
+        Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=' + _data['cpsgrpId']),
+        headers: {'token': token},
+      );
+      final u8decoded2 = utf8.decode(response2.bodyBytes);
+      final decoded2 = jsonDecode(u8decoded2);
+      final code2 = decoded2['code'];
+      final data2 = decoded2['data'];
+      if (code2 != 0) throw ("wrong return code");
+      else _data['title'] = data2['title'];
 
     listDataTranscript.add(
       ResJson.fromJson(_data)
     );
 
-    break;
+    // break;
 
   }
 
