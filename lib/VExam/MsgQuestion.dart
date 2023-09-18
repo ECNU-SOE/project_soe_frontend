@@ -34,7 +34,7 @@ class MsgMgrQuestion {
           cnum: json['cNum'],
           tnum: tnum,
           cpsgrpId: topicMap['cpsgrpId'],
-          id: topicMap['id'],
+          id: json['id'],
           weight: score,
           desc: topicMap['description'],
           title: topicMap['title'],

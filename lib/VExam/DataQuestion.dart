@@ -64,12 +64,16 @@ String getLabelFromMonotoneInt(int monoTone) {
 // 获取讯飞数据的解析格式
 String getXfCategoryStringByInt(int x) {
   switch (x) {
+    case -1:
+      return '无';
+    case 1:
+      return '字';
     case 2:
-      return 'read_word';
+      return '词';
     case 3:
-      return 'read_sentence';
+      return '句子';
     case 4:
-      return 'read_chapter';
+      return '段落';
     default:
       throw ('不支持的格式');
   }

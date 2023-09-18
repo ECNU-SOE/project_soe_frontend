@@ -49,7 +49,7 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
       label: data['refText'],
       cpsgrpId: data['cpsgrpId'],
       topicId: data['topicId'],
-      evalMode: data['evalMode']);
+      evalMode: data['evalMode'],);
 
     var dataQuestionPage = new DataQuestionPageMain(
       evalMode: data['evalMode'],

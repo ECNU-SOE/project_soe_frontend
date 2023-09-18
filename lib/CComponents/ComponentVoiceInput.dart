@@ -18,6 +18,8 @@ import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 
+Map<int, String> mp = {-1: '无', 1: '字', 2: '词', 3: '句子', 4: '段落'};
+
 // 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
@@ -123,7 +125,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.dataPage.setUploading(true);
     });
     // ---------------- test !!!
-    await widget.dataPage.postAndGetResultXf(widget.dataPage.cpsgrpId);
+    await widget.dataPage.postAndGetResultXf(widget.dataPage.id);
     
     setState(() {
       widget.dataPage.setUploading(false);
@@ -286,10 +288,16 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         toolbarHeight: 80.0,
         title: Column(
           children: [
-            ComponentSubtitle(
+            Row(children: [
+                          ComponentSubtitle(
               label: '${widget.dataPage.title}',
               style: gTitleStyle,
             ),
+            ComponentSubtitle(
+              label: '（标签：' + mp[widget.dataPage.dataQuestion.evalMode].toString() + '）',
+              style: gSubtitleStyle,
+            ),            
+            ],),
             _buildExampleAudioPlayer(context),
           ],
         ),

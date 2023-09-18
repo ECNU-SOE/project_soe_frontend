@@ -106,7 +106,7 @@ class DataMistakeDetailListItem {
   String pinyin;
   String refText;
   String audioUrl;
-  String tags;
+  List<String> tags;
   int cNum;
   DataMistakeDetailListItem(
       {required this.cpsrcdId,
@@ -133,7 +133,7 @@ class DataMistakeDetailListItem {
         pinyin: json['pinyin'].toString() ?? "",
         refText: json['refText'].toString() ?? "",
         audioUrl: json['audioUrl'].toString() ?? "",
-        tags: json['tags'].toString() ?? "",
+        tags: json['tags'] ?? [""],
         cNum: json['cNum'] ?? 0);
   }
 }
@@ -194,7 +194,7 @@ Future<DataMistakeDetailListItem> getGetRandomDataMistakeDetail() async {
       pinyin: data['pinyin'].toString() ?? "",
       refText: data['refText'].toString() ?? "",
       audioUrl: data['audioUrl'].toString() ?? "",
-      tags: data['tags'].toString() ?? "",
+      tags: data['tags'] ?? -1,
       cNum: 0
   );
   print(dataMistakeDetailListItem);
