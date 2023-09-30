@@ -49,7 +49,8 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
       label: data['refText'],
       cpsgrpId: data['cpsgrpId'],
       topicId: data['topicId'],
-      evalMode: data['evalMode'],);
+      evalMode: data['evalMode'],
+      tags: data['tags'] != null? data['tags'] as List<String>: []);
 
     var dataQuestionPage = new DataQuestionPageMain(
       evalMode: data['evalMode'],
@@ -62,6 +63,7 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
       title: '字词训练', // 题目上面标题
       desc: '字词训练', // 题目里面标题
       audioUri: data['audioUrl'],
+      pinyin: data['pinyin']
     );
 
     dataQuestionPageList.add(dataQuestionPage);

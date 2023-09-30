@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-// import 'dart:html';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -133,7 +132,7 @@ class DataMistakeDetailListItem {
         pinyin: json['pinyin'].toString() ?? "",
         refText: json['refText'].toString() ?? "",
         audioUrl: json['audioUrl'].toString() ?? "",
-        tags: json['tags'] ?? [""],
+        tags: json['tags'] ?? [],
         cNum: json['cNum'] ?? 0);
   }
 }
@@ -167,11 +166,10 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(int mistakeTypeCode, int oneW
   return DataMistakeDetail(listMistakeDetail: listMistakeDetail);
 }
 
-
 Future<DataMistakeDetailListItem> getGetRandomDataMistakeDetail() async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
-      'http://47.101.58.72:8888/corpus-server/api/corpus/v1/rand');
+      'http://47.101.58.72:8888/corpus-server/api/corpus/v1/rand?entityType=1');
   final response = await http.Client().get(
     uri,
     headers: {"token": token, "Content-Type": "application/json"},
@@ -194,7 +192,7 @@ Future<DataMistakeDetailListItem> getGetRandomDataMistakeDetail() async {
       pinyin: data['pinyin'].toString() ?? "",
       refText: data['refText'].toString() ?? "",
       audioUrl: data['audioUrl'].toString() ?? "",
-      tags: data['tags'] ?? -1,
+      tags: data['tags'] ?? [],
       cNum: 0
   );
   print(dataMistakeDetailListItem);

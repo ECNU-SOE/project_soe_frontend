@@ -6,30 +6,31 @@ import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
+import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VCommon/ViewQuestion.dart';
+import 'package:project_soe/VCommon/ViewQuestion_1.dart';
 import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/s_o_e_icons_icons.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:element_ui/animations.dart';
 import 'package:element_ui/widgets.dart';
 
-// ------------------------------------------------
-// final Map<> map evalMode: 0,1,2,3 -> 字 词 句子 段落
-// ------------------------------------------------
+dynamic test, aList, tagList;
 
 class ViewPracticeRandom extends StatefulWidget {
   static String routeName = 'practiceRandom';
-  // DataQuestionPageMain dataQuestionPageMain;
   ViewPracticeRandom({super.key});
 
   @override
   State<ViewPracticeRandom> createState() => _ViewPracticeRandomState();
 }
 
+
 class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
-  ComponentVoiceInput? _inputPage;
+  ViewQuestion_1? _inputPage;
 
   Widget _buildBodyImpl(BuildContext context, DataMistakeDetailListItem dataMistakeDetailListItem) {
     DataMistakeDetailListItem data = dataMistakeDetailListItem;
@@ -39,7 +40,8 @@ class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
       label: data.refText,
       cpsgrpId: data.cpsgrpId,
       topicId: data.topicId,
-      evalMode: data.evalMode,);
+      evalMode: data.evalMode,
+      tags: data.tags);
 
     var dataQuestionPage = new DataQuestionPageMain(
       evalMode: data.evalMode,
@@ -52,9 +54,10 @@ class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
       title: '字词训练', // 题目上面标题
       desc: '字词训练', // 题目里面标题
       audioUri: data.audioUrl,
+      pinyin: data.pinyin
     );
 
-    _inputPage = ComponentVoiceInput(dataPage: dataQuestionPage, titleShow: false);
+    _inputPage = ViewQuestion_1(dataPage: dataQuestionPage, titleShow: false);
 
     return Scaffold(
       appBar: ComponentAppBar(

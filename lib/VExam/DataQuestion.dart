@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
+import 'package:lpinyin/lpinyin.dart';
 
 import 'package:project_soe/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/CComponents/LogicPingyinlizer.dart' as pinyinlizer;
@@ -64,18 +66,16 @@ String getLabelFromMonotoneInt(int monoTone) {
 // 获取讯飞数据的解析格式
 String getXfCategoryStringByInt(int x) {
   switch (x) {
-    case -1:
-      return '无';
     case 1:
-      return '字';
+      return 'read_syllable';
     case 2:
-      return '词';
+      return 'read_word';
     case 3:
-      return '句子';
+      return 'read_sentence';
     case 4:
-      return '段落';
+      return 'read_chapter';
     default:
-      throw ('不支持的格式');
+    return 'read_word';
   }
 }
 
@@ -154,27 +154,39 @@ class ParsedResultsXf {
     ret += '{';
 
     ret += '"dataResultXf":[';
-    for(var dataResultXf in resultList) {
-      ret +='{';
-      ret += '"totalScore": '; ret += '${dataResultXf.totalScore.toString()},';
-      ret += '"fluencyScore": '; ret += '${dataResultXf.fluencyScore.toString()},';
-      ret += '"phoneScore": '; ret += '${dataResultXf.phoneScore.toString()},';
-      ret += '"toneScore": '; ret += '${dataResultXf.toneScore.toString()},';
-      ret += '"more": '; ret += '${dataResultXf.more.toString()},';
-      ret += '"less": '; ret += '${dataResultXf.less.toString()},';
-      ret += '"retro": '; ret += '${dataResultXf.retro.toString()},';
-      ret += '"repl": '; ret += '${dataResultXf.repl.toString()},';
+    for (var dataResultXf in resultList) {
+      ret += '{';
+      ret += '"totalScore": ';
+      ret += '${dataResultXf.totalScore.toString()},';
+      ret += '"fluencyScore": ';
+      ret += '${dataResultXf.fluencyScore.toString()},';
+      ret += '"phoneScore": ';
+      ret += '${dataResultXf.phoneScore.toString()},';
+      ret += '"toneScore": ';
+      ret += '${dataResultXf.toneScore.toString()},';
+      ret += '"more": ';
+      ret += '${dataResultXf.more.toString()},';
+      ret += '"less": ';
+      ret += '${dataResultXf.less.toString()},';
+      ret += '"retro": ';
+      ret += '${dataResultXf.retro.toString()},';
+      ret += '"repl": ';
+      ret += '${dataResultXf.repl.toString()},';
       ret += '},';
     }
     ret += '],';
 
     ret += '"itemResult":[';
-    for(var itemResult in itemList) {
-      ret +='{';
-      ret += '"gotScore": '; ret += '${itemResult.gotScore.toString()},';
-      ret += '"fullScore": '; ret += '${itemResult.fullScore.toString()},';
-      ret += '"tNum": '; ret += '${itemResult.tNum.toString()},';
-      ret += '"cNum": '; ret += '${itemResult.cNum.toString()},';
+    for (var itemResult in itemList) {
+      ret += '{';
+      ret += '"gotScore": ';
+      ret += '${itemResult.gotScore.toString()},';
+      ret += '"fullScore": ';
+      ret += '${itemResult.fullScore.toString()},';
+      ret += '"tNum": ';
+      ret += '${itemResult.tNum.toString()},';
+      ret += '"cNum": ';
+      ret += '${itemResult.cNum.toString()},';
       ret += '},';
     }
     ret += '],';
@@ -292,7 +304,6 @@ class ParsedResultsXf {
       wrongMonos: wrongMonos,
     );
   }
-
 }
 
 // 基类, 记录录音情况和评测内容
@@ -341,50 +352,67 @@ class DataQuestionEval {
     return 14;
   }
 
-  Widget getRichText4Show(String str, List<String> wrongSheng, bool showWrongs) {
-    // final str = toSingleString();
-    print(str.length);
-    final adaSize = getAdaptiveSize(str.length);
-    if (!showWrongs) {
-      return Text(
-        str,
-        style: TextStyle(
-          fontFamily: 'SourceSans',
-          color: Color.fromARGB(255, 1, 41, 50),
-          fontSize: adaSize,
-        ),
-      );
+  double getAdaptiveFactor(int strLen) {
+    if (strLen < 80) {
+      return 1.0;
     }
+    if (strLen < 200) {
+      return 0.8;
+    }
+    return 0.6;
+  }
+
+  // 创造题目内容中每一个字
+  Column getOneWord(String c, double adaptSize, bool f) {
+    return Column(
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK),
+                  style: TextStyle(
+                    fontFamily: 'SourceSans',
+                    color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
+                    fontSize:adaptSize - 6,
+                  ),
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  text: c,
+                  style: TextStyle(
+                    fontFamily: 'SourceSans',
+                    color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
+                    fontSize: adaptSize,
+                  ),
+                ),
+              ),
+            ],
+          );
+  }
+
+  // 创造题目内容
+  Widget getRichText4Show(
+      String _pinyin, String str, double sWidth, List<String> wrongSheng, bool showWrongs) {
+    List<Container> row = List.empty(growable: true);
+    List<Wrap> rows = List.empty(growable: true);
+    double factor = getAdaptiveFactor(str.length);
     Map<String, int> mp = Map();
-    for(var x in wrongSheng) {
+    for (var x in wrongSheng) {
       mp[x] = 1;
     }
-    List<TextSpan> childrenSpanList = [];
-    for(int i = 0; i < str.length; ++ i) {
-      if(mp[str[i]] == 1) {
-        childrenSpanList.add(TextSpan(
-            text: str[i],
-            style: TextStyle(
-              fontFamily: 'SourceSans',
-              color: Color(0xefff1e1e),
-              fontSize: adaSize,
-            ),
-          ));
-      } else {
-        childrenSpanList.add(TextSpan(
-            text: str[i],
-            style: TextStyle(
-              fontFamily: 'SourceSans',
-              color: Color(0xff2a2a2a),
-              fontSize: adaSize,
-            ),
-          ));
-      }
+    // List<TextSpan> childrenSpanList = [];
+    str += "\n";
+    for (int i = 0; i < str.length; ++i) {
+        if(str[i] == '\n') {
+          if(row.isNotEmpty) rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+          row = List.empty(growable: true);
+        } else {
+          row.add(
+            Container(width: 40 * factor, height: 44 * factor, child: getOneWord(str[i], 18 * factor,!showWrongs && mp[str[i]] == 1))            
+          );
+        }
     }
-    
-    return RichText(
-      text: TextSpan(children: childrenSpanList),
-    );
+    return SizedBox(width: sWidth, child: Column(children: rows));
   }
 
   // 发送结果至服务器评测
@@ -477,6 +505,7 @@ class DataQuestionPageMain extends DataQuestionEval {
   final String cpsgrpId;
   final double weight;
   final String title;
+  final String pinyin;
   final String desc;
   DataQuestion dataQuestion;
 
@@ -514,6 +543,7 @@ class DataQuestionPageMain extends DataQuestionEval {
     required this.title,
     required this.desc,
     required this.audioUri,
+    required this.pinyin,
   });
 
   // 用来发送评测的内容
@@ -546,24 +576,25 @@ class DataQuestion {
   final String cpsgrpId;
   final String topicId;
   final double wordWeight;
-  const DataQuestion({
-    required this.wordWeight,
-    required this.id,
-    required this.label,
-    required this.cpsgrpId,
-    required this.topicId,
-    required this.evalMode,
-  });
+  final List<String> tags;
+  const DataQuestion(
+      {required this.wordWeight,
+      required this.id,
+      required this.label,
+      required this.cpsgrpId,
+      required this.topicId,
+      required this.evalMode,
+      required this.tags});
   factory DataQuestion.fromJson(Map<String, dynamic> json) {
     return DataQuestion(
-      wordWeight:
-          json['wordWeight'] != null ? json['wordWeight'] as double : 0.0,
-      id: json['id'] as String,
-      label: json['refText'] as String,
-      cpsgrpId: json['cpsgrpId'] as String,
-      topicId: json['topicId'] as String,
-      evalMode: json['evalMode'] as int,
-    );
+        wordWeight:
+            json['wordWeight'] != null ? json['wordWeight'] as double : 0.0,
+        id: json['id'] as String,
+        label: json['refText'] as String,
+        cpsgrpId: json['cpsgrpId'] as String,
+        topicId: json['topicId'] as String,
+        evalMode: json['evalMode'] as int,
+        tags: json['tags'] != null ? json['tags'] as List<String> : []);
   }
   Map<String, dynamic> toDynamicMap() {
     Map<String, dynamic> json = {};

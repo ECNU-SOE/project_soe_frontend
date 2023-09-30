@@ -21,22 +21,22 @@ import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 // Map<int, String> mp = {-1: '无', 0: '无', 1: '字', 2: '词', 3: '句子', 4: '段落'};
 
 // 语音输入Component
-class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
+class ViewQuestion_1 extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
   final DataQuestionPageMain dataPage;
   final bool titleShow;
   bool wrongsShow;
-  ComponentVoiceInput(
+  ViewQuestion_1(
       {super.key,
       required this.dataPage,
       required this.titleShow,
       this.wrongsShow = false});
   @override
-  State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
+  State<ViewQuestion_1> createState() => _ViewQuestion_1State();
 }
 
-class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
-  _ComponentVoiceInputState({Key? key});
+class _ViewQuestion_1State extends State<ViewQuestion_1> {
+  _ViewQuestion_1State({Key? key});
   final _audioPlayer = ap.AudioPlayer();
   final _audioRecorder = rcd.Record();
 

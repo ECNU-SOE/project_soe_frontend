@@ -38,6 +38,7 @@ class MsgMgrQuestion {
           weight: score,
           desc: topicMap['description'],
           title: topicMap['title'],
+          pinyin: json['pinyin']
         );
         retList.add(dataPage);
       }
@@ -87,13 +88,8 @@ class MsgMgrQuestion {
     request.fields['category'] = getXfCategoryStringByInt(data.evalMode);
     // 设置Headers
     request.headers['Content-Type'] = 'multipart/form-data';
-    // ------------------------------------------ not test !!!
-    print(id);
-    if(id != '' && id.substring(0, 6) == 'cpsrcd') {
-      print("yes yes yes");
-      // 传cpsrcdId
-      request.fields['cpsrcdId'] = id;
-    }
+    request.fields['cpsrcdId'] = id;
+    
     // 发送 并等待返回
     // -----------------------------------------
     final response = await request.send();

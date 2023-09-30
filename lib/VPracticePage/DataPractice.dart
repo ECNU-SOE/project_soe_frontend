@@ -146,7 +146,7 @@ class ResJson {
     manualScore = json['manualScore'];
     gmtCreate = json['gmtCreate'];
     gmtModified = json['gmtModified'];
-    title = json['title'];
+    title = json['cpsgrpName'];
     // print(json['cpsgrpId']);
     // print(json['resJson']);
     if (json['dataResultXf'] != null) {
@@ -309,27 +309,10 @@ Future<List<ResJson>> postGetDataTranscriptPage() async {
   List<ResJson> listDataTranscript = List.empty(growable: true);
 
   for(var _data in data) {
-      _data['title'] = "";
-      final response2 = await http.Client().get(
-        Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/detail?cpsgrpId=' + _data['cpsgrpId']),
-        headers: {'token': token},
-      );
-      final u8decoded2 = utf8.decode(response2.bodyBytes);
-      final decoded2 = jsonDecode(u8decoded2);
-      final code2 = decoded2['code'];
-      final data2 = decoded2['data'];
-      if (code2 != 0) throw ("wrong return code");
-      else _data['title'] = data2['title'];
-
     listDataTranscript.add(
       ResJson.fromJson(_data)
     );
-
-    // break;
-
   }
 
-  print(listDataTranscript.length);
-  print(listDataTranscript[0].dataResultXf);
   return listDataTranscript;
 }
