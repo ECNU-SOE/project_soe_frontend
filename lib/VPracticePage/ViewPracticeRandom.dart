@@ -30,34 +30,11 @@ class ViewPracticeRandom extends StatefulWidget {
 
 
 class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
-  ViewQuestion_1? _inputPage;
+  ComponentVoiceInput? _inputPage;
 
-  Widget _buildBodyImpl(BuildContext context, DataMistakeDetailListItem dataMistakeDetailListItem) {
-    DataMistakeDetailListItem data = dataMistakeDetailListItem;
-    var dataQuestion = new DataQuestion(
-      wordWeight: data.wordWeight,
-      id: "",
-      label: data.refText,
-      cpsgrpId: data.cpsgrpId,
-      topicId: data.topicId,
-      evalMode: data.evalMode,
-      tags: data.tags);
+  Widget _buildBodyImpl(BuildContext context, SubCpsrcds subCpsrcds) {
 
-    var dataQuestionPage = new DataQuestionPageMain(
-      evalMode: data.evalMode,
-      id: "",
-      dataQuestion: dataQuestion,
-      cnum: data.cNum,
-      tnum: 1,
-      cpsgrpId: data.cpsgrpId,
-      weight: data.wordWeight == null? 0: data.wordWeight,
-      title: '字词训练', // 题目上面标题
-      desc: '字词训练', // 题目里面标题
-      audioUri: data.audioUrl,
-      pinyin: data.pinyin
-    );
-
-    _inputPage = ViewQuestion_1(dataPage: dataQuestionPage, titleShow: false);
+    _inputPage = ComponentVoiceInput(dataPage: subCpsrcds, titleShow: false);
 
     return Scaffold(
       appBar: ComponentAppBar(
@@ -83,7 +60,7 @@ class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
   }
 
   @override
-  Widget build(BuildContext buildContext) => FutureBuilder<DataMistakeDetailListItem>(
+  Widget build(BuildContext buildContext) => FutureBuilder<SubCpsrcds>(
         future: getGetRandomDataMistakeDetail(),// 获取随机一题接口,
         builder: (context, snapshot) {
           if (snapshot.hasData) {

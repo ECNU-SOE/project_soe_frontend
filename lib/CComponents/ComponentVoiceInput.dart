@@ -23,7 +23,7 @@ import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 // 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
-  final DataQuestionPageMain dataPage;
+  final SubCpsrcds dataPage;
   final bool titleShow;
   bool wrongsShow;
   ComponentVoiceInput(
@@ -57,10 +57,11 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
 
   Icon _recordIcon() {
     return Icon(
-      // widget.dataPage.hasRecordFile()
-      // ? Icons.play_arrow
-      // :
-      widget.dataPage.isRecording() ? SOEIcons.pause : SOEIcons.mic,
+      widget.dataPage.hasRecordFile()
+          ? Icons.play_arrow
+          : widget.dataPage.isRecording()
+              ? SOEIcons.pause
+              : SOEIcons.mic,
       color: widget.dataPage.hasRecordFile() ? Colors.grey : gColor749FC4,
       size: 32.0,
     );
@@ -125,10 +126,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.dataPage.setUploading(true);
     });
     // ---------------- test !!!
-    await widget.dataPage.postAndGetResultXf(
-        widget.dataPage.id != null && widget.dataPage.id != ''
-            ? widget.dataPage.id
-            : "");
+    await widget.dataPage.postAndGetResultXf();
 
     setState(() {
       widget.dataPage.setUploading(false);
@@ -158,7 +156,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   void _playExampleAudio() {
-    _audioPlayer.play(ap.UrlSource(widget.dataPage.audioUri));
+    _audioPlayer.play(ap.UrlSource(widget.dataPage.audioUrl.toString()));
   }
 
   void _stopExampleAudio() {
@@ -213,11 +211,16 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   }
 
   Widget _buildExampleAudioPlayer(BuildContext context) {
-    // print(widget.dataPage.audioUri);
-    if (widget.dataPage.audioUri.isEmpty || widget.dataPage.audioUri == '') {
-      return ComponentSubtitle(
-        label: '没有示例语音',
-        style: gSubtitleStyle,
+    print(widget.dataPage.audioUrl);
+    if (widget.dataPage.audioUrl == "" || widget.dataPage.audioUrl == null) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ComponentSubtitle(
+            label: '没有示例语音',
+            style: gSubtitleStyle,
+          )
+        ],
       );
     }
     return Row(
@@ -255,14 +258,15 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     List<Widget> children = List.empty(growable: true);
-    print(widget.dataPage.dataQuestion.label);
-    children.addAll([
+    // print(widget.dataPage.dataQuestion.label);
+    children.addAll(
+      [
         widget.titleShow
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
                   child: Text(
-                    widget.dataPage.desc,
+                    widget.dataPage.title ?? "",
                     style: gSubtitleStyle,
                   ),
                 ),
@@ -271,22 +275,21 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         Container(
           padding: EdgeInsets.only(left: 15, bottom: 10),
           child: Text(
-            widget.dataPage.getScoreDescString(!widget.titleShow),
+            // widget.dataPage.getScoreDescString(!widget.titleShow),
+            "分数：" + widget.dataPage.score.toString(),
             style: gInfoTextStyle,
           ),
         ),
         widget.dataPage.getRichText4Show(
-                widget.dataPage.pinyin,
-                widget.dataPage.dataQuestion.label,
-                screenSize.width,
-                wrongSheng,
-                widget.wrongsShow),    
+            widget.dataPage.refText ?? "", screenSize.width, widget.wrongsShow),
       ],
     );
+
+    // tags -------
     List<Widget> tags = List.empty(growable: true);
     tags.addAll([
       ComponentSubtitle(
-        label: '${widget.dataPage.title}',
+        label: '${widget.dataPage.type}',
         style: gTitleStyle,
       ),
       ComponentSubtitle(
@@ -294,20 +297,22 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         style: gSubtitleStyle,
       ),
     ]);
-    if (widget.dataPage.dataQuestion.tags.isEmpty) {
+
+    if (widget.dataPage.tags == [] || widget.dataPage.tags == null) {
       tags.add(ComponentSubtitle(
         label: '无',
         style: gSubtitleStyle,
       ));
     } else {
-      for (var tag in widget.dataPage.dataQuestion.tags) {
+      for (var tag in widget.dataPage.tags!) {
         tags.add(ComponentSubtitle(
-          label: tag,
+          label: tag.name.toString(),
           style: gSubtitleStyle,
         ));
       }
     }
-    
+    // tags -------
+
     return Scaffold(
       backgroundColor: gColorE1EBF5RGBA,
       appBar: AppBar(
@@ -366,8 +371,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                   Row(
                     children: [
                       Text(
-                        (!widget.dataPage.hasRecordFile() ||
-                                widget.dataPage.resultXf == null)
+                        (!widget.dataPage.hasRecordFile())
                             ? (widget.dataPage.isRecording()
                                 ? '正在录音'
                                 : '点击开始录音')
@@ -403,20 +407,20 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                             onPressed: (() {
                               // ........
                               setState(() {
-                                if (widget.dataPage.resultXf != null) {
-                                  wrongSheng.clear();
-                                  for (var x
-                                      in widget.dataPage.resultXf!.wrongSheng) {
-                                    var tmp = x.toJson();
-                                    print(tmp[9]);
-                                    print('----------------');
-                                    wrongSheng.add(tmp[9]);
-                                  }
-                                  widget.dataPage.setStartPlaying(false);
-                                  widget.dataPage.setRecording(false);
-                                  widget.dataPage.setFilePath('');
-                                  widget.dataPage.setUploading(false);
-                                  widget.dataPage.resultXf = null;
+                                if (widget.dataPage.dataOneResultCard != null) {
+                                  // wrongSheng.clear();
+                                  // for (var x
+                                  //     in widget.dataPage.resultXf!.wrongSheng) {
+                                  //   var tmp = x.toJson();
+                                  //   print(tmp[9]);
+                                  //   print('----------------');
+                                  //   wrongSheng.add(tmp[9]);
+                                  // }
+                                  // widget.dataPage.setStartPlaying(false);
+                                  // widget.dataPage.setRecording(false);
+                                  // widget.dataPage.setFilePath('');
+                                  // widget.dataPage.setUploading(false);
+                                  // widget.dataPage.resultXf = null;
                                 }
                                 widget.wrongsShow = true;
                               });

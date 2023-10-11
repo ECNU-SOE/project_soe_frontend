@@ -17,7 +17,8 @@ import 'package:element_ui/widgets.dart';
 
 class ViewMistakeCard extends StatefulWidget {
   static String routeName = 'mistakeCard';
-  DataQuestionPageMain dataQuestionPageMain;
+
+  SubCpsrcds dataQuestionPageMain;
   ViewMistakeCard({super.key, required this.dataQuestionPageMain,});
 
   @override

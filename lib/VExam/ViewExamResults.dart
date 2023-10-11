@@ -14,11 +14,12 @@ import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
+import 'package:project_soe/VCommon/DataAllResultsCard.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/CComponents/ComponentVoiceInput.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/VExam/MsgQuestion.dart';
-
+/*
 Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
@@ -26,11 +27,13 @@ Future<Map<String, dynamic>> parseExamResults(http.Response response) async {
   return retMap;
 }
 
-Future<ParsedResultsXf> parseAndPostResultsXf(
+Future<DataAllResultCard> parseAndPostResultsXf(
     List<DataQuestionPageMain> dataList, String id) async {
   final parsedResultsXf =
       ParsedResultsXf.fromQuestionPageDataList(dataList, id);
+  
   await MsgMgrQuestion().postResultToServer(parsedResultsXf);
+
   return parsedResultsXf;
 }
 
@@ -119,7 +122,7 @@ class ViewExamResult extends StatelessWidget {
     }
   }
 
-  Widget _generateScaffoldBodyXf(ParsedResultsXf data) {
+  Widget _generateScaffoldBodyXf(DataAllResultCard data) {
     if (data.resultList.isEmpty) {
       return const Center(
         child: Padding(
@@ -267,28 +270,6 @@ class ViewExamResult extends StatelessWidget {
     );
   }
 
-/*
-  Widget? _showEnterApp(BuildContext context, bool isShow) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        children: [
-          ComponentRoundButton(
-            func: () => Navigator.pushNamed(context, ViewAppHome.routeName),
-            color: gColorE3EDF7RGBA,
-            child: ComponentTitle(
-                label: isShow ? "进入APP" : "返回APP", style: gTitleStyle),
-            height: 64,
-            width: 200,
-            radius: 6,
-          ),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-      ),
-    );
-  }
-*/
-
   // FIXME 23.3.5 此处用的是临时界面
   @override
   Widget build(BuildContext context) {
@@ -328,5 +309,15 @@ class ViewExamResult extends StatelessWidget {
         }
       },
     );
+  }
+}
+*/
+
+class ViewExamResult extends StatelessWidget {
+  static const String routeName = 'fullExamResult';
+  const ViewExamResult({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

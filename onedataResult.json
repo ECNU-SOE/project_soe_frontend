@@ -1,0 +1,499 @@
+{
+    "code": 0,
+    "data": {
+      "lan": "cn",
+      "type": "study",
+      "version": "7,0,0,1024",
+      "rec_paper": {
+        "read_word": {
+          "beg_pos": 0,
+          "content": "包车。高级。花草。高大。",
+          "end_pos": 747,
+          "except_info": 0,
+          "fluency_score": 0,
+          "integrity_score": 0,
+          "phone_score": 68.75,
+          "time_len": 747,
+          "tone_score": 87.5,
+          "total_score": 78.125,
+          "sentence": [
+            {
+              "beg_pos": 0,
+              "content": "包车",
+              "end_pos": 240,
+              "time_len": 240,
+              "word": {
+                "beg_pos": 0,
+                "content": "包车",
+                "end_pos": 240,
+                "symbol": "bao1che1",
+                "time_len": 240,
+                "syll": [
+                  {
+                    "beg_pos": 0,
+                    "content": "silv",
+                    "dp_message": 0,
+                    "end_pos": 165,
+                    "rec_node_type": "silv",
+                    "time_len": 165,
+                    "phone": {
+                      "beg_pos": 0,
+                      "content": "silv",
+                      "dp_message": 0,
+                      "end_pos": 165,
+                      "rec_node_type": "silv",
+                      "time_len": 165
+                    }
+                  },
+                  {
+                    "beg_pos": 165,
+                    "content": "包",
+                    "dp_message": 0,
+                    "end_pos": 192,
+                    "rec_node_type": "paper",
+                    "symbol": "bao1",
+                    "time_len": 27,
+                    "phone": [
+                      {
+                        "beg_pos": 165,
+                        "content": "b",
+                        "dp_message": 0,
+                        "end_pos": 171,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 9
+                      },
+                      {
+                        "beg_pos": 171,
+                        "content": "ao",
+                        "dp_message": 128,
+                        "end_pos": 192,
+                        "is_yun": 1,
+                        "mono_tone": "TONE1",
+                        "perr_level_msg": 0,
+                        "perr_msg": 3,
+                        "rec_node_type": "paper",
+                        "time_len": 18
+                      }
+                    ]
+                  },
+                  {
+                    "beg_pos": 192,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 201,
+                    "rec_node_type": "sil",
+                    "time_len": 9,
+                    "phone": {
+                      "beg_pos": 192,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 201,
+                      "rec_node_type": "sil",
+                      "time_len": 9
+                    }
+                  },
+                  {
+                    "beg_pos": 201,
+                    "content": "车",
+                    "dp_message": 0,
+                    "end_pos": 240,
+                    "rec_node_type": "paper",
+                    "symbol": "che1",
+                    "time_len": 39,
+                    "phone": [
+                      {
+                        "beg_pos": 201,
+                        "content": "ch",
+                        "dp_message": 0,
+                        "end_pos": 220,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 19
+                      },
+                      {
+                        "beg_pos": 220,
+                        "content": "e",
+                        "dp_message": 0,
+                        "end_pos": 240,
+                        "is_yun": 1,
+                        "mono_tone": "TONE1",
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 20
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "beg_pos": 240,
+              "content": "高级",
+              "end_pos": 424,
+              "time_len": 184,
+              "word": {
+                "beg_pos": 240,
+                "content": "高级",
+                "end_pos": 424,
+                "symbol": "gao1ji2",
+                "time_len": 184,
+                "syll": [
+                  {
+                    "beg_pos": 240,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 330,
+                    "rec_node_type": "sil",
+                    "time_len": 90,
+                    "phone": {
+                      "beg_pos": 240,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 330,
+                      "rec_node_type": "sil",
+                      "time_len": 90
+                    }
+                  },
+                  {
+                    "beg_pos": 330,
+                    "content": "高",
+                    "dp_message": 0,
+                    "end_pos": 361,
+                    "rec_node_type": "paper",
+                    "symbol": "gao1",
+                    "time_len": 31,
+                    "phone": [
+                      {
+                        "beg_pos": 330,
+                        "content": "g",
+                        "dp_message": 0,
+                        "end_pos": 343,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 15
+                      },
+                      {
+                        "beg_pos": 343,
+                        "content": "ao",
+                        "dp_message": 128,
+                        "end_pos": 361,
+                        "is_yun": 1,
+                        "mono_tone": "TONE1",
+                        "perr_level_msg": 0,
+                        "perr_msg": 1,
+                        "rec_node_type": "paper",
+                        "time_len": 16
+                      }
+                    ]
+                  },
+                  {
+                    "beg_pos": 361,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 366,
+                    "rec_node_type": "sil",
+                    "time_len": 5,
+                    "phone": {
+                      "beg_pos": 361,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 366,
+                      "rec_node_type": "sil",
+                      "time_len": 5
+                    }
+                  },
+                  {
+                    "beg_pos": 366,
+                    "content": "级",
+                    "dp_message": 0,
+                    "end_pos": 424,
+                    "rec_node_type": "paper",
+                    "symbol": "ji2",
+                    "time_len": 58,
+                    "phone": [
+                      {
+                        "beg_pos": 366,
+                        "content": "j",
+                        "dp_message": 0,
+                        "end_pos": 377,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 1,
+                        "rec_node_type": "paper",
+                        "time_len": 11
+                      },
+                      {
+                        "beg_pos": 377,
+                        "content": "i",
+                        "dp_message": 0,
+                        "end_pos": 424,
+                        "is_yun": 1,
+                        "mono_tone": "TONE2",
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 47
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "beg_pos": 424,
+              "content": "花草",
+              "end_pos": 560,
+              "time_len": 136,
+              "word": {
+                "beg_pos": 424,
+                "content": "花草",
+                "end_pos": 560,
+                "symbol": "hua1cao3",
+                "time_len": 136,
+                "syll": [
+                  {
+                    "beg_pos": 424,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 460,
+                    "rec_node_type": "sil",
+                    "time_len": 36,
+                    "phone": {
+                      "beg_pos": 424,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 460,
+                      "rec_node_type": "sil",
+                      "time_len": 36
+                    }
+                  },
+                  {
+                    "beg_pos": 460,
+                    "content": "花",
+                    "dp_message": 0,
+                    "end_pos": 497,
+                    "rec_node_type": "paper",
+                    "symbol": "hua1",
+                    "time_len": 37,
+                    "phone": [
+                      {
+                        "beg_pos": 460,
+                        "content": "h",
+                        "dp_message": 0,
+                        "end_pos": 468,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 8
+                      },
+                      {
+                        "beg_pos": 468,
+                        "content": "ua",
+                        "dp_message": 0,
+                        "end_pos": 497,
+                        "is_yun": 1,
+                        "mono_tone": "TONE1",
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 29
+                      }
+                    ]
+                  },
+                  {
+                    "beg_pos": 497,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 501,
+                    "rec_node_type": "sil",
+                    "time_len": 4,
+                    "phone": {
+                      "beg_pos": 497,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 501,
+                      "rec_node_type": "sil",
+                      "time_len": 4
+                    }
+                  },
+                  {
+                    "beg_pos": 501,
+                    "content": "草",
+                    "dp_message": 0,
+                    "end_pos": 560,
+                    "rec_node_type": "paper",
+                    "symbol": "cao3",
+                    "time_len": 59,
+                    "phone": [
+                      {
+                        "beg_pos": 501,
+                        "content": "c",
+                        "dp_message": 128,
+                        "end_pos": 520,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 1,
+                        "rec_node_type": "paper",
+                        "time_len": 16
+                      },
+                      {
+                        "beg_pos": 520,
+                        "content": "ao",
+                        "dp_message": 128,
+                        "end_pos": 560,
+                        "is_yun": 1,
+                        "mono_tone": "TONE3",
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 43
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "beg_pos": 560,
+              "content": "高大",
+              "end_pos": 747,
+              "time_len": 187,
+              "word": {
+                "beg_pos": 560,
+                "content": "高大",
+                "end_pos": 747,
+                "symbol": "gao1da4",
+                "time_len": 187,
+                "syll": [
+                  {
+                    "beg_pos": 560,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 617,
+                    "rec_node_type": "sil",
+                    "time_len": 57,
+                    "phone": {
+                      "beg_pos": 560,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 617,
+                      "rec_node_type": "sil",
+                      "time_len": 57
+                    }
+                  },
+                  {
+                    "beg_pos": 617,
+                    "content": "高",
+                    "dp_message": 0,
+                    "end_pos": 653,
+                    "rec_node_type": "paper",
+                    "symbol": "gao1",
+                    "time_len": 36,
+                    "phone": [
+                      {
+                        "beg_pos": 617,
+                        "content": "g",
+                        "dp_message": 0,
+                        "end_pos": 629,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 12
+                      },
+                      {
+                        "beg_pos": 629,
+                        "content": "ao",
+                        "dp_message": 0,
+                        "end_pos": 653,
+                        "is_yun": 1,
+                        "mono_tone": "TONE1",
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 24
+                      }
+                    ]
+                  },
+                  {
+                    "beg_pos": 653,
+                    "content": "sil",
+                    "dp_message": 0,
+                    "end_pos": 664,
+                    "rec_node_type": "sil",
+                    "time_len": 11,
+                    "phone": {
+                      "beg_pos": 653,
+                      "content": "sil",
+                      "dp_message": 0,
+                      "end_pos": 664,
+                      "rec_node_type": "sil",
+                      "time_len": 11
+                    }
+                  },
+                  {
+                    "beg_pos": 664,
+                    "content": "大",
+                    "dp_message": 0,
+                    "end_pos": 685,
+                    "rec_node_type": "paper",
+                    "symbol": "da4",
+                    "time_len": 21,
+                    "phone": [
+                      {
+                        "beg_pos": 664,
+                        "content": "d",
+                        "dp_message": 0,
+                        "end_pos": 675,
+                        "is_yun": 0,
+                        "perr_level_msg": 0,
+                        "perr_msg": 0,
+                        "rec_node_type": "paper",
+                        "time_len": 11
+                      },
+                      {
+                        "beg_pos": 675,
+                        "content": "a",
+                        "dp_message": 0,
+                        "end_pos": 685,
+                        "is_yun": 1,
+                        "mono_tone": "TONE4",
+                        "perr_level_msg": 0,
+                        "perr_msg": 1,
+                        "rec_node_type": "paper",
+                        "time_len": 10
+                      }
+                    ]
+                  },
+                  {
+                    "beg_pos": 685,
+                    "content": "silv",
+                    "dp_message": 0,
+                    "end_pos": 747,
+                    "rec_node_type": "silv",
+                    "time_len": 62,
+                    "phone": {
+                      "beg_pos": 685,
+                      "content": "silv",
+                      "end_pos": 747,
+                      "time_len": 62
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "msg": null
+  }

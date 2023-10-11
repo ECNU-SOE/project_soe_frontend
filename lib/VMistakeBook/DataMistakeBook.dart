@@ -1,19 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VCommon/DataAllResultsCard.dart';
+import 'package:project_soe/VExam/DataQuestion.dart';
 
 class DataMistakeBook {
-  final int mistakeTotalNumber;
-  final int stubbornMistakeNumber;
+  final int mistakeTotalNumber1;
+  final int stubbornMistakeNumber1;
+  final int mistakeTotalNumber2;
+  final int stubbornMistakeNumber2;
   final List<DataMistakeBookListItem> listMistakeBookOne;
   final List<DataMistakeBookListItem> listMistakeBookAll;
   DataMistakeBook({
-    required this.mistakeTotalNumber,
-    required this.stubbornMistakeNumber,
+    required this.mistakeTotalNumber1,
+    required this.stubbornMistakeNumber1,
+    required this.mistakeTotalNumber2,
+    required this.stubbornMistakeNumber2,
     required this.listMistakeBookOne,
     required this.listMistakeBookAll,
   });
@@ -44,16 +49,10 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
       "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=1");
   final response = await http.Client().get(
     uri,
-    headers: {
-      'token': token,
-      'Content-Type': 'application/json'
-    },
+    headers: {'token': token, 'Content-Type': 'application/json'},
   );
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
-  // COMMENT-8-12 服务器上目前没有我们测试账号的错题数据, 这是用来测试的临时数据, 不用注释掉即可. 不必删除
-  // final decoded = jsonDecode(
-  //     '{ "code": 0, "data": {"eachMistakeTypeNumber": [{"mistakeNum": 3,"mistakeTypeName": "字词训练","mistakeTypeCode": 0},{"mistakeNum": 3,"mistakeTypeName": "常速朗读","mistakeTypeCode": 1}],"mistakeTotalNumber": 3,"stubbornMistakeNumber": 1},"msg": null}');
   final code = decoded['code'];
   final data = decoded['data'];
   if (code != 0) throw ("wrong return code");
@@ -63,13 +62,14 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
     listMistakeBookOne.add(DataMistakeBookListItem.fromJson(mistake));
   }
 
+  int x = data['mistakeTotalNumber'];
+  int y = data['stubbornMistakeNumber'];
+
   final _uri = Uri.parse(
       "http://47.101.58.72:8888/corpus-server/api/mistake/v1/getDetail?oneWeekKey=0");
   final _response = await http.Client().get(
     _uri,
-    headers: {
-      'token': token,
-    },
+    headers: {'token': token, 'Content-Type': 'application/json'},
   );
   final _u8decoded = utf8.decode(_response.bodyBytes);
   final _decoded = jsonDecode(_u8decoded);
@@ -83,61 +83,16 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
   }
 
   return DataMistakeBook(
-      mistakeTotalNumber: data['mistakeTotalNumber'],
-      stubbornMistakeNumber: data['stubbornMistakeNumber'],
+      mistakeTotalNumber1: x,
+      stubbornMistakeNumber1: y,
+      mistakeTotalNumber2: data['mistakeTotalNumber'],
+      stubbornMistakeNumber2: data['stubbornMistakeNumber'],
       listMistakeBookOne: listMistakeBookOne,
       listMistakeBookAll: listMistakeBookAll);
 }
 
-class DataMistakeDetail {
-  List<DataMistakeDetailListItem> listMistakeDetail;
-  DataMistakeDetail({required this.listMistakeDetail});
-}
-
-class DataMistakeDetailListItem {
-  String cpsrcdId; //题目的快照id，为了识别用户答的是哪道题，答题时给后端传答题结果时需要带上它
-  String corpusId;
-  String cpsgrpId;
-  String topicId;
-  int evalMode;
-  int difficulty;
-  double wordWeight;
-  String pinyin;
-  String refText;
-  String audioUrl;
-  List<String> tags;
-  int cNum;
-  DataMistakeDetailListItem(
-      {required this.cpsrcdId,
-      required this.corpusId,
-      required this.cpsgrpId,
-      required this.topicId,
-      required this.evalMode,
-      required this.difficulty,
-      required this.wordWeight,
-      required this.pinyin,
-      required this.refText,
-      required this.audioUrl,
-      required this.tags,
-      required this.cNum});
-  factory DataMistakeDetailListItem.fromJson(Map<String, dynamic> json) {
-    return DataMistakeDetailListItem(
-        cpsrcdId: json['cpsrcdId'].toString() ?? "",
-        corpusId: json['corpusId'].toString() ?? "",
-        cpsgrpId: json['cpsgrpId'].toString() ?? "",
-        topicId: json['topicId'].toString() ?? "",
-        evalMode: json['evalMode'] ?? 0,
-        difficulty: json['difficulty'] ?? 0,
-        wordWeight: json['wordWeight'] ?? 0.0,
-        pinyin: json['pinyin'].toString() ?? "",
-        refText: json['refText'].toString() ?? "",
-        audioUrl: json['audioUrl'].toString() ?? "",
-        tags: json['tags'] ?? [],
-        cNum: json['cNum'] ?? 0);
-  }
-}
-
-Future<DataMistakeDetail> postGetDataMistakeDetail(int mistakeTypeCode, int oneWeekKey) async {
+Future<List<SubCpsrcds>> postGetDataMistakeDetail(
+    int mistakeTypeCode, int oneWeekKey) async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
       'http://47.101.58.72:8888/corpus-server/api/mistake/v1/getMistakes');
@@ -158,21 +113,34 @@ Future<DataMistakeDetail> postGetDataMistakeDetail(int mistakeTypeCode, int oneW
   final data = decoded['data'];
   final msg = decoded['msg'];
   if (code != 0) throw ('wrong return code');
-  List<DataMistakeDetailListItem> listMistakeDetail =
-      List.empty(growable: true);
+  List<SubCpsrcds> listSubCpsrcds = List.empty(growable: true);
   for (final item in data) {
-    listMistakeDetail.add(DataMistakeDetailListItem.fromJson(item));
+    SubCpsrcds tmp = SubCpsrcds.fromJson(item);
+    tmp.id = item['cpsrcdId'];
+    tmp.evalMode = item['evalMode'];
+    listSubCpsrcds.add(tmp);
   }
-  return DataMistakeDetail(listMistakeDetail: listMistakeDetail);
+  return listSubCpsrcds;
 }
 
-Future<DataMistakeDetailListItem> getGetRandomDataMistakeDetail() async {
+Future<SubCpsrcds> getGetRandomDataMistakeDetail() async {
   final token = AuthritionState.instance.getToken();
-  final uri = Uri.parse(
-      'http://47.101.58.72:8888/corpus-server/api/corpus/v1/rand?entityType=1');
-  final response = await http.Client().get(
+  final uri =
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsrcd/v1/rand');
+  final response = await http.Client().post(
     uri,
     headers: {"token": token, "Content-Type": "application/json"},
+    body: jsonEncode({
+      "type": null, //暂不支持
+      "difficultyBegin": null, //暂不支持
+      "difficultyEnd": null, //暂不支持
+      "textValue": null, //暂不支持
+      "tagIds": [
+        //语料标签   //查询逻辑是输入多个标签时，显示的结果中会包含其中至少一个标签
+        2,
+        5
+      ]
+    }),
   );
   final u8decoded = utf8.decode(response.bodyBytes);
   final decoded = jsonDecode(u8decoded);
@@ -180,21 +148,29 @@ Future<DataMistakeDetailListItem> getGetRandomDataMistakeDetail() async {
   final data = decoded['data'];
   final msg = decoded['msg'];
   if (code != 0) throw ('wrong return code');
-  // print(data);
-  DataMistakeDetailListItem dataMistakeDetailListItem = new DataMistakeDetailListItem(
-      cpsrcdId: "",
-      corpusId: data['id'].toString() ?? "",
-      cpsgrpId: "",
-      topicId: "",
-      evalMode: data['evalMode'] ?? 0,
-      difficulty: data['difficulty'] ?? 0,
-      wordWeight: data['wordWeight'] ?? 0,
-      pinyin: data['pinyin'].toString() ?? "",
-      refText: data['refText'].toString() ?? "",
-      audioUrl: data['audioUrl'].toString() ?? "",
-      tags: data['tags'] ?? [],
-      cNum: 0
+  print(code);
+  // SubCpsrcds subCpsrcds = SubCpsrcds.fromJson(data);
+  List<Tags> tags = List.empty(growable: true);
+  data['tags'].forEach((v) {
+    tags!.add(new Tags.fromJson(v));
+  });
+  SubCpsrcds subCpsrcds = SubCpsrcds(
+    id: data['id'] ?? "",
+    topicId: "",
+    cpsgrpId: "",
+    type: data['type'] ?? "",
+    evalMode: data['evalMode'] ?? -1,
+    difficulty: data['difficulty'] ?? -1,
+    score: 0.0,
+    enablePinyin: false,
+    pinyin: data['pinyin'] ?? "",
+    refText: data['refText'] ?? "",
+    audioUrl: data['audioUrl'] ?? "",
+    description: "",
+    tags: tags,
+    gmtCreate: data['gmtCreate'] ?? "",
+    gmtModified: data['gmtModified'] ?? "",
+    cNum: -1
   );
-  print(dataMistakeDetailListItem);
-  return dataMistakeDetailListItem;
+  return subCpsrcds;
 }

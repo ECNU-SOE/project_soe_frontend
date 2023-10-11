@@ -176,16 +176,16 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
         ),
       );
     } else {
-      List<DataQuestionPageMain> lst = List.empty(growable: true);
-      for (final voiceInput in _voiceInputs!) {
-        lst.add(voiceInput.dataPage);
-      }
-      Navigator.pushReplacementNamed(context, ViewExamResult.routeName,
-          arguments: (ArgsViewExamResult(
-            widget._args.cprsgrpId,
-            lst,
-            widget._args.endingRoute,
-          )));
+      // List<SubCpsrcds> lst = List.empty(growable: true);
+      // for (final voiceInput in _voiceInputs!) {
+      //   lst.add(voiceInput.dataPage);
+      // }
+      // Navigator.pushReplacementNamed(context, ViewExamResult.routeName,
+      //     arguments: (ArgsViewExamResult(
+      //       widget._args.cprsgrpId,
+      //       lst,
+      //       widget._args.endingRoute,
+      //     )));
     }
   }
 
@@ -314,7 +314,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
 }
 
 class _ViewExamBody extends StatefulWidget {
-  List<DataQuestionPageMain> _dataList;
+  List<SubCpsrcds> _dataList;
   ArgsViewExam _args;
   _ViewExamBody(this._args, this._dataList);
   @override
@@ -329,10 +329,9 @@ class ViewExam extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings;
     _argsViewExam = ModalRoute.of(context)!.settings.arguments as ArgsViewExam;
-    
-    return FutureBuilder<List<DataQuestionPageMain>>(
+    return FutureBuilder<List<SubCpsrcds>>(
       future:
-          MsgMgrQuestion().getQuestionPageMainList(_argsViewExam!.cprsgrpId),
+          MsgMgrQuestion().getExamByCpsgrpId(_argsViewExam!.cprsgrpId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return _ViewExamBody(_argsViewExam!, snapshot.data!);

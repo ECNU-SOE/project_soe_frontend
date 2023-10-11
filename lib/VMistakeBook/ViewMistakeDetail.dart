@@ -8,6 +8,7 @@ import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VCommon/DataAllResultsCard.dart';
 import 'package:project_soe/VMistakeBook/DataMistakeBook.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
@@ -19,7 +20,7 @@ import 'package:http/http.dart' as http;
 import 'package:element_ui/animations.dart';
 import 'package:element_ui/widgets.dart';
 
-List<DataQuestionPageMain> dataQuestionPageList = [];
+List<SubCpsrcds> dataQuestionPageList = [];
 
 class ViewMistakeDetail extends StatefulWidget {
   const ViewMistakeDetail({super.key});
@@ -43,34 +44,29 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
     );
     var data = jsonDecode(Utf8Codec().decode(response.bodyBytes))['data']; 
 
-    var dataQuestion = new DataQuestion(
-      wordWeight: data['wordWeight'],
-      id: data['id'],
-      label: data['refText'],
-      cpsgrpId: data['cpsgrpId'],
-      topicId: data['topicId'],
-      evalMode: data['evalMode'],
-      tags: data['tags'] != null? data['tags'] as List<String>: []);
+    print(data);
+    List<Tags> tags = List.empty(growable: true);
+    data['tags'].forEach((v) {
+      tags!.add(new Tags.fromJson(v));
+    });
 
-    var dataQuestionPage = new DataQuestionPageMain(
-      evalMode: data['evalMode'],
-      id: data['id'],
-      dataQuestion: dataQuestion,
-      cnum: data['cNum'],
-      tnum: 1,
-      cpsgrpId: data['cpsgrpId'],
-      weight: data['wordWeight'] == null? 0: data['wordWeight'],
-      title: '字词训练', // 题目上面标题
-      desc: '字词训练', // 题目里面标题
-      audioUri: data['audioUrl'],
-      pinyin: data['pinyin']
+    SubCpsrcds subCpsrcd = new SubCpsrcds(
+      id: data['id'] ?? "",
+      type: data['type'] ?? "",
+      evalMode: data['evalMode'] ?? -1,
+      difficulty: data['difficulty'] ?? -1,
+      pinyin: data['pinyin'] ?? "",
+      refText: data['refText'] ?? "",
+      audioUrl: data['audioUrl'] ?? "",
+      tags: tags ?? [],
+      gmtCreate: data['gmtCreate'] ?? "",
+      gmtModified: data['gmtModified'] ?? ""
     );
 
-    dataQuestionPageList.add(dataQuestionPage);
+    dataQuestionPageList.add(subCpsrcd);
   }
 
-
-  Widget _buildImpl(BuildContext context, DataMistakeDetail mistakeDetail) {
+  Widget _buildImpl(BuildContext context, List<SubCpsrcds> listSubCpsrcds) {
 
     final itemBuilder = (context, index) {
       // null, return 
@@ -81,11 +77,11 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
 
     return EPageView(
       itemBuilder: itemBuilder,
-      itemCount: mistakeDetail.listMistakeDetail.length,
+      itemCount: listSubCpsrcds.length,
     );
   }
 
-  Widget _buildItem(DataQuestionPageMain dataQuestionPageMain) {
+  Widget _buildItem(SubCpsrcds dataQuestionPageMain) {
     return ViewMistakeCard(dataQuestionPageMain: dataQuestionPageMain);
   }
 
@@ -93,12 +89,13 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
     final args = ModalRoute.of(context)!.settings.arguments as List<int>;
     int oneWeekKey = args[0];
     int mistakeTypeCode = args[1];
-    return FutureBuilder<DataMistakeDetail>(
+    return FutureBuilder<List<SubCpsrcds>>(
       future: postGetDataMistakeDetail(mistakeTypeCode, oneWeekKey),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          for(var index = 0; index < snapshot.data!.listMistakeDetail.length; ++ index) {
-            getGetCpsrcdDetail(snapshot.data!.listMistakeDetail[index].cpsrcdId, index);
+          for(var index = 0; index < snapshot.data!.length; ++ index) {
+            dataQuestionPageList.add(snapshot.data![index]);
+            // getGetCpsrcdDetail(snapshot.data![index].id ?? "", index);
           }
           print("postGetDataMistakeDetail succeeded");
           return Scaffold(

@@ -93,25 +93,27 @@ class DataAllResultCard {
 } */
 class DataOneResultCard {
   String? cpsrcdId;
+  int? evalMode;
+  double? weight;
   int? tNum;
   int? cNum;
-  double? suggestedScore;
-  double? manualScore;
-  double? fullScore;
+  double? totalScore;
+  double? phoneScore;
+  double? toneScore;
   int? more;
   int? less;
   int? retro;
   int? repl;
   List<DataOneWordCard>? dataOneWordCard;
-  List<String>? tags;
+  List<Tags>? tags;
 
   DataOneResultCard(
       {this.cpsrcdId,
       this.tNum,
       this.cNum,
-      this.suggestedScore,
-      this.manualScore,
-      this.fullScore,
+      this.totalScore,
+      this.toneScore,
+      this.phoneScore,
       this.more,
       this.less,
       this.retro,
@@ -121,11 +123,13 @@ class DataOneResultCard {
 
   DataOneResultCard.fromJson(Map<String, dynamic> json) {
     cpsrcdId = json['cpsrcdId'];
+    evalMode = json['evalMode'];
+    weight = json['weight'];
     tNum = json['tNum'];
     cNum = json['cNum'];
-    suggestedScore = json['suggestedScore'];
-    manualScore = json['manualScore'];
-    fullScore = json['fullScore'];
+    totalScore = json['totalScore'];
+    toneScore = json['toneScore'];
+    phoneScore = json['phoneScore'];
     more = json['more'];
     less = json['less'];
     retro = json['retro'];
@@ -137,9 +141,9 @@ class DataOneResultCard {
       });
     }
     if (json['tags'] != null) {
-      tags = <String>[];
+      tags = <Tags>[];
       json['tags'].forEach((v) {
-        tags!.add(v.toString());
+        tags!.add(new Tags.fromJson(v));
       });
     }
   }
@@ -147,11 +151,13 @@ class DataOneResultCard {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['cpsrcdId'] = this.cpsrcdId;
+    data['evalMode'] = this.evalMode;
+    data['weight'] = this.weight;
     data['tNum'] = this.tNum;
     data['cNum'] = this.cNum;
-    data['suggestedScore'] = this.suggestedScore;
-    data['manualScore'] = this.manualScore;
-    data['fullScore'] = this.fullScore;
+    data['totalScore'] = this.totalScore;
+    data['phoneScore'] = this.phoneScore;
+    data['toneScore'] = this.toneScore;
     data['more'] = this.more;
     data['less'] = this.less;
     data['retro'] = this.retro;
@@ -160,7 +166,7 @@ class DataOneResultCard {
       data['OneWordCard'] = this.dataOneWordCard!.map((v) => v.toJson()).toList();
     }
     if (this.tags != null) {
-      data['tags'] = this.tags!.map((v) => v.toString()).toList();
+      data['tags'] = this.tags!.map((v) => v.toJson()).toList();
     }
 
     return data;
@@ -172,6 +178,7 @@ class DataOneResultCard {
   "word": "",
   "pinyin": "",
   "shengMu": "",
+  "isWrong": false,
   "yunMu": "",
   "shengDiao": "",
   "wrongShengMu": false,
@@ -181,6 +188,7 @@ class DataOneResultCard {
 class DataOneWordCard {
   String? word;
   String? pinyin;
+  bool? isWrong;
   String? shengMu;
   String? yunMu;
   String? shengDiao;
@@ -201,6 +209,7 @@ class DataOneWordCard {
   DataOneWordCard.fromJson(Map<String, dynamic> json) {
     word = json['word'];
     pinyin = json['pinyin'];
+    isWrong = json['isWrong'];
     shengMu = json['shengMu'];
     yunMu = json['yunMu'];
     shengDiao = json['shengDiao'];
@@ -213,12 +222,45 @@ class DataOneWordCard {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['word'] = this.word;
     data['pinyin'] = this.pinyin;
+    data['isWrong'] = this.isWrong;
     data['shengMu'] = this.shengMu;
     data['yunMu'] = this.yunMu;
     data['shengDiao'] = this.shengDiao;
     data['wrongShengMu'] = this.wrongShengMu;
     data['wrongYunMu'] = this.wrongYunMu;
     data['wrongShengDiao'] = this.wrongShengDiao;
+    return data;
+  }
+}
+
+/*
+{
+  "id": 2,
+  "name": "ch",
+  "weight": 0.2,
+  "category": 2
+} */
+class Tags {
+  int? id;
+  String? name;
+  double? weight;
+  int? category;
+
+  Tags({this.id, this.name, this.weight, this.category});
+
+  Tags.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    weight = json['weight'];
+    category = json['category'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['weight'] = this.weight;
+    data['category'] = this.category;
     return data;
   }
 }

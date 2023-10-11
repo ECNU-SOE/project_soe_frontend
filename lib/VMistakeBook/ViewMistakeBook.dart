@@ -84,10 +84,10 @@ class _ViewMistakeBookBody extends StatelessWidget {
     List<Widget> wrongListOne = List.empty(growable: true);
     wrongListOne.add(Row(children: [
       Text(
-        '总错题数：' + mistakeBook.mistakeTotalNumber.toString(),
+        '总错题数：' + mistakeBook.mistakeTotalNumber1.toString(),
         style: gSubtitleStyle,
       ),
-      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber.toString(),
+      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber1.toString(),
           style: gSubtitleStyle),
     ], mainAxisAlignment: MainAxisAlignment.spaceAround));
 
@@ -103,10 +103,10 @@ class _ViewMistakeBookBody extends StatelessWidget {
     List<Widget> wrongListAll = List.empty(growable: true);
     wrongListAll.add(Row(children: [
       Text(
-        '总错题数：' + mistakeBook.mistakeTotalNumber.toString(),
+        '总错题数：' + mistakeBook.mistakeTotalNumber2.toString(),
         style: gSubtitleStyle,
       ),
-      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber.toString(),
+      Text('顽固错题数：' + mistakeBook.stubbornMistakeNumber2.toString(),
           style: gSubtitleStyle),
     ], mainAxisAlignment: MainAxisAlignment.spaceAround));
 
