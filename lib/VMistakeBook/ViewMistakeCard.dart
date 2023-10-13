@@ -30,7 +30,7 @@ class _ViewMistakeCardState extends State<ViewMistakeCard> {
   
   @override
   Widget build(BuildContext context) {
-    _inputPage = ComponentVoiceInput(dataPage: widget.dataQuestionPageMain, titleShow: false);
+    _inputPage = ComponentVoiceInput(dataPage: widget.dataQuestionPageMain, wrongsShow: false, add2Mis: false, subButShow: true);
     
     return Container(child: _inputPage);
   }

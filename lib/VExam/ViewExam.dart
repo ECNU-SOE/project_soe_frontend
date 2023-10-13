@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_soe/CComponents/ComponentBottomNavigation.dart';
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
+import 'package:project_soe/VCommon/DataAllResultsCard.dart';
 import 'package:project_soe/VExam/MsgQuestion.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
@@ -176,21 +177,86 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
         ),
       );
     } else {
-      // List<SubCpsrcds> lst = List.empty(growable: true);
-      // for (final voiceInput in _voiceInputs!) {
-      //   lst.add(voiceInput.dataPage);
-      // }
-      // Navigator.pushReplacementNamed(context, ViewExamResult.routeName,
-      //     arguments: (ArgsViewExamResult(
-      //       widget._args.cprsgrpId,
-      //       lst,
-      //       widget._args.endingRoute,
-      //     )));
+      int cnt = 0;
+      List<DataOneResultCard> lst = List.empty(growable: true);
+      for (final voiceInput in _voiceInputs!) {
+        if(voiceInput.dataPage.dataOneResultCard == null) {
+          RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
+          int less = 0;
+          List<DataOneWordCard> listDataOneWord = List.empty(growable: true);
+          for(int i = 0; i < voiceInput.dataPage.refText!.length; ++ i) {
+            if(exp.hasMatch(voiceInput.dataPage.refText![i])) {
+              less ++;
+              DataOneWordCard tmp = DataOneWordCard(isWrong: true);
+              listDataOneWord.add(tmp);
+            }
+          }
+          DataOneResultCard tmp = DataOneResultCard(
+            cpsrcdId: voiceInput.dataPage.id,
+            tNum: voiceInput.dataPage.tNum,
+            cNum: voiceInput.dataPage.cNum,
+            totalScore: 0,
+            toneScore: 0,
+            phoneScore: 0,
+            more: 0,
+            less: less,
+            repl: 0,
+            retro: 0,
+            dataOneWordCard: listDataOneWord,
+            tags: voiceInput.dataPage.tags 
+          );
+          voiceInput.dataPage.dataOneResultCard = tmp;
+        } else cnt ++;
+        lst.add(voiceInput.dataPage.dataOneResultCard!);
+      }
+      if(cnt == 0) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            actions: [
+              TextButton(
+                child: Text(
+                  "确定",
+                  style: gInfoTextStyle,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  '取消',
+                  style: gInfoTextStyle,
+                ),
+              ),
+            ],
+            content: Container(
+              height: 52.0,
+              child: Text(
+                "你还没有提交, 确定要退出吗?",
+                style: gInfoTextStyle,
+              ),
+            ),
+          ),
+        );
+      } else {
+        Navigator.pushReplacementNamed(context, ViewExamResult.routeName,
+            arguments: (ArgsViewExamResult(
+              widget._args.cprsgrpId,
+              lst,
+              widget._args.endingRoute,
+              widget._args.sumScore
+            )));
+      }
     }
   }
 
   bool _checkAnyUploading() {
-    if (null == _voiceInputs) {
+    if (_voiceInputs == null  || _voiceInputs!.isEmpty) {
       return false;
     }
     for (var voiceInput in _voiceInputs!) {
@@ -237,7 +303,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
 
   @override
   Widget build(BuildContext context) {
-    _inputPage = ComponentVoiceInput(dataPage: widget._dataList[_index], titleShow: true);
+    _inputPage = ComponentVoiceInput(dataPage: widget._dataList[_index], wrongsShow: false, add2Mis: true, subButShow: false);
     try {
       _voiceInputs![_index] = _inputPage!;
     } catch (e) {
@@ -329,12 +395,13 @@ class ViewExam extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings;
     _argsViewExam = ModalRoute.of(context)!.settings.arguments as ArgsViewExam;
-    return FutureBuilder<List<SubCpsrcds>>(
+    return FutureBuilder<ExamResult>(
       future:
           MsgMgrQuestion().getExamByCpsgrpId(_argsViewExam!.cprsgrpId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _ViewExamBody(_argsViewExam!, snapshot.data!);
+          _argsViewExam!.sumScore = snapshot.data!.totScore ?? 0.0;
+          return _ViewExamBody(_argsViewExam!, snapshot.data!.listSubCpsrcd!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),

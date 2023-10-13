@@ -100,6 +100,7 @@ class DataOneResultCard {
   double? totalScore;
   double? phoneScore;
   double? toneScore;
+  double? fluencyScore;
   int? more;
   int? less;
   int? retro;
@@ -130,6 +131,7 @@ class DataOneResultCard {
     totalScore = json['totalScore'];
     toneScore = json['toneScore'];
     phoneScore = json['phoneScore'];
+    fluencyScore = json['fluencyScore'];
     more = json['more'];
     less = json['less'];
     retro = json['retro'];
@@ -158,6 +160,7 @@ class DataOneResultCard {
     data['totalScore'] = this.totalScore;
     data['phoneScore'] = this.phoneScore;
     data['toneScore'] = this.toneScore;
+    data['fluencyScore'] = this.fluencyScore;
     data['more'] = this.more;
     data['less'] = this.less;
     data['retro'] = this.retro;
@@ -204,7 +207,8 @@ class DataOneWordCard {
       this.shengDiao,
       this.wrongShengMu,
       this.wrongYunMu,
-      this.wrongShengDiao});
+      this.wrongShengDiao,
+      this.isWrong});
 
   DataOneWordCard.fromJson(Map<String, dynamic> json) {
     word = json['word'];

@@ -10,6 +10,7 @@ import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 import 'package:quiver/strings.dart';
 import 'package:record/record.dart' as rcd;
 import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart' as ffmpeg;
+import 'package:scroll_snap_list/scroll_snap_list.dart';
 
 import 'package:project_soe/s_o_e_icons_icons.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
@@ -18,19 +19,19 @@ import 'package:project_soe/CComponents/ComponentShadowedContainer.dart';
 import 'package:project_soe/CComponents/ComponentSubtitle.dart';
 import 'package:project_soe/CComponents/ComponentRoundButton.dart';
 
-// Map<int, String> mp = {-1: '无', 0: '无', 1: '字', 2: '词', 3: '句子', 4: '段落'};
-
 // 语音输入Component
 class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   // 文件数据, 包括录音地址.
   final SubCpsrcds dataPage;
-  final bool titleShow;
+  bool add2Mis;
   bool wrongsShow;
+  bool subButShow;
   ComponentVoiceInput(
       {super.key,
       required this.dataPage,
-      required this.titleShow,
-      this.wrongsShow = false});
+      this.wrongsShow = false,
+      this.add2Mis = false,
+      this.subButShow = false});
   @override
   State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
@@ -126,8 +127,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.dataPage.setUploading(true);
     });
     // ---------------- test !!!
-    await widget.dataPage.postAndGetResultXf();
-
+    await widget.dataPage.postAndGetResultXf(widget.add2Mis);
+    print(widget.dataPage.dataOneResultCard!.cpsrcdId);
     setState(() {
       widget.dataPage.setUploading(false);
     });
@@ -261,56 +262,146 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     // print(widget.dataPage.dataQuestion.label);
     children.addAll(
       [
-        widget.titleShow
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
-                  child: Text(
-                    widget.dataPage.title ?? "",
-                    style: gSubtitleStyle,
-                  ),
-                ),
-              )
-            : Container(),
+        // Center(
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
+        //     child: Text(
+        //       widget.dataPage.title ?? "",
+        //       style: gSubtitleStyle,
+        //     ),
+        //   ),
+        // ),
         Container(
-          padding: EdgeInsets.only(left: 15, bottom: 10),
+          padding: EdgeInsets.only(left: 15, right: 15),
           child: Text(
             // widget.dataPage.getScoreDescString(!widget.titleShow),
             "分数：" + widget.dataPage.score.toString(),
             style: gInfoTextStyle,
           ),
         ),
+        Padding(padding: EdgeInsets.only(left: screenSize.width * 0.08, right: screenSize.width * 0.08), child: 
         widget.dataPage.getRichText4Show(
-            widget.dataPage.refText ?? "", screenSize.width, widget.wrongsShow),
+            widget.dataPage.refText ?? "", screenSize.width * 0.8, widget.wrongsShow),),
       ],
     );
 
     // tags -------
-    List<Widget> tags = List.empty(growable: true);
-    tags.addAll([
-      ComponentSubtitle(
-        label: '${widget.dataPage.type}',
-        style: gTitleStyle,
-      ),
-      ComponentSubtitle(
-        label: '标签：',
-        style: gSubtitleStyle,
-      ),
-    ]);
-
+    List<Widget> listTags = List.empty(growable: true);
     if (widget.dataPage.tags == [] || widget.dataPage.tags == null) {
-      tags.add(ComponentSubtitle(
+      listTags.add(ComponentSubtitle(
         label: '无',
         style: gSubtitleStyle,
       ));
     } else {
       for (var tag in widget.dataPage.tags!) {
-        tags.add(ComponentSubtitle(
-          label: tag.name.toString(),
-          style: gSubtitleStyle,
+        if (listTags.length != 0) listTags.add(SizedBox(width: 5));
+        listTags.add(Padding(
+          padding: EdgeInsets.all(2),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              color: gColorFFFFFFRGBA,
+            ),
+            child: Text(
+              tag.name.toString(),
+              style: gInfoTextStyle,
+            ),
+          ),
         ));
       }
     }
+    print(listTags.length);
+    List<Widget> tags = List.empty(growable: true);
+    tags.addAll(
+      <Widget>[
+        // 题目类型
+        Row(
+          children: [
+            ComponentSubtitle(
+              label: widget.dataPage.type ?? "暂无类型",
+              style: gTitleStyle,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              // todo
+              TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.resolveWith(
+                      (states) {
+                        if (states.contains(MaterialState.focused) &&
+                            !states.contains(MaterialState.pressed)) {
+                          //获取焦点时的颜色
+                          return Colors.blue;
+                        } else if (states.contains(MaterialState.pressed)) {
+                          //按下时的颜色
+                          return Colors.deepPurple;
+                        }
+                        //默认状态使用灰色
+                        return Colors.grey;
+                      },
+                    ),
+                  ),
+                  onPressed: () => {
+                        setState(() {
+                          widget.dataPage.enablePinyin = true;
+                        })
+                      },
+                  child: ComponentSubtitle(
+                    label: "开启拼音",
+                    style: gSubtitleStyle0,
+                  )),
+              TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.resolveWith(
+                      (states) {
+                        if (states.contains(MaterialState.focused) &&
+                            !states.contains(MaterialState.pressed)) {
+                          //获取焦点时的颜色
+                          return Colors.blue;
+                        } else if (states.contains(MaterialState.pressed)) {
+                          //按下时的颜色
+                          return Colors.deepPurple;
+                        }
+                        //默认状态使用灰色
+                        return Colors.grey;
+                      },
+                    ),
+                  ),
+                  onPressed: () => {
+                        setState(() {
+                          widget.dataPage.enablePinyin = false;
+                        })
+                      },
+                  child: ComponentSubtitle(
+                    label: "关闭拼音",
+                    style: gSubtitleStyle0,
+                  )),
+            ]),
+          ],
+        ),
+        //
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: Row(
+            children: [
+              ComponentSubtitle(
+                label: '标签：',
+                style: gSubtitleStyle,
+              ),
+              SizedBox(
+                  width: screenSize.width * 0.8,
+                  height: 30,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: listTags.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return listTags[index];
+                      }))
+            ],
+          ),
+        ),
+        _buildExampleAudioPlayer(context)
+      ],
+    );
     // tags -------
 
     return Scaffold(
@@ -319,25 +410,23 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         shadowColor: Color.fromARGB(0, 0, 0, 0),
         automaticallyImplyLeading: false,
         backgroundColor: gColorE1EBF5RGBA,
-        toolbarHeight: 80.0,
-        title: Column(
-          children: [
-            Row(
-              children: tags,
-            ),
-            _buildExampleAudioPlayer(context),
-          ],
+        toolbarHeight: 100.0,
+        title: Container(
+          child: Column(children: tags),
         ),
       ),
-      body: SizedBox(
-        width: screenSize.width,
-        child: ComponentShadowedContainer(
-          color: gColorFFFFFFRGBA,
-          shadowColor: gColorE1EBF5RGBA,
-          edgesHorizon: 26.5,
-          edgesVertical: 10,
-          child: ListView(
-            children: children,
+      body: Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: SizedBox(
+          // width: screenSize.width,
+          child: ComponentShadowedContainer(
+            color: gColorFFFFFFRGBA,
+            shadowColor: gColorE1EBF5RGBA,
+            edgesHorizon: 26.5,
+            edgesVertical: 10,
+            child: ListView(
+              children: children,
+            ),
           ),
         ),
       ),
@@ -398,9 +487,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       color: gColorE3EDF7RGBA,
                     ),
                   ),
-                  widget.titleShow
-                      ? Container()
-                      : Padding(
+                  widget.subButShow
+                      ? Padding(
                           padding: EdgeInsets.only(left: 0),
                           child: TextButton(
                             child: Text('提交'),
@@ -408,25 +496,22 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                               // ........
                               setState(() {
                                 if (widget.dataPage.dataOneResultCard != null) {
-                                  // wrongSheng.clear();
-                                  // for (var x
-                                  //     in widget.dataPage.resultXf!.wrongSheng) {
-                                  //   var tmp = x.toJson();
-                                  //   print(tmp[9]);
-                                  //   print('----------------');
-                                  //   wrongSheng.add(tmp[9]);
-                                  // }
-                                  // widget.dataPage.setStartPlaying(false);
-                                  // widget.dataPage.setRecording(false);
+                                  print("------------");
+                                  print(widget
+                                      .dataPage.dataOneResultCard!.cpsrcdId);
+                                  widget.wrongsShow = true;
+                                  widget.dataPage.setStartPlaying(false);
+                                  widget.dataPage.setRecording(false);
                                   // widget.dataPage.setFilePath('');
                                   // widget.dataPage.setUploading(false);
-                                  // widget.dataPage.resultXf = null;
+                                  // widget.dataPage.dataOneResultCard = null;
                                 }
                                 widget.wrongsShow = true;
                               });
                             }),
                           ),
                         )
+                      : Container()
                   // color: gColorE3EDF7RGBA,
                 ],
               ),

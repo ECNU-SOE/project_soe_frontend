@@ -44,12 +44,10 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
     );
     var data = jsonDecode(Utf8Codec().decode(response.bodyBytes))['data']; 
 
-    print(data);
     List<Tags> tags = List.empty(growable: true);
     data['tags'].forEach((v) {
       tags!.add(new Tags.fromJson(v));
     });
-
     SubCpsrcds subCpsrcd = new SubCpsrcds(
       id: data['id'] ?? "",
       type: data['type'] ?? "",
@@ -60,7 +58,8 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
       audioUrl: data['audioUrl'] ?? "",
       tags: tags ?? [],
       gmtCreate: data['gmtCreate'] ?? "",
-      gmtModified: data['gmtModified'] ?? ""
+      gmtModified: data['gmtModified'] ?? "",
+      enablePinyin: data['enablePinyin'] ?? false,
     );
 
     dataQuestionPageList.add(subCpsrcd);
@@ -95,7 +94,6 @@ class _MyWidgetState extends State<ViewMistakeDetail> {
         if (snapshot.hasData) {
           for(var index = 0; index < snapshot.data!.length; ++ index) {
             dataQuestionPageList.add(snapshot.data![index]);
-            // getGetCpsrcdDetail(snapshot.data![index].id ?? "", index);
           }
           print("postGetDataMistakeDetail succeeded");
           return Scaffold(

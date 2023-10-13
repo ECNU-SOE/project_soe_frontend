@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
@@ -21,15 +22,17 @@ import 'package:project_soe/LNavigation/LogicNavigation.dart';
 class ArgsViewExamResult {
   final String id;
   final String endingRoute;
-  final DataExamPage dataList;
-  ArgsViewExamResult(this.id, this.dataList, this.endingRoute);
+  final List<DataOneResultCard> dataList;
+  double sumScore = 0;
+  ArgsViewExamResult(this.id, this.dataList, this.endingRoute, this.sumScore);
 }
 
 class ArgsViewExam {
   final String cprsgrpId;
   final String title;
   final String endingRoute;
-  ArgsViewExam(this.cprsgrpId, this.title, this.endingRoute) {
+  double sumScore = 0;
+  ArgsViewExam(this.cprsgrpId, this.title, this.endingRoute, this.sumScore) {
     if (sNavigationRoutes[endingRoute] == null) {
       throw ('ROUTE NAME NOT FOUND');
     }
@@ -266,6 +269,7 @@ class SubCpsrcds {
   String? gmtCreate;
   String? gmtModified;
 
+  int? tNum;
   int? cNum;
   bool _isRecording = false;
   bool _isUploading = false;
@@ -293,6 +297,7 @@ class SubCpsrcds {
       this.tags,
       this.gmtCreate,
       this.gmtModified,
+      this.tNum,
       this.cNum});
 
   SubCpsrcds.fromJson(Map<String, dynamic> json) {
@@ -317,6 +322,7 @@ class SubCpsrcds {
     }
     gmtCreate = json['gmtCreate'] ?? "";
     gmtModified = json['gmtModified'] ?? "";
+    tNum = json['tNum'] ?? -1;
     cNum = json['cNum'] ?? -1;
   }
 
@@ -338,6 +344,7 @@ class SubCpsrcds {
     data['gmtCreate'] = this.gmtCreate;
     data['gmtModified'] = this.gmtModified;
     data['cNum'] = this.cNum;
+    data['tNum'] = this.tNum;
     return data;
   }
 
@@ -371,6 +378,7 @@ class SubCpsrcds {
   }
 
   Future<http.MultipartFile> getMultiPartFileAudio() async {
+    print("录音地址：" + _filePath);
     dynamic httpAudio;
     if (_filePath != '') {
       final bytes = await File(_filePath).readAsBytes();
@@ -451,15 +459,26 @@ class SubCpsrcds {
 
   // 创造题目内容中每一个字
   Column getOneWord(String c, double adaptSize, bool f) {
+    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
+    // double pinyinLength = 1.0 * (exp.hasMatch(c)
+    //               ? ((enablePinyin ?? false) ? PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK) : " ").length
+    //               : " ".length);
+    // double wordLength = 1.0 * (exp.hasMatch(c)
+    //               ? c.length * 2
+    //               : c.length);
+    // double maxx = max(pinyinLength, wordLength) * adaptSize;
+    // print(maxx);
     return Column(
             children: [
               RichText(
                 text: TextSpan(
-                  text: (enablePinyin ?? false) ? PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK) : "",
+                  text: exp.hasMatch(c)
+                  ? ((enablePinyin ?? false) ? PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK) : "")
+                  : "",
                   style: TextStyle(
-                    fontFamily: 'SourceSans',
+                    fontFamily: 'SourceSerif',
                     color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
-                    fontSize:adaptSize - 6,
+                    fontSize: adaptSize - 6,
                   ),
                 ),
               ),
@@ -467,7 +486,7 @@ class SubCpsrcds {
                 text: TextSpan(
                   text: c,
                   style: TextStyle(
-                    fontFamily: 'SourceSans',
+                    fontFamily: 'SourceSerif',
                     color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
                     fontSize: adaptSize,
                   ),
@@ -478,52 +497,99 @@ class SubCpsrcds {
   }
 
   // 创造题目内容
-  Widget getRichText4Show(
-      String str, double sWidth, bool showWrongs) {
-    str += "\n";
+  Widget getRichText4Show(String str, double sWidth, bool showWrongs) {
+    List<String> ans = List.empty(growable: true);
+    str += "\n"; int n = str.length; String tmp = "";
+    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
+    for(int i = 0; i < n; ++ i) {
+      if(exp.hasMatch(str[i])) tmp += str[i];
+      else {
+        if(tmp != "") {
+          ans.add(tmp);
+          tmp = "";
+        }
+        ans.add(str[i]);
+      }
+      // ans.add(str[i]);
+    }
+    if(tmp != "") ans.add(tmp);
+    n = ans.length;
+    // ans 表示连词后
 
     List<Container> row = List.empty(growable: true);
     List<Wrap> rows = List.empty(growable: true);
-    double factor = getAdaptiveFactor(str.length);
+    // double factor = getAdaptiveFactor(str.length);
 
     List<bool> str_isWrong = List.filled(str.length, false);
 
+    print(showWrongs);
+    print("-------------");
     int c_str_len = 0;
+    print("c_str_len: " + c_str_len.toString());
     if(dataOneResultCard != null && dataOneResultCard!.dataOneWordCard != null) c_str_len = dataOneResultCard!.dataOneWordCard!.length;
     for(int i = 0, cnt = 0; i < str.length; ++ i) {
-      var c = str[i];
-      var tmp = PinyinHelper.getPinyinE(c);
-      if(tmp != ' ') { // 是中文字
+      if(exp.hasMatch(str[i])) { // 是中文字
         if(cnt < c_str_len) {
-          str_isWrong[cnt] = dataOneResultCard!.dataOneWordCard![cnt].isWrong ?? false;
+          str_isWrong[i] = dataOneResultCard!.dataOneWordCard![cnt].isWrong ?? true;
+          print(str[i] + " 对比 " + dataOneResultCard!.dataOneWordCard![cnt].word! + " : " + str_isWrong[i].toString());
           cnt ++;
         }
       }
     }
-
-    for (int i = 0; i < str.length; ++i) {
+    print("-------------");
+    /*
+    int cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        if(ans[i] == '\n') {
+          if(row.isNotEmpty) rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+          row = List.empty(growable: true);
+        } else {
+          var c = ans[i];
+          bool f = showWrongs;
+          for(int j = 0; j < c.length; ++ j) {
+            f = f && str_isWrong[j + cnt];
+          }
+          row.add(
+            Container(height: 44, child: getOneWord(c, 18, f))
+            // width: 30 * factor * c.length
+            // false 修改 str_isWrong[i]            
+          );
+        }
+        cnt += ans[i].length;
+    }
+    */
+      for (int i = 0; i < str.length; ++i) {
         if(str[i] == '\n') {
           if(row.isNotEmpty) rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
           row = List.empty(growable: true);
         } else {
           var c = str[i];
+          bool f = showWrongs;
           row.add(
-            Container(width: 40 * factor, height: 44 * factor, child: getOneWord(c, 18 * factor, str_isWrong[i]))            
+            Container(height: 44, child: getOneWord(c, 18, f && str_isWrong[i]))
+            // width: 30 * factor * c.length
+            // false 修改 str_isWrong[i]            
           );
         }
     }
+
     return SizedBox(width: sWidth, child: Column(children: rows));
   }
 
-  Future<void> postAndGetResultXf() async {
+  Future<void> postAndGetResultXf(bool add2Mis) async {
     if (_filePath == '') {
       return;
     }
     _isUploading = true;
-    dataOneResultCard = await MsgMgrQuestion().postAndGetResultXf(this);
+    dataOneResultCard = await MsgMgrQuestion().postAndGetResultXf(this, add2Mis);
     // 标定状态
     _isUploading = false;
   }
 
 }
 
+class ExamResult {
+  double? totScore = 0;
+  List<SubCpsrcds>? listSubCpsrcd;
+  ExamResult({this.totScore, this.listSubCpsrcd});
+}

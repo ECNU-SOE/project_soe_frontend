@@ -34,7 +34,7 @@ class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
 
   Widget _buildBodyImpl(BuildContext context, SubCpsrcds subCpsrcds) {
 
-    _inputPage = ComponentVoiceInput(dataPage: subCpsrcds, titleShow: false);
+    _inputPage = ComponentVoiceInput(dataPage: subCpsrcds, wrongsShow: false, add2Mis: true, subButShow: true);
 
     return Scaffold(
       appBar: ComponentAppBar(
@@ -54,6 +54,7 @@ class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
           foregroundColor: Colors.black,
           backgroundColor: gColorE8F3FBRGBA,
       ),    
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
       bottomNavigationBar:
           ComponentBottomNavigator(curRouteName: ViewPracticeRandom.routeName),
     );

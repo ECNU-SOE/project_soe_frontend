@@ -70,7 +70,7 @@ class ViewPractice extends StatelessWidget {
                     context,
                     ViewExam.routeName,
                     arguments:
-                        ArgsViewExam(data.id, '作业', ViewAppHome.routeName),
+                        ArgsViewExam(data.id, '作业', ViewAppHome.routeName, 0.0),
                   )
               : () => showDialog(
                     context: context,

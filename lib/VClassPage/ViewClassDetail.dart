@@ -42,7 +42,7 @@ class ViewClassDetail extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, ViewExam.routeName,
                 arguments: ArgsViewExam(
-                    homeWorkInfo.cpsgrpId, '作业', ViewClassDetail.routeName));
+                    homeWorkInfo.cpsgrpId, '作业', ViewClassDetail.routeName, 0.0));
           },
           child: Text(
             '进入作业',

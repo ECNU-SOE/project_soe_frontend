@@ -20,7 +20,7 @@ Future<void> onChooseNativeLanguage(
   final decoded = jsonDecode(u8decoded);
   final parsedId = decoded['data'];
   Navigator.pushReplacementNamed(context, ViewExam.routeName,
-      arguments: ArgsViewExam(parsedId, '全面测试', ViewAppHome.routeName));
+      arguments: ArgsViewExam(parsedId, '全面测试', ViewAppHome.routeName, 0.0));
 }
 
 class _ViewNativeLanuageChooseImpl extends StatelessWidget {
