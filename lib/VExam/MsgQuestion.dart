@@ -8,7 +8,6 @@ import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
 
 class MsgMgrQuestion {
-// 此文件只应被DataQuestion包含
   Future<ExamResult> getExamByCpsgrpId(String cpsgrpId) async {
     final token = AuthritionState.instance.getToken();
     final uri = Uri.parse(
@@ -86,7 +85,7 @@ class MsgMgrQuestion {
       'refText': data.refText ?? "",
       'category': getXfCategoryStringByInt(data.evalMode ?? -1),
       'pinyin': data.pinyin ?? "",
-      "cpsrcdId": add2Mis ? (data.id ?? "") : ""
+      "cpsrcdId": add2Mis ? (data.id ?? "") : "",
     });
     request.files.add(await data.getMultiPartFileAudio());
     request.headers.addAll(headers);
@@ -102,924 +101,12 @@ class MsgMgrQuestion {
     List<DataOneWordCard> oneWordList = List.empty(growable: true);
     print(getXfCategoryStringByInt(data.evalMode ?? -1));
     RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
-/*
-    if (!_isJsonList(resultJson['sentence'])) {
-      var sentanceJson = resultJson['sentence'];
-      if (!_isJsonList(sentanceJson['word'])) {
-        var wordJson = sentanceJson['word'];
-        if (!_isJsonList(wordJson['syll'])) {
-          var syrllJson = wordJson['syll'];
-          if (syrllJson['content'] != 'silv' &&
-              syrllJson['content'] != 'sil' &&
-              syrllJson['content'] != 'fil' &&
-              exp.hasMatch(syrllJson['content'])) {
-            DataOneWordCard tmp = DataOneWordCard();
-            tmp.word = syrllJson['content'];
-            tmp.pinyin = syrllJson['symbol'];
-            tmp.isWrong = syrllJson['dp_message'] != 0;
-            tmp.wrongShengMu = false;
-            tmp.wrongYunMu = false;
-            tmp.wrongShengDiao = false;
-            tmp.shengMu = "";
-            tmp.yunMu = "";
-            tmp.shengDiao = "";
-            if (syrllJson['dp_message'] == 0) {
-            } else if (syrllJson['dp_message'] == 16) {
-              less += 1;
-            } else if (syrllJson['dp_message'] == 32) {
-              more += 1;
-            } else if (syrllJson['dp_message'] == 64) {
-              retro += 1;
-            } else if (syrllJson['dp_message'] == 128) {
-              repl += 1;
-            }
-            var phoneJson = syrllJson['phone'];
-            switch (syrllJson['dp_message']) {
-              case 16:
-                less += 1;
-                break;
-              case 32:
-                more += 1;
-                break;
-              case 64:
-                retro += 1;
-                break;
-              case 128:
-                repl += 1;
-                break;
-              default:
-            }
-            if (!_isJsonList(phoneJson)) {
-              var phone = phoneJson;
-              if (phone['is_yun'] == 1) {
-                tmp.yunMu = phone['content'];
-                tmp.shengDiao = phone['mono_tone'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = true;
-                    break;
-                  case 2:
-                    tmp.wrongYunMu = true;
-                    tmp.wrongShengDiao = false;
-                    break;
-                  default:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = false;
-                    break;
-                }
-              } else if (phone['is_yun'] == 0) {
-                tmp.shengMu = phone['content'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongShengMu = false;
-                    break;
-                  case 2:
-                    tmp.wrongShengMu = true;
-                    break;
-                  default:
-                    tmp.wrongShengMu = false;
-                    break;
-                }
-              }
-            } else {
-              for (var phone in phoneJson) {
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              }
-            }
-          }
-        } else {
-          for (var syrllJson in wordJson['syll']) {
-            if (syrllJson['content'] == 'silv' ||
-                syrllJson['content'] == 'sil' ||
-                syrllJson['content'] == 'fil' ||
-                !exp.hasMatch(syrllJson['content'])) continue;
-            DataOneWordCard tmp = DataOneWordCard();
-            tmp.word = syrllJson['content'];
-            tmp.pinyin = syrllJson['symbol'];
-            tmp.isWrong = syrllJson['dp_message'] != 0;
-            tmp.wrongShengMu = false;
-            tmp.wrongYunMu = false;
-            tmp.wrongShengDiao = false;
-            tmp.shengMu = "";
-            tmp.yunMu = "";
-            tmp.shengDiao = "";
-            if (syrllJson['dp_message'] == 0) {
-            } else if (syrllJson['dp_message'] == 16) {
-              less += 1;
-            } else if (syrllJson['dp_message'] == 32) {
-              more += 1;
-            } else if (syrllJson['dp_message'] == 64) {
-              retro += 1;
-            } else if (syrllJson['dp_message'] == 128) {
-              repl += 1;
-            }
-            var phoneJson = syrllJson['phone'];
-            switch (syrllJson['dp_message']) {
-              case 16:
-                less += 1;
-                break;
-              case 32:
-                more += 1;
-                break;
-              case 64:
-                retro += 1;
-                break;
-              case 128:
-                repl += 1;
-                break;
-              default:
-            }
-            if (!_isJsonList(phoneJson)) {
-              var phone = phoneJson;
-              if (phone['is_yun'] == 1) {
-                tmp.yunMu = phone['content'];
-                tmp.shengDiao = phone['mono_tone'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = true;
-                    break;
-                  case 2:
-                    tmp.wrongYunMu = true;
-                    tmp.wrongShengDiao = false;
-                    break;
-                  default:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = false;
-                    break;
-                }
-              } else if (phone['is_yun'] == 0) {
-                tmp.shengMu = phone['content'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongShengMu = false;
-                    break;
-                  case 2:
-                    tmp.wrongShengMu = true;
-                    break;
-                  default:
-                    tmp.wrongShengMu = false;
-                    break;
-                }
-              }
-            } else {
-              for (var phone in phoneJson) {
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      } else {
-        for (var wordJson in sentanceJson['word']) {
-          if (!_isJsonList(wordJson['syll'])) {
-            var syrllJson = wordJson['syll'];
-            if (syrllJson['content'] == 'silv' ||
-                syrllJson['content'] == 'sil' ||
-                syrllJson['content'] == 'fil' ||
-                !exp.hasMatch(syrllJson['content'])) continue;
-            DataOneWordCard tmp = DataOneWordCard();
-            tmp.word = syrllJson['content'];
-            tmp.pinyin = syrllJson['symbol'];
-            tmp.isWrong = syrllJson['dp_message'] != 0;
-            tmp.wrongShengMu = false;
-            tmp.wrongYunMu = false;
-            tmp.wrongShengDiao = false;
-            tmp.shengMu = "";
-            tmp.yunMu = "";
-            tmp.shengDiao = "";
-            if (syrllJson['dp_message'] == 0) {
-            } else if (syrllJson['dp_message'] == 16) {
-              less += 1;
-            } else if (syrllJson['dp_message'] == 32) {
-              more += 1;
-            } else if (syrllJson['dp_message'] == 64) {
-              retro += 1;
-            } else if (syrllJson['dp_message'] == 128) {
-              repl += 1;
-            }
-            var phoneJson = syrllJson['phone'];
-            switch (syrllJson['dp_message']) {
-              case 16:
-                less += 1;
-                break;
-              case 32:
-                more += 1;
-                break;
-              case 64:
-                retro += 1;
-                break;
-              case 128:
-                repl += 1;
-                break;
-              default:
-            }
-            if (!_isJsonList(phoneJson)) {
-              var phone = phoneJson;
-              if (phone['is_yun'] == 1) {
-                tmp.yunMu = phone['content'];
-                tmp.shengDiao = phone['mono_tone'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = true;
-                    break;
-                  case 2:
-                    tmp.wrongYunMu = true;
-                    tmp.wrongShengDiao = false;
-                    break;
-                  default:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = false;
-                    break;
-                }
-              } else if (phone['is_yun'] == 0) {
-                tmp.shengMu = phone['content'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongShengMu = false;
-                    break;
-                  case 2:
-                    tmp.wrongShengMu = true;
-                    break;
-                  default:
-                    tmp.wrongShengMu = false;
-                    break;
-                }
-              }
-            } else {
-              for (var phone in phoneJson) {
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              }
-            }
-          } else {
-            for (var syrllJson in wordJson['syll']) {
-              if (syrllJson['content'] == 'silv' ||
-                  syrllJson['content'] == 'sil' ||
-                  syrllJson['content'] == 'fil' ||
-                  !exp.hasMatch(syrllJson['content'])) continue;
-              DataOneWordCard tmp = DataOneWordCard();
-              tmp.word = syrllJson['content'];
-              tmp.pinyin = syrllJson['symbol'];
-              tmp.isWrong = syrllJson['dp_message'] != 0;
-              tmp.wrongShengMu = false;
-              tmp.wrongYunMu = false;
-              tmp.wrongShengDiao = false;
-              tmp.shengMu = "";
-              tmp.yunMu = "";
-              tmp.shengDiao = "";
-              if (syrllJson['dp_message'] == 0) {
-              } else if (syrllJson['dp_message'] == 16) {
-                less += 1;
-              } else if (syrllJson['dp_message'] == 32) {
-                more += 1;
-              } else if (syrllJson['dp_message'] == 64) {
-                retro += 1;
-              } else if (syrllJson['dp_message'] == 128) {
-                repl += 1;
-              }
-              var phoneJson = syrllJson['phone'];
-              switch (syrllJson['dp_message']) {
-                case 16:
-                  less += 1;
-                  break;
-                case 32:
-                  more += 1;
-                  break;
-                case 64:
-                  retro += 1;
-                  break;
-                case 128:
-                  repl += 1;
-                  break;
-                default:
-              }
-              if (!_isJsonList(phoneJson)) {
-                var phone = phoneJson;
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              } else {
-                for (var phone in phoneJson) {
-                  if (phone['is_yun'] == 1) {
-                    tmp.yunMu = phone['content'];
-                    tmp.shengDiao = phone['mono_tone'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = true;
-                        break;
-                      case 2:
-                        tmp.wrongYunMu = true;
-                        tmp.wrongShengDiao = false;
-                        break;
-                      default:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = false;
-                        break;
-                    }
-                  } else if (phone['is_yun'] == 0) {
-                    tmp.shengMu = phone['content'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongShengMu = false;
-                        break;
-                      case 2:
-                        tmp.wrongShengMu = true;
-                        break;
-                      default:
-                        tmp.wrongShengMu = false;
-                        break;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    } else {
-      for (var sentanceJson in resultJson['sentence']) {
-        if (!_isJsonList(sentanceJson['word'])) {
-          var wordJson = sentanceJson['word'];
-          if (!_isJsonList(wordJson['syll'])) {
-            var syrllJson = wordJson['syll'];
-            if (syrllJson['content'] == 'silv' ||
-                syrllJson['content'] == 'sil' ||
-                syrllJson['content'] == 'fil' ||
-                !exp.hasMatch(syrllJson['content'])) continue;
-            DataOneWordCard tmp = DataOneWordCard();
-            tmp.word = syrllJson['content'];
-            tmp.pinyin = syrllJson['symbol'];
-            tmp.isWrong = syrllJson['dp_message'] != 0;
-            tmp.wrongShengMu = false;
-            tmp.wrongYunMu = false;
-            tmp.wrongShengDiao = false;
-            tmp.shengMu = "";
-            tmp.yunMu = "";
-            tmp.shengDiao = "";
-            if (syrllJson['dp_message'] == 0) {
-            } else if (syrllJson['dp_message'] == 16) {
-              less += 1;
-            } else if (syrllJson['dp_message'] == 32) {
-              more += 1;
-            } else if (syrllJson['dp_message'] == 64) {
-              retro += 1;
-            } else if (syrllJson['dp_message'] == 128) {
-              repl += 1;
-            }
-            var phoneJson = syrllJson['phone'];
-            switch (syrllJson['dp_message']) {
-              case 16:
-                less += 1;
-                break;
-              case 32:
-                more += 1;
-                break;
-              case 64:
-                retro += 1;
-                break;
-              case 128:
-                repl += 1;
-                break;
-              default:
-            }
-            if (!_isJsonList(phoneJson)) {
-              var phone = phoneJson;
-              if (phone['is_yun'] == 1) {
-                tmp.yunMu = phone['content'];
-                tmp.shengDiao = phone['mono_tone'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = true;
-                    break;
-                  case 2:
-                    tmp.wrongYunMu = true;
-                    tmp.wrongShengDiao = false;
-                    break;
-                  default:
-                    tmp.wrongYunMu = false;
-                    tmp.wrongShengDiao = false;
-                    break;
-                }
-              } else if (phone['is_yun'] == 0) {
-                tmp.shengMu = phone['content'];
-                switch (phone['perr_msg']) {
-                  case 1:
-                    tmp.wrongShengMu = false;
-                    break;
-                  case 2:
-                    tmp.wrongShengMu = true;
-                    break;
-                  default:
-                    tmp.wrongShengMu = false;
-                    break;
-                }
-              }
-            } else {
-              for (var phone in phoneJson) {
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              }
-            }
-          } else {
-            for (var syrllJson in wordJson['syll']) {
-              if (syrllJson['content'] == 'silv' ||
-                  syrllJson['content'] == 'sil' ||
-                  syrllJson['content'] == 'fil' ||
-                  !exp.hasMatch(syrllJson['content'])) continue;
-              DataOneWordCard tmp = DataOneWordCard();
-              tmp.word = syrllJson['content'];
-              tmp.pinyin = syrllJson['symbol'];
-              tmp.isWrong = syrllJson['dp_message'] != 0;
-              tmp.wrongShengMu = false;
-              tmp.wrongYunMu = false;
-              tmp.wrongShengDiao = false;
-              tmp.shengMu = "";
-              tmp.yunMu = "";
-              tmp.shengDiao = "";
-              if (syrllJson['dp_message'] == 0) {
-              } else if (syrllJson['dp_message'] == 16) {
-                less += 1;
-              } else if (syrllJson['dp_message'] == 32) {
-                more += 1;
-              } else if (syrllJson['dp_message'] == 64) {
-                retro += 1;
-              } else if (syrllJson['dp_message'] == 128) {
-                repl += 1;
-              }
-              var phoneJson = syrllJson['phone'];
-              switch (syrllJson['dp_message']) {
-                case 16:
-                  less += 1;
-                  break;
-                case 32:
-                  more += 1;
-                  break;
-                case 64:
-                  retro += 1;
-                  break;
-                case 128:
-                  repl += 1;
-                  break;
-                default:
-              }
-              if (!_isJsonList(phoneJson)) {
-                var phone = phoneJson;
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              } else {
-                for (var phone in phoneJson) {
-                  if (phone['is_yun'] == 1) {
-                    tmp.yunMu = phone['content'];
-                    tmp.shengDiao = phone['mono_tone'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = true;
-                        break;
-                      case 2:
-                        tmp.wrongYunMu = true;
-                        tmp.wrongShengDiao = false;
-                        break;
-                      default:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = false;
-                        break;
-                    }
-                  } else if (phone['is_yun'] == 0) {
-                    tmp.shengMu = phone['content'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongShengMu = false;
-                        break;
-                      case 2:
-                        tmp.wrongShengMu = true;
-                        break;
-                      default:
-                        tmp.wrongShengMu = false;
-                        break;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } else {
-          for (var wordJson in sentanceJson['word']) {
-            if (!_isJsonList(wordJson['syll'])) {
-              var syrllJson = wordJson['syll'];
-              if (syrllJson['content'] == 'silv' ||
-                  syrllJson['content'] == 'sil' ||
-                  syrllJson['content'] == 'fil' ||
-                  !exp.hasMatch(syrllJson['content'])) continue;
-              DataOneWordCard tmp = DataOneWordCard();
-              tmp.word = syrllJson['content'];
-              tmp.pinyin = syrllJson['symbol'];
-              tmp.isWrong = syrllJson['dp_message'] != 0;
-              tmp.wrongShengMu = false;
-              tmp.wrongYunMu = false;
-              tmp.wrongShengDiao = false;
-              tmp.shengMu = "";
-              tmp.yunMu = "";
-              tmp.shengDiao = "";
-              if (syrllJson['dp_message'] == 0) {
-              } else if (syrllJson['dp_message'] == 16) {
-                less += 1;
-              } else if (syrllJson['dp_message'] == 32) {
-                more += 1;
-              } else if (syrllJson['dp_message'] == 64) {
-                retro += 1;
-              } else if (syrllJson['dp_message'] == 128) {
-                repl += 1;
-              }
-              var phoneJson = syrllJson['phone'];
-              switch (syrllJson['dp_message']) {
-                case 16:
-                  less += 1;
-                  break;
-                case 32:
-                  more += 1;
-                  break;
-                case 64:
-                  retro += 1;
-                  break;
-                case 128:
-                  repl += 1;
-                  break;
-                default:
-              }
-              if (!_isJsonList(phoneJson)) {
-                var phone = phoneJson;
-                if (phone['is_yun'] == 1) {
-                  tmp.yunMu = phone['content'];
-                  tmp.shengDiao = phone['mono_tone'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = true;
-                      break;
-                    case 2:
-                      tmp.wrongYunMu = true;
-                      tmp.wrongShengDiao = false;
-                      break;
-                    default:
-                      tmp.wrongYunMu = false;
-                      tmp.wrongShengDiao = false;
-                      break;
-                  }
-                } else if (phone['is_yun'] == 0) {
-                  tmp.shengMu = phone['content'];
-                  switch (phone['perr_msg']) {
-                    case 1:
-                      tmp.wrongShengMu = false;
-                      break;
-                    case 2:
-                      tmp.wrongShengMu = true;
-                      break;
-                    default:
-                      tmp.wrongShengMu = false;
-                      break;
-                  }
-                }
-              } else {
-                for (var phone in phoneJson) {
-                  if (phone['is_yun'] == 1) {
-                    tmp.yunMu = phone['content'];
-                    tmp.shengDiao = phone['mono_tone'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = true;
-                        break;
-                      case 2:
-                        tmp.wrongYunMu = true;
-                        tmp.wrongShengDiao = false;
-                        break;
-                      default:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = false;
-                        break;
-                    }
-                  } else if (phone['is_yun'] == 0) {
-                    tmp.shengMu = phone['content'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongShengMu = false;
-                        break;
-                      case 2:
-                        tmp.wrongShengMu = true;
-                        break;
-                      default:
-                        tmp.wrongShengMu = false;
-                        break;
-                    }
-                  }
-                }
-              }
-            } else {
-              for (var syrllJson in wordJson['syll']) {
-                if (syrllJson['content'] == 'silv' ||
-                    syrllJson['content'] == 'sil' ||
-                    syrllJson['content'] == 'fil' ||
-                    !exp.hasMatch(syrllJson['content'])) continue;
-                DataOneWordCard tmp = DataOneWordCard();
-                tmp.word = syrllJson['content'];
-                tmp.pinyin = syrllJson['symbol'];
-                tmp.isWrong = syrllJson['dp_message'] != 0;
-                tmp.wrongShengMu = false;
-                tmp.wrongYunMu = false;
-                tmp.wrongShengDiao = false;
-                tmp.shengMu = "";
-                tmp.yunMu = "";
-                tmp.shengDiao = "";
-                if (syrllJson['dp_message'] == 0) {
-                } else if (syrllJson['dp_message'] == 16) {
-                  less += 1;
-                } else if (syrllJson['dp_message'] == 32) {
-                  more += 1;
-                } else if (syrllJson['dp_message'] == 64) {
-                  retro += 1;
-                } else if (syrllJson['dp_message'] == 128) {
-                  repl += 1;
-                }
-                var phoneJson = syrllJson['phone'];
-                switch (syrllJson['dp_message']) {
-                  case 16:
-                    less += 1;
-                    break;
-                  case 32:
-                    more += 1;
-                    break;
-                  case 64:
-                    retro += 1;
-                    break;
-                  case 128:
-                    repl += 1;
-                    break;
-                  default:
-                }
-                if (!_isJsonList(phoneJson)) {
-                  var phone = phoneJson;
-                  if (phone['is_yun'] == 1) {
-                    tmp.yunMu = phone['content'];
-                    tmp.shengDiao = phone['mono_tone'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = true;
-                        break;
-                      case 2:
-                        tmp.wrongYunMu = true;
-                        tmp.wrongShengDiao = false;
-                        break;
-                      default:
-                        tmp.wrongYunMu = false;
-                        tmp.wrongShengDiao = false;
-                        break;
-                    }
-                  } else if (phone['is_yun'] == 0) {
-                    tmp.shengMu = phone['content'];
-                    switch (phone['perr_msg']) {
-                      case 1:
-                        tmp.wrongShengMu = false;
-                        break;
-                      case 2:
-                        tmp.wrongShengMu = true;
-                        break;
-                      default:
-                        tmp.wrongShengMu = false;
-                        break;
-                    }
-                  }
-                } else {
-                  for (var phone in phoneJson) {
-                    if (phone['is_yun'] == 1) {
-                      tmp.yunMu = phone['content'];
-                      tmp.shengDiao = phone['mono_tone'];
-                      switch (phone['perr_msg']) {
-                        case 1:
-                          tmp.wrongYunMu = false;
-                          tmp.wrongShengDiao = true;
-                          break;
-                        case 2:
-                          tmp.wrongYunMu = true;
-                          tmp.wrongShengDiao = false;
-                          break;
-                        default:
-                          tmp.wrongYunMu = false;
-                          tmp.wrongShengDiao = false;
-                          break;
-                      }
-                    } else if (phone['is_yun'] == 0) {
-                      tmp.shengMu = phone['content'];
-                      switch (phone['perr_msg']) {
-                        case 1:
-                          tmp.wrongShengMu = false;
-                          break;
-                        case 2:
-                          tmp.wrongShengMu = true;
-                          break;
-                        default:
-                          tmp.wrongShengMu = false;
-                          break;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-*/
-
+    
     if (_isJsonList(resultJson['sentence'])) {
-      if (true) {
-        // 用于缩略代码
         for (var sentanceJson in resultJson['sentence']) {
           if (_isJsonList(sentanceJson['word'])) {
             for (var wordJson in sentanceJson['word']) {
               if (_isJsonList(wordJson['syll'])) {
-                if (true) {
                   for (var syrllJson in wordJson['syll']) {
                     if (syrllJson['content'] == 'silv' ||
                         syrllJson['content'] == 'sil' ||
@@ -1121,10 +208,8 @@ class MsgMgrQuestion {
                     // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                     oneWordList.add(tmp);
                   }
-                }
               } else {
                 var syrllJson = wordJson['syll'];
-                if (true) {
                   if (syrllJson['content'] == 'silv' ||
                       syrllJson['content'] == 'sil' ||
                       syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
@@ -1185,7 +270,9 @@ class MsgMgrQuestion {
                             break;
                         }
                       }
-                      if (phone['perr_msg'] != 0) f = false;
+                      if (phone['perr_msg'] != 0) {
+                        tmp.isWrong = true;
+                      }
                     }
                   } else {
                     var phone = phoneJson;
@@ -1220,25 +307,23 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
-                  // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                   oneWordList.add(tmp);
                   }
-                }
               }
             }
           } else {
             var wordJson = sentanceJson['word'];
             if (_isJsonList(wordJson['syll'])) {
-              if (true) {
                 for (var syrllJson in wordJson['syll']) {
                   if (syrllJson['content'] == 'silv' ||
                       syrllJson['content'] == 'sil' ||
                       syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
                     continue;
                   }
-
                   DataOneWordCard tmp = DataOneWordCard();
                   tmp.word = syrllJson['content'];
                   tmp.pinyin = syrllJson['symbol'];
@@ -1294,7 +379,9 @@ class MsgMgrQuestion {
                             break;
                         }
                       }
-                      if (phone['perr_msg'] != 0) f = false;
+                      if (phone['perr_msg'] != 0) {
+                        if(tmp.isWrong == false) tmp.isWrong = true;
+                      }
                     }
                   } else {
                     var phone = phoneJson;
@@ -1329,21 +416,19 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
-                  // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                   oneWordList.add(tmp);
                 }
-              }
             } else {
               var syrllJson = wordJson['syll'];
-              if (true) {
                 if (syrllJson['content'] == 'silv' ||
                     syrllJson['content'] == 'sil' ||
                     syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
                   continue;
                 }
-
                 DataOneWordCard tmp = DataOneWordCard();
                 tmp.word = syrllJson['content'];
                 tmp.pinyin = syrllJson['symbol'];
@@ -1399,7 +484,9 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
                 } else {
                   var phone = phoneJson;
@@ -1434,27 +521,21 @@ class MsgMgrQuestion {
                         break;
                     }
                   }
-                  if (phone['perr_msg'] != 0) f = false;
+                  if (phone['perr_msg'] != 0) {
+                    if(tmp.isWrong == false) tmp.isWrong = true;
+                  }
                 }
-                // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                 oneWordList.add(tmp);
-              }
             }
           }
         }
-      }
     } else {
-      if (true) {
-        // 用于缩略代码
         var sentanceJson = resultJson['sentence'];
         if (_isJsonList(sentanceJson['word'])) {
           for (var wordJson in sentanceJson['word']) {
             if (_isJsonList(wordJson['syll'])) {
-              if (true) {
                 for (var syrllJson in wordJson['syll']) {
-                  if (syrllJson['content'] == 'silv' ||
-                      syrllJson['content'] == 'sil' ||
-                      syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
+                  if (syrllJson['content'] == 'silv' || syrllJson['content'] == 'sil' || syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
                     continue;
                   }
                   DataOneWordCard tmp = DataOneWordCard();
@@ -1512,7 +593,9 @@ class MsgMgrQuestion {
                             break;
                         }
                       }
-                      if (phone['perr_msg'] != 0) f = false;
+                      if (phone['perr_msg'] != 0) {
+                        if(tmp.isWrong == false) tmp.isWrong = true;
+                      }
                     }
                   } else {
                     var phone = phoneJson;
@@ -1547,21 +630,19 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
-                  // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                   oneWordList.add(tmp);
                 }
-              }
             } else {
               var syrllJson = wordJson['syll'];
-              if (true) {
                 if (syrllJson['content'] == 'silv' ||
                     syrllJson['content'] == 'sil' ||
                     syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
                   continue;
                 }
-
                 DataOneWordCard tmp = DataOneWordCard();
                 tmp.word = syrllJson['content'];
                 tmp.pinyin = syrllJson['symbol'];
@@ -1617,7 +698,9 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
                 } else {
                   var phone = phoneJson;
@@ -1652,17 +735,16 @@ class MsgMgrQuestion {
                         break;
                     }
                   }
-                  if (phone['perr_msg'] != 0) f = false;
+                  if (phone['perr_msg'] != 0) {
+                    if(tmp.isWrong == false) tmp.isWrong = true;
+                  }
                 }
-                // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
-                oneWordList.add(tmp);
-              }
+                oneWordList.add(tmp);             
             }
           }
         } else {
           var wordJson = sentanceJson['word'];
           if (_isJsonList(wordJson['syll'])) {
-            if (true) {
               for (var syrllJson in wordJson['syll']) {
                 if (syrllJson['content'] == 'silv' ||
                     syrllJson['content'] == 'sil' ||
@@ -1724,7 +806,9 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
                 } else {
                   var phone = phoneJson;
@@ -1759,15 +843,14 @@ class MsgMgrQuestion {
                         break;
                     }
                   }
-                  if (phone['perr_msg'] != 0) f = false;
+                  if (phone['perr_msg'] != 0) {
+                    if(tmp.isWrong == false) tmp.isWrong = true;
+                  }
                 }
-                // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                 oneWordList.add(tmp);
-              }
-            }
+              }          
           } else {
             var syrllJson = wordJson['syll'];
-            if (true) {
               if (syrllJson['content'] == 'silv' ||
                   syrllJson['content'] == 'sil' ||
                   syrllJson['content'] == 'fil' || !exp.hasMatch(syrllJson['content'])) {
@@ -1827,7 +910,9 @@ class MsgMgrQuestion {
                           break;
                       }
                     }
-                    if (phone['perr_msg'] != 0) f = false;
+                    if (phone['perr_msg'] != 0) {
+                      if(tmp.isWrong == false) tmp.isWrong = true;
+                    }
                   }
                 } else {
                   var phone = phoneJson;
@@ -1862,15 +947,14 @@ class MsgMgrQuestion {
                         break;
                     }
                   }
-                  if (phone['perr_msg'] != 0) f = false;
+                  if (phone['perr_msg'] != 0) {
+                    if(tmp.isWrong == false) tmp.isWrong = true;
+                  }
                 }
-                // tmp.isWrong = tmp.isWrong! || f || !(tmp.wrongShengDiao! || tmp.wrongShengMu! || tmp.wrongYunMu!);
                 oneWordList.add(tmp);
               }
-            }
           }
         }
-      }
     }
     
     dataOneResultCard.totalScore = resultJson['total_score'];

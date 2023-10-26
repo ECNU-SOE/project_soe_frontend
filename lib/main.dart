@@ -44,6 +44,7 @@ class ProjectSOE extends StatelessWidget {
                 snapshot.data! ? ViewAppHome.routeName : ViewLogin.routeName,
             theme: ThemeData(fontFamily: 'SourceSans'),
             routes: sNavigationRoutes,
+            debugShowCheckedModeBanner: false
           );
         }
         return const Center(

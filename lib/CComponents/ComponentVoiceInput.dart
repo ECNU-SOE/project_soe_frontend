@@ -113,6 +113,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
           widget.dataPage.setRecording(true);
           widget.dataPage.setPlayingExample(false);
           widget.dataPage.setStartPlaying(false);
+          widget.wrongsShow = false;
         });
       }
     }
@@ -125,12 +126,14 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     setState(() {
       widget.dataPage.setRecording(false);
       widget.dataPage.setUploading(true);
+      widget.wrongsShow = false;
     });
     // ---------------- test !!!
     await widget.dataPage.postAndGetResultXf(widget.add2Mis);
     print(widget.dataPage.dataOneResultCard!.cpsrcdId);
     setState(() {
       widget.dataPage.setUploading(false);
+      widget.wrongsShow = false;
     });
   }
 
@@ -140,6 +143,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     // _audioPlayer.stop();
     setState(() {
       widget.dataPage.setFilePath('');
+      widget.dataPage.dataOneResultCard = null;
+      widget.wrongsShow = false;
     });
   }
 
@@ -262,26 +267,31 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     // print(widget.dataPage.dataQuestion.label);
     children.addAll(
       [
-        // Center(
-        //   child: Padding(
-        //     padding: const EdgeInsets.only(bottom: 12.0, top: 10.0),
-        //     child: Text(
-        //       widget.dataPage.title ?? "",
-        //       style: gSubtitleStyle,
-        //     ),
-        //   ),
-        // ),
         Container(
-          padding: EdgeInsets.only(left: 15, right: 15),
-          child: Text(
-            // widget.dataPage.getScoreDescString(!widget.titleShow),
-            "分数：" + widget.dataPage.score.toString(),
+          child: ComponentSubtitle(
+            label: widget.dataPage.type != "" ? widget.dataPage.type! : "暂无类型",
             style: gInfoTextStyle,
           ),
         ),
-        Padding(padding: EdgeInsets.only(left: screenSize.width * 0.08, right: screenSize.width * 0.08), child: 
-        widget.dataPage.getRichText4Show(
-            widget.dataPage.refText ?? "", screenSize.width * 0.8, widget.wrongsShow),),
+        Container(
+            padding: EdgeInsets.only(left: 15, right: 15),
+            child: !widget.wrongsShow
+                ? Text(
+                    // widget.dataPage.getScoreDescString(!widget.titleShow),
+                    "分数：" + widget.dataPage.score.toString(),
+                    style: gInfoTextStyle,
+                  )
+                : Text(
+                    // widget.dataPage.getScoreDescString(!widget.titleShow),
+                    "分数：" + widget.dataPage.score.toString() + "    错题展示：",
+                    style: gInfoTextStyle,
+                  )),
+        Padding(
+          padding: EdgeInsets.only(
+              left: screenSize.width * 0.08, right: screenSize.width * 0.08),
+          child: widget.dataPage.getRichText4Show(widget.dataPage.refText ?? "",
+              widget.dataPage.pinyin ?? "", 18, widget.wrongsShow, false, widget.dataPage.enablePinyin ?? false),
+        ),
       ],
     );
 
@@ -314,15 +324,50 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     List<Widget> tags = List.empty(growable: true);
     tags.addAll(
       <Widget>[
-        // 题目类型
-        Row(
-          children: [
-            ComponentSubtitle(
-              label: widget.dataPage.type ?? "暂无类型",
-              style: gTitleStyle,
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              // todo
+        // 错题出处
+        widget.dataPage.description != ""
+            ? Padding(
+                padding: EdgeInsets.only(top: 0),
+                child: Row(
+                  children: [
+                    ComponentSubtitle(
+                      label: '出处：',
+                      style: gInfoTextStyle,
+                    ),
+                    ComponentSubtitle(
+                      label: widget.dataPage.description!,
+                      style: gInfoTextStyle1,
+                    )
+                  ],
+                ),
+              )
+            : Container(),
+        Padding(
+          padding: EdgeInsets.only(top: 0),
+          child: Row(
+            children: [
+              ComponentSubtitle(
+                label: '标签：',
+                style: gInfoTextStyle,
+              ),
+              SizedBox(
+                  width: screenSize.width * 0.8,
+                  height: 30,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: listTags.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return listTags[index];
+                      }))
+            ],
+          ),
+        ),
+        widget.subButShow?
+        Padding(
+          padding: EdgeInsets.only(top: 0),
+          child: Row(
+            children: [
+              _buildExampleAudioPlayer(context),
               TextButton(
                   style: ButtonStyle(
                     foregroundColor: MaterialStateProperty.resolveWith(
@@ -347,7 +392,11 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       },
                   child: ComponentSubtitle(
                     label: "开启拼音",
-                    style: gSubtitleStyle0,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 97, 97, 97),
+                      fontFamily: 'SourceSans',
+                      fontSize: 12.0,
+                    ),
                   )),
               TextButton(
                   style: ButtonStyle(
@@ -373,33 +422,15 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                       },
                   child: ComponentSubtitle(
                     label: "关闭拼音",
-                    style: gSubtitleStyle0,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 97, 97, 97),
+                      fontFamily: 'SourceSans',
+                      fontSize: 12.0,
+                    ),
                   )),
-            ]),
-          ],
-        ),
-        //
-        Padding(
-          padding: EdgeInsets.only(top: 5),
-          child: Row(
-            children: [
-              ComponentSubtitle(
-                label: '标签：',
-                style: gSubtitleStyle,
-              ),
-              SizedBox(
-                  width: screenSize.width * 0.8,
-                  height: 30,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: listTags.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return listTags[index];
-                      }))
             ],
           ),
-        ),
-        _buildExampleAudioPlayer(context)
+        ):Container()
       ],
     );
     // tags -------
@@ -494,8 +525,43 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                             child: Text('提交'),
                             onPressed: (() {
                               // ........
-                              setState(() {
-                                if (widget.dataPage.dataOneResultCard != null) {
+                              if (widget.dataPage.dataOneResultCard == null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    actions: [
+                                      TextButton(
+                                        child: Text(
+                                          "确定",
+                                          style: gInfoTextStyle,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          '取消',
+                                          style: gInfoTextStyle,
+                                        ),
+                                      ),
+                                    ],
+                                    content: Container(
+                                      height: 52.0,
+                                      child: Text(
+                                        "你没有做题, 确定要退出吗?",
+                                        style: gInfoTextStyle,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                setState(() {
+                                  widget.wrongsShow = true;
                                   print("------------");
                                   print(widget
                                       .dataPage.dataOneResultCard!.cpsrcdId);
@@ -505,9 +571,9 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                                   // widget.dataPage.setFilePath('');
                                   // widget.dataPage.setUploading(false);
                                   // widget.dataPage.dataOneResultCard = null;
-                                }
-                                widget.wrongsShow = true;
-                              });
+                                  widget.wrongsShow = true;
+                                });
+                              }
                             }),
                           ),
                         )

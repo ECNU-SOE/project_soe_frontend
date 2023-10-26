@@ -17,6 +17,8 @@ class ComponentShadowedContainer extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Padding(
+        // padding: EdgeInsets.symmetric(
+        //     horizontal: edgesHorizon, vertical: edgesVertical),
         padding: EdgeInsets.symmetric(
             horizontal: edgesHorizon, vertical: edgesVertical),
         child: Container(

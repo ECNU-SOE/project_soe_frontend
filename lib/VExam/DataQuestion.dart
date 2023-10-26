@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:http/http.dart' as http;
@@ -276,10 +279,16 @@ class SubCpsrcds {
   String _filePath = '';
   bool _isPlayingExample = false;
   bool _isStartPlaying = false;
-  // 播放进度
   double playingProgress = 0.0;
 
+  String _audioUrl = "";
+  bool _isPlayingWord = false;
+  bool _isStartPlayingWord = false;
+  double playingProgressWord = 0.0;
+
   DataOneResultCard? dataOneResultCard;
+
+  AudioPlayer audioPlayer = AudioPlayer();
 
   SubCpsrcds(
       {this.id,
@@ -417,6 +426,24 @@ class SubCpsrcds {
   void setPlayingExample(bool bPlayingExample) {
     _isPlayingExample = bPlayingExample;
   }
+
+  // 播放word
+  bool isStartPlayingWord() {
+    return _isStartPlayingWord;
+  }
+
+  void setStartPlayingWord(bool bStart) {
+    _isStartPlayingWord = bStart;
+  }
+
+  bool isPlayingWord() {
+    return _isPlayingWord;
+  }
+
+  void setPlayingWord(bool bPlayingWord) {
+    _isPlayingWord = bPlayingWord;
+  }
+
   // -------
 
   String toSingleString() {
@@ -428,151 +455,154 @@ class SubCpsrcds {
     return 100.0;
   }
 
-  TextSpan _wrongWord(String txt, int size) {
-    return TextSpan(text: txt, style: TextStyle());
-  }
-
-  TextSpan _normalWord(String txt, int size) {
-    return TextSpan(text: txt, style: TextStyle());
-  }
-
-  // 获取字体的size
-  double getAdaptiveSize(int strLen) {
-    if (strLen < 50) {
-      return 22;
-    }
-    if (strLen < 120) {
-      return 18;
-    }
-    return 14;
-  }
-
-  double getAdaptiveFactor(int strLen) {
-    if (strLen < 80) {
-      return 1.0;
-    }
-    if (strLen < 200) {
-      return 0.8;
-    }
-    return 0.6;
-  }
-
   // 创造题目内容中每一个字
-  Column getOneWord(String c, double adaptSize, bool f) {
+  Column getOneWord(String c, String py, double adaptSize, bool f, bool enablePinyin) {
     RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
-    // double pinyinLength = 1.0 * (exp.hasMatch(c)
-    //               ? ((enablePinyin ?? false) ? PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK) : " ").length
-    //               : " ".length);
-    // double wordLength = 1.0 * (exp.hasMatch(c)
-    //               ? c.length * 2
-    //               : c.length);
-    // double maxx = max(pinyinLength, wordLength) * adaptSize;
-    // print(maxx);
+    if (py.length != 0 && py[py.length - 1] == '0') {
+      py = py.substring(0, py.length - 1);
+    } else {
+      py = pinyinlizer.Pinyinizer().pinyinize(py);
+    }
+    double WIDTH = c != " " && c != "\t" ? 16 : 15;
     return Column(
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: exp.hasMatch(c)
-                  ? ((enablePinyin ?? false) ? PinyinHelper.getPinyinE(c, separator: " ", defPinyin: ' ', format: PinyinFormat.WITH_TONE_MARK) : "")
-                  : "",
-                  style: TextStyle(
-                    fontFamily: 'SourceSerif',
-                    color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
-                    fontSize: adaptSize - 6,
-                  ),
-                ),
+      children: [
+        Container(
+          width: WIDTH,
+          child: RichText(
+            text: TextSpan(
+              text: enablePinyin? py: "",
+              style: TextStyle(
+                fontFamily: '楷体',
+                color: f ? Color(0xefff1e1e) : Color(0xff2a2a2a),
+                fontSize: py.length <= 4 ? adaptSize - 5 : adaptSize - 6,
               ),
-              RichText(
-                text: TextSpan(
-                  text: c,
-                  style: TextStyle(
-                    fontFamily: 'SourceSerif',
-                    color: f? Color(0xefff1e1e): Color(0xff2a2a2a),
-                    fontSize: adaptSize,
+            ),
+          ),
+        ),
+        f
+            ? Container(
+                width: WIDTH,
+                child: RichText(
+                  text: TextSpan(
+                      text: c,
+                      style: TextStyle(
+                        fontFamily: '楷体',
+                        color: Color(0xefff1e1e),
+                        fontSize: adaptSize,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          _audioUrl =
+                              "https://soe-oss.oss-cn-shanghai.aliyuncs.com/transliteration/" +
+                                  py[0] +
+                                  "/" +
+                                  py +
+                                  ".MP3";
+                          print(_audioUrl);
+                          await audioPlayer.setSourceUrl(_audioUrl);
+                          await audioPlayer.resume();
+                        }),
+                ))
+            : Container(
+                width: WIDTH,
+                child: RichText(
+                  text: TextSpan(
+                    text: c,
+                    style: TextStyle(
+                      fontFamily: '楷体',
+                      color: Color(0xff2a2a2a),
+                      fontSize: adaptSize,
+                    ),
                   ),
-                ),
-              ),
-            ],
-          );
+                ))
+      ],
+    );
   }
 
   // 创造题目内容
-  Widget getRichText4Show(String str, double sWidth, bool showWrongs) {
-    List<String> ans = List.empty(growable: true);
-    str += "\n"; int n = str.length; String tmp = "";
-    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
-    for(int i = 0; i < n; ++ i) {
-      if(exp.hasMatch(str[i])) tmp += str[i];
-      else {
-        if(tmp != "") {
-          ans.add(tmp);
-          tmp = "";
+  Widget getRichText4Show(
+      String str, String py, double sWidth, bool showWrongs, bool isCenter, bool enablePinyin) {
+        // print(py);
+    double WIDTH = 10.5;
+    int ROWLEN = 15;
+    int pyLen = py.length;
+    py += "   ";
+    List<String> pyList = List.empty(growable: true);
+    String pyTmp = "";
+    RegExp pyExp = RegExp(r"[A-Za-z0-9]");
+    for (int i = 0; i < pyLen; ++i) {
+      if (pyExp.hasMatch(py[i])) {
+        pyTmp += py[i];
+      } else {
+        if (pyTmp != "") {
+          pyList.add(pyTmp);
         }
-        ans.add(str[i]);
+        pyTmp = "";
       }
-      // ans.add(str[i]);
     }
-    if(tmp != "") ans.add(tmp);
-    n = ans.length;
-    // ans 表示连词后
-
+    if (pyTmp != "") pyList.add(pyTmp);
+    str += "\n";
+    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
     List<Container> row = List.empty(growable: true);
-    List<Wrap> rows = List.empty(growable: true);
-    // double factor = getAdaptiveFactor(str.length);
-
+    List<Widget> rows = List.empty(growable: true);
     List<bool> str_isWrong = List.filled(str.length, false);
 
-    print(showWrongs);
-    print("-------------");
     int c_str_len = 0;
-    print("c_str_len: " + c_str_len.toString());
-    if(dataOneResultCard != null && dataOneResultCard!.dataOneWordCard != null) c_str_len = dataOneResultCard!.dataOneWordCard!.length;
-    for(int i = 0, cnt = 0; i < str.length; ++ i) {
-      if(exp.hasMatch(str[i])) { // 是中文字
-        if(cnt < c_str_len) {
-          str_isWrong[i] = dataOneResultCard!.dataOneWordCard![cnt].isWrong ?? true;
-          print(str[i] + " 对比 " + dataOneResultCard!.dataOneWordCard![cnt].word! + " : " + str_isWrong[i].toString());
-          cnt ++;
+    if (dataOneResultCard != null && dataOneResultCard!.dataOneWordCard != null)
+      c_str_len = dataOneResultCard!.dataOneWordCard!.length;
+    for (int i = 0, cnt = 0; i < str.length; ++i) {
+      if (exp.hasMatch(str[i])) {
+        // 是中文字
+        if (cnt < c_str_len) {
+          str_isWrong[i] = dataOneResultCard!.dataOneWordCard![cnt].isWrong!;
+          print(str[i] +
+              " 对比 " +
+              dataOneResultCard!.dataOneWordCard![cnt].word! +
+              " : " +
+              str_isWrong[i].toString());
+          cnt++;
         }
       }
     }
-    print("-------------");
-    /*
-    int cnt = 0;
-    for (int i = 0; i < n; ++i) {
-        if(ans[i] == '\n') {
-          if(row.isNotEmpty) rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
-          row = List.empty(growable: true);
-        } else {
-          var c = ans[i];
-          bool f = showWrongs;
-          for(int j = 0; j < c.length; ++ j) {
-            f = f && str_isWrong[j + cnt];
-          }
-          row.add(
-            Container(height: 44, child: getOneWord(c, 18, f))
-            // width: 30 * factor * c.length
-            // false 修改 str_isWrong[i]            
-          );
-        }
-        cnt += ans[i].length;
-    }
-    */
-      for (int i = 0; i < str.length; ++i) {
-        if(str[i] == '\n') {
-          if(row.isNotEmpty) rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
-          row = List.empty(growable: true);
-        } else {
-          var c = str[i];
-          bool f = showWrongs;
-          row.add(
-            Container(height: 44, child: getOneWord(c, 18, f && str_isWrong[i]))
-            // width: 30 * factor * c.length
-            // false 修改 str_isWrong[i]            
-          );
-        }
-    }
 
+    for (int i = 0, cnt = 0; i < str.length; ++i) {
+      // if(i > 2 && str[i] == " ") continue;
+      if (str[i] == '\n') {
+        if (row.isNotEmpty) {
+          if (isCenter) {
+            rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+          } else {
+            rows.add(Padding(
+                padding: EdgeInsets.only(left: 10), child: Row(children: row)));
+          }
+        }
+        row = List.empty(growable: true);
+      } else {
+        var c = str[i];
+        bool f = showWrongs;
+        row.add(Container(
+            height: 30,
+            child: getOneWord(
+                c,
+                exp.hasMatch(str[i]) && cnt < pyList.length ? pyList[cnt] : "",
+                WIDTH,
+                f && str_isWrong[i],
+                enablePinyin)));
+        if (exp.hasMatch(str[i])) cnt += 1;
+        if (row.length == ROWLEN) {
+          if (row.isNotEmpty) {
+            if (isCenter) {
+              rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+            } else {
+              rows.add(Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Row(children: row)));
+            }
+          }
+          row = List.empty(growable: true);
+        }
+      }
+    }
     return SizedBox(width: sWidth, child: Column(children: rows));
   }
 
@@ -581,11 +611,11 @@ class SubCpsrcds {
       return;
     }
     _isUploading = true;
-    dataOneResultCard = await MsgMgrQuestion().postAndGetResultXf(this, add2Mis);
+    dataOneResultCard =
+        await MsgMgrQuestion().postAndGetResultXf(this, add2Mis);
     // 标定状态
     _isUploading = false;
   }
-
 }
 
 class ExamResult {

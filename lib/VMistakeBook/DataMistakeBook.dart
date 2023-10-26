@@ -123,7 +123,7 @@ Future<List<SubCpsrcds>> postGetDataMistakeDetail(
   return listSubCpsrcds;
 }
 
-Future<SubCpsrcds> getGetRandomDataMistakeDetail() async {
+Future<SubCpsrcds> getGetRandomDataMistakeDetail(List<int> tagIds) async {
   final token = AuthritionState.instance.getToken();
   final uri =
       Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsrcd/v1/rand');
@@ -135,11 +135,7 @@ Future<SubCpsrcds> getGetRandomDataMistakeDetail() async {
       "difficultyBegin": null, //暂不支持
       "difficultyEnd": null, //暂不支持
       "textValue": null, //暂不支持
-      "tagIds": [
-        //语料标签   //查询逻辑是输入多个标签时，显示的结果中会包含其中至少一个标签
-        2,
-        5
-      ]
+      "tagIds": tagIds == []? [2, 5]: tagIds
     }),
   );
   final u8decoded = utf8.decode(response.bodyBytes);
@@ -173,4 +169,39 @@ Future<SubCpsrcds> getGetRandomDataMistakeDetail() async {
     cNum: -1
   );
   return subCpsrcds;
+}
+
+class TagList {
+  int total;
+  List<Tags> records;
+  TagList({required this.total, required this.records});
+}
+
+Future<TagList> getAllTagList() async {
+  final token = AuthritionState.instance.getToken();
+  final uri =
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/tag/v1/list?cur=1&size=10');
+  List<int> tagIds = List.empty(growable: true);
+  for(int i = 0; i < 1000; ++ i) tagIds.add(i);
+  final response = await http.Client().post(
+    uri,
+    headers: {"token": token, "Content-Type": "application/json"},
+    body: jsonEncode({
+      "ids": tagIds,//ids不为空时按照ids查询，ids为空时按其余条件查询
+      "name":"",
+      "weight":null,
+      "category":null
+    }),
+  );
+  final u8decoded = utf8.decode(response.bodyBytes);
+  final decoded = jsonDecode(u8decoded);
+  final code = decoded['code'];
+  final data = decoded['data'];
+  final msg = decoded['msg'];
+  if (code != 0) throw ('wrong return code');
+  List<Tags> tags = List.empty(growable: true);
+  data['records'].forEach((v) {
+    tags!.add(new Tags.fromJson(v));
+  });
+  return TagList(total: data['total'], records: tags);
 }
