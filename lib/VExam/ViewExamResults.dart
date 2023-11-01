@@ -51,6 +51,8 @@ class _generateBody extends StatelessWidget {
   int totRepl = 0;
   int totRetro = 0;
 
+  Map<String, int> wrongShengMuCount = {}, wrongYunMuCount = {};
+  
   @override
   Widget build(BuildContext context) {
     for (var dataOneResultCard in dataList) {
@@ -62,64 +64,134 @@ class _generateBody extends StatelessWidget {
       this.totLess += dataOneResultCard.less ?? 0;
       this.totRepl += dataOneResultCard.repl ?? 0;
       this.totRetro += dataOneResultCard.retro ?? 0;
+      if(dataOneResultCard.dataOneWordCard == null) continue;
+      for (int i = 0; i < dataOneResultCard.dataOneWordCard!.length; ++i) {
+        DataOneWordCard x = dataOneResultCard.dataOneWordCard![i];
+        if (x.isWrong == true &&
+            x.wrongShengDiao == false &&
+            x.wrongShengMu == false &&
+            x.wrongYunMu == false) continue;
+        if (x.wrongShengMu == true || x.wrongShengDiao == true) {
+          if (wrongShengMuCount.containsKey(x.shengMu ?? "")) {
+            int num = wrongShengMuCount[x.shengMu ?? ""] ?? 0;
+            wrongShengMuCount[x.shengMu ?? ""] = num + 1;
+          } else {
+            wrongShengMuCount[x.shengMu ?? ""] = 1;
+          }
+        }
+        if (x.wrongYunMu == true) {
+          if (wrongYunMuCount.containsKey(x.yunMu ?? "")) {
+            int num = wrongYunMuCount[x.yunMu ?? ""] ?? 0;
+            wrongYunMuCount[x.yunMu ?? ""] = num + 1;
+          } else {
+            wrongYunMuCount[x.yunMu ?? ""] = 1;
+          }
+        }
+      }
     }
-    return Column(
-      children: [
-        ComponentSubtitle(label: '全面测试结果', style: gTitleStyle),
-        ComponentShadowedContainer(
-          child: ComponentTitle(
-              label: '您的得分:0/总分:${totScore}', style: gInfoTextStyle),
-          color: gColor7BCBE6RGBA48,
-          shadowColor: Color.fromARGB(0, 0, 0, 0),
-          edgesHorizon: 38.5,
-          edgesVertical: 12.0,
+
+    List<Widget> shengMuList = List.empty(growable: true);
+    List<String> shengMuName = List.empty(growable: true);
+    List<String> shengMuNum = List.empty(growable: true);
+    shengMuName.add("错误的声母");
+    shengMuNum.add("错误的数量");
+    wrongShengMuCount.forEach((key, value) {
+      if(key != " ") { 
+        shengMuName.add(key);
+        shengMuNum.add(value.toString());
+      }
+    });
+
+    List<Widget> yunMuList = List.empty(growable: true);
+    List<String> yunMuName = List.empty(growable: true);
+    List<String> yunMuNum = List.empty(growable: true);
+    yunMuName.add("错误的韵母");
+    yunMuNum.add("错误的数量");
+    wrongYunMuCount.forEach((key, value) {
+      if(key != " ") {
+        yunMuName.add(key);
+        yunMuNum.add(value.toString());
+      }
+    });
+
+
+    return 
+    ListView(children: [
+      ComponentSubtitle(label: '全面测试结果', style: gTitleStyle),
+      ComponentShadowedContainer(
+        child: ComponentTitle(
+            label: '您的得分:0/总分:${totScore}', style: gInfoTextStyle),
+        color: gColor7BCBE6RGBA48,
+        shadowColor: Color.fromARGB(0, 0, 0, 0),
+        edgesHorizon: 38.5,
+        edgesVertical: 12.0,
+      ),
+      Padding(
+        padding: EdgeInsets.all(5.0),
+        child: DataTable(
+          border: TableBorder.all(),
+          rows: <DataRow>[
+            DataRow(
+              cells: <DataCell>[
+                DataCell(Text(totToneScore.toStringAsFixed(2))),
+                DataCell(Text(totPhoneScore.toStringAsFixed(2))),
+                DataCell(Text(totFluencyScore.toStringAsFixed(2))),
+                DataCell(Text(totTotalScore.toStringAsFixed(2))),
+              ],
+            ),
+          ],
+          columns: <DataColumn>[
+            DataColumn(label: Text('声调得分')),
+            DataColumn(label: Text('发音得分')),
+            DataColumn(label: Text('流畅得分')),
+            DataColumn(label: Text('答题得分')),
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.all(20.0),
-          child: DataTable(
-            // border: TableBorder.all(),
-            rows: <DataRow>[
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text(totToneScore.toString())),
-                  DataCell(Text(totPhoneScore.toString())),
-                  DataCell(Text(totFluencyScore.toString())),
-                  DataCell(Text(totTotalScore.toString())),
-                ],
-              ),
-            ],
-            columns: <DataColumn>[
-              DataColumn(label: Text('声调得分')),
-              DataColumn(label: Text('发音得分')),
-              DataColumn(label: Text('流畅得分')),
-              DataColumn(label: Text('答题得分')),
-            ],
-          ),
+      ),
+      Padding(
+        padding: EdgeInsets.all(5.0),
+        child: DataTable(
+          border: TableBorder.all(),
+          rows: <DataRow>[
+            DataRow(
+              cells: <DataCell>[
+                DataCell(Text(totMore.toString())),
+                DataCell(Text(totLess.toString())),
+                DataCell(Text(totRetro.toString())),
+                DataCell(Text(totRepl.toString())),
+              ],
+            ),
+          ],
+          columns: <DataColumn>[
+            DataColumn(label: Text('增读')),
+            DataColumn(label: Text('漏读')),
+            DataColumn(label: Text('回读')),
+            DataColumn(label: Text('替换')),
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.all(20.0),
-          child: DataTable(
-            // border: TableBorder.all(),
-            rows: <DataRow>[
-              DataRow(
-                cells: <DataCell>[
-                  DataCell(Text(totMore.toString())),
-                  DataCell(Text(totLess.toString())),
-                  DataCell(Text(totRetro.toString())),
-                  DataCell(Text(totRepl.toString())),
+      ),
+      Padding(
+        padding: EdgeInsets.all(5.0),
+        child: ListView(
+          children: [
+            DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text("标题"),
+                  ),
+                  DataColumn(
+                    label: Text("作者"),
+                  )
                 ],
-              ),
-            ],
-            columns: <DataColumn>[
-              DataColumn(label: Text('增读')),
-              DataColumn(label: Text('漏读')),
-              DataColumn(label: Text('回读')),
-              DataColumn(label: Text('替换')),
-            ],
-          ),
-        ),        
-      ],
-    );
+                rows: [
+                  DataRow(
+                    cells: [DataCell(Text("西游记")), DataCell(Text("吴承恩"))]),
+                  DataRow(cells: [DataCell(Text("红楼梦")), DataCell(Text("曹雪芹"))]),
+                ])
+          ],
+        )
+      ),
+    ]);
   }
 }
 

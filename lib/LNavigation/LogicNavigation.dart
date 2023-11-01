@@ -1,7 +1,3 @@
-// import 'dart:js';
-
-// import 'dart:js';
-
 import 'package:flutter/material.dart';
 
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
@@ -15,7 +11,6 @@ import 'package:project_soe/VExam/ViewExam.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/VAuthorition/ViewLogin.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeBook.dart';
-// import 'package:project_soe/VMistakeBook/ViewMistakeCard.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeDetail.dart';
 import 'package:project_soe/VNativeLanguageChoice/ViewNativeLanguageChoice.dart';
 import 'package:project_soe/VPersonalPage/ViewEditPersonal.dart';
@@ -24,7 +19,7 @@ import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeFollow.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeRandom.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeResults.dart';
-import 'package:project_soe/VPracticePage/ViewPracticeResultsCard.dart';
+import 'package:project_soe/VShowAllQuestion/ViewAllQuestion.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
 
 
@@ -49,6 +44,7 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
   ViewPracticeRandom.routeName: (context) => ViewPracticeRandom(),
   ViewPracticeResults.routeName: (context) => ViewPracticeResults(),
+  ViewAllQuestion.routeName: (context) => ViewAllQuestion()
   // ViewPracticeResultsCard.routeName: (context) => ViewPracticeResultsCard()
 };
 

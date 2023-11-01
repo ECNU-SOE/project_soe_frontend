@@ -180,15 +180,15 @@ class TagList {
 Future<TagList> getAllTagList() async {
   final token = AuthritionState.instance.getToken();
   final uri =
-      Uri.parse('http://47.101.58.72:8888/corpus-server/api/tag/v1/list?cur=1&size=10');
-  List<int> tagIds = List.empty(growable: true);
-  for(int i = 0; i < 1000; ++ i) tagIds.add(i);
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/tag/v1/list?cur=1&size=1000');
+  // List<int> tagIds = List.empty(growable: true);
+  // for(int i = 0; i < 1000; ++ i) tagIds.add(i);
   final response = await http.Client().post(
     uri,
     headers: {"token": token, "Content-Type": "application/json"},
     body: jsonEncode({
-      "ids": tagIds,//ids不为空时按照ids查询，ids为空时按其余条件查询
-      "name":"",
+      "ids": [],//ids不为空时按照ids查询，ids为空时按其余条件查询
+      "name": null,
       "weight":null,
       "category":null
     }),
@@ -198,6 +198,8 @@ Future<TagList> getAllTagList() async {
   final code = decoded['code'];
   final data = decoded['data'];
   final msg = decoded['msg'];
+  print(data['total']);
+  print(data['records'].length);
   if (code != 0) throw ('wrong return code');
   List<Tags> tags = List.empty(growable: true);
   data['records'].forEach((v) {

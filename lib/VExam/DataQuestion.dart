@@ -21,6 +21,7 @@ import 'package:project_soe/VCommon/DataAllResultsCard.dart';
 import 'package:project_soe/VExam/MsgQuestion.dart';
 import 'package:project_soe/VExam/ViewExamResults.dart';
 import 'package:project_soe/LNavigation/LogicNavigation.dart';
+import 'package:quiver/strings.dart';
 
 class ArgsViewExamResult {
   final String id;
@@ -322,7 +323,6 @@ class SubCpsrcds {
     refText = json['refText'] ?? "";
     audioUrl = json['audioUrl'] ?? "";
     description = json['description'] ?? "";
-    // tags = json['tags'] ?? [];
     if (json['tags'] != null) {
       tags = <Tags>[];
       json['tags'].forEach((v) {
@@ -456,8 +456,10 @@ class SubCpsrcds {
   }
 
   // 创造题目内容中每一个字
-  Column getOneWord(String c, String py, double adaptSize, bool f, bool enablePinyin) {
+  Column getOneWord(
+      String c, String py, double adaptSize, bool f, bool enablePinyin) {
     RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
+    String _py = py;
     if (py.length != 0 && py[py.length - 1] == '0') {
       py = py.substring(0, py.length - 1);
     } else {
@@ -467,22 +469,24 @@ class SubCpsrcds {
     return Column(
       children: [
         Container(
-          width: WIDTH,
-          child: RichText(
-            text: TextSpan(
-              text: enablePinyin? py: "",
-              style: TextStyle(
-                fontFamily: '楷体',
-                color: f ? Color(0xefff1e1e) : Color(0xff2a2a2a),
-                fontSize: py.length <= 4 ? adaptSize - 5 : adaptSize - 6,
+            width: WIDTH,
+            child: Center(
+              child: RichText(
+                text: TextSpan(
+                  text: enablePinyin ? py : "",
+                  style: TextStyle(
+                    fontFamily: '楷体',
+                    color: f ? Color(0xefff1e1e) : Color(0xff2a2a2a),
+                    fontSize: py.length <= 4 ? adaptSize - 5 : adaptSize - 6,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
+            )),
         f
             ? Container(
                 width: WIDTH,
-                child: RichText(
+                child: Center(
+                    child: RichText(
                   text: TextSpan(
                       text: c,
                       style: TextStyle(
@@ -492,20 +496,20 @@ class SubCpsrcds {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () async {
-                          _audioUrl =
-                              "https://soe-oss.oss-cn-shanghai.aliyuncs.com/transliteration/" +
-                                  py[0] +
-                                  "/" +
-                                  py +
-                                  ".MP3";
+                          _audioUrl = "assets/WrongWordAudio/" +
+                              _py[0] +
+                              "/" +
+                              _py +
+                              ".MP3";
                           print(_audioUrl);
                           await audioPlayer.setSourceUrl(_audioUrl);
                           await audioPlayer.resume();
                         }),
-                ))
+                )))
             : Container(
                 width: WIDTH,
-                child: RichText(
+                child: Center(
+                    child: RichText(
                   text: TextSpan(
                     text: c,
                     style: TextStyle(
@@ -514,15 +518,14 @@ class SubCpsrcds {
                       fontSize: adaptSize,
                     ),
                   ),
-                ))
+                )))
       ],
     );
   }
 
   // 创造题目内容
-  Widget getRichText4Show(
-      String str, String py, double sWidth, bool showWrongs, bool isCenter, bool enablePinyin) {
-        // print(py);
+  List<Widget> getRichText4Show(
+      String str, String py, bool showWrongs, bool enablePinyin) {
     double WIDTH = 10.5;
     int ROWLEN = 15;
     int pyLen = py.length;
@@ -564,16 +567,21 @@ class SubCpsrcds {
         }
       }
     }
-
+    bool centerFlag = false;
     for (int i = 0, cnt = 0; i < str.length; ++i) {
-      // if(i > 2 && str[i] == " ") continue;
+      if (i < 5) print(str[i]);
+      if (str[i] == '#') {
+        centerFlag = true;
+        continue;
+      }
       if (str[i] == '\n') {
         if (row.isNotEmpty) {
-          if (isCenter) {
-            rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+          if (centerFlag) {
+            rows.add(Row(
+                mainAxisAlignment: MainAxisAlignment.center, children: row));
           } else {
-            rows.add(Padding(
-                padding: EdgeInsets.only(left: 10), child: Row(children: row)));
+            rows.add(
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: row));
           }
         }
         row = List.empty(growable: true);
@@ -591,19 +599,21 @@ class SubCpsrcds {
         if (exp.hasMatch(str[i])) cnt += 1;
         if (row.length == ROWLEN) {
           if (row.isNotEmpty) {
-            if (isCenter) {
-              rows.add(Wrap(spacing: 0, runSpacing: 0, children: row));
+            if (centerFlag) {
+              rows.add(Row(
+                  mainAxisAlignment: MainAxisAlignment.center, children: row));
             } else {
-              rows.add(Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Row(children: row)));
+              rows.add(Row(
+                  mainAxisAlignment: MainAxisAlignment.start, children: row));
             }
           }
           row = List.empty(growable: true);
         }
       }
+      if (str[i] == '\n') centerFlag = false;
     }
-    return SizedBox(width: sWidth, child: Column(children: rows));
+
+    return rows;
   }
 
   Future<void> postAndGetResultXf(bool add2Mis) async {

@@ -26,12 +26,14 @@ class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   bool add2Mis;
   bool wrongsShow;
   bool subButShow;
+  bool recordShow;
   ComponentVoiceInput(
       {super.key,
       required this.dataPage,
       this.wrongsShow = false,
       this.add2Mis = false,
-      this.subButShow = false});
+      this.subButShow = false,
+      this.recordShow = true});
   @override
   State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
@@ -264,7 +266,6 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     List<Widget> children = List.empty(growable: true);
-    // print(widget.dataPage.dataQuestion.label);
     children.addAll(
       [
         Container(
@@ -287,10 +288,13 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                     style: gInfoTextStyle,
                   )),
         Padding(
-          padding: EdgeInsets.only(
-              left: screenSize.width * 0.08, right: screenSize.width * 0.08),
-          child: widget.dataPage.getRichText4Show(widget.dataPage.refText ?? "",
-              widget.dataPage.pinyin ?? "", 18, widget.wrongsShow, false, widget.dataPage.enablePinyin ?? false),
+          padding: EdgeInsets.only(left: 12),
+          child: Column(
+              children: widget.dataPage.getRichText4Show(
+                  widget.dataPage.refText ?? "",
+                  widget.dataPage.pinyin ?? "",
+                  widget.wrongsShow,
+                  widget.dataPage.enablePinyin ?? false)),
         ),
       ],
     );
@@ -320,7 +324,6 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
         ));
       }
     }
-    print(listTags.length);
     List<Widget> tags = List.empty(growable: true);
     tags.addAll(
       <Widget>[
@@ -362,75 +365,78 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             ],
           ),
         ),
-        widget.subButShow?
-        Padding(
-          padding: EdgeInsets.only(top: 0),
-          child: Row(
-            children: [
-              _buildExampleAudioPlayer(context),
-              TextButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.resolveWith(
-                      (states) {
-                        if (states.contains(MaterialState.focused) &&
-                            !states.contains(MaterialState.pressed)) {
-                          //获取焦点时的颜色
-                          return Colors.blue;
-                        } else if (states.contains(MaterialState.pressed)) {
-                          //按下时的颜色
-                          return Colors.deepPurple;
-                        }
-                        //默认状态使用灰色
-                        return Colors.grey;
-                      },
-                    ),
-                  ),
-                  onPressed: () => {
-                        setState(() {
-                          widget.dataPage.enablePinyin = true;
-                        })
-                      },
-                  child: ComponentSubtitle(
-                    label: "开启拼音",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 97, 97, 97),
-                      fontFamily: 'SourceSans',
-                      fontSize: 12.0,
-                    ),
-                  )),
-              TextButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.resolveWith(
-                      (states) {
-                        if (states.contains(MaterialState.focused) &&
-                            !states.contains(MaterialState.pressed)) {
-                          //获取焦点时的颜色
-                          return Colors.blue;
-                        } else if (states.contains(MaterialState.pressed)) {
-                          //按下时的颜色
-                          return Colors.deepPurple;
-                        }
-                        //默认状态使用灰色
-                        return Colors.grey;
-                      },
-                    ),
-                  ),
-                  onPressed: () => {
-                        setState(() {
-                          widget.dataPage.enablePinyin = false;
-                        })
-                      },
-                  child: ComponentSubtitle(
-                    label: "关闭拼音",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 97, 97, 97),
-                      fontFamily: 'SourceSans',
-                      fontSize: 12.0,
-                    ),
-                  )),
-            ],
-          ),
-        ):Container()
+        widget.subButShow
+            ? Padding(
+                padding: EdgeInsets.only(top: 0),
+                child: Row(
+                  children: [
+                    _buildExampleAudioPlayer(context),
+                    TextButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.resolveWith(
+                            (states) {
+                              if (states.contains(MaterialState.focused) &&
+                                  !states.contains(MaterialState.pressed)) {
+                                //获取焦点时的颜色
+                                return Colors.blue;
+                              } else if (states
+                                  .contains(MaterialState.pressed)) {
+                                //按下时的颜色
+                                return Colors.deepPurple;
+                              }
+                              //默认状态使用灰色
+                              return Colors.grey;
+                            },
+                          ),
+                        ),
+                        onPressed: () => {
+                              setState(() {
+                                widget.dataPage.enablePinyin = true;
+                              })
+                            },
+                        child: ComponentSubtitle(
+                          label: "开启拼音",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 97, 97, 97),
+                            fontFamily: 'SourceSans',
+                            fontSize: 12.0,
+                          ),
+                        )),
+                    TextButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.resolveWith(
+                            (states) {
+                              if (states.contains(MaterialState.focused) &&
+                                  !states.contains(MaterialState.pressed)) {
+                                //获取焦点时的颜色
+                                return Colors.blue;
+                              } else if (states
+                                  .contains(MaterialState.pressed)) {
+                                //按下时的颜色
+                                return Colors.deepPurple;
+                              }
+                              //默认状态使用灰色
+                              return Colors.grey;
+                            },
+                          ),
+                        ),
+                        onPressed: () => {
+                              setState(() {
+                                widget.dataPage.enablePinyin = false;
+                              })
+                            },
+                        child: ComponentSubtitle(
+                          label: "关闭拼音",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 97, 97, 97),
+                            fontFamily: 'SourceSans',
+                            fontSize: 12.0,
+                          ),
+                        )),
+                  ],
+                ),
+              )
+            : Container()
       ],
     );
     // tags -------
@@ -464,14 +470,17 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       bottomNavigationBar: Container(
         height: 60.0,
         color: gColorE1EBF5RGBA,
-        child: widget.dataPage.isUploading()
+        child: 
+        !widget.recordShow
+        ? Container()
+        :
+        widget.dataPage.isUploading()
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
                     strokeWidth: 4.0,
-                    // semanticsLabel: '',
                   ),
                   Center(
                     child: Padding(

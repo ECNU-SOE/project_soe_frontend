@@ -187,7 +187,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
           for(int i = 0; i < voiceInput.dataPage.refText!.length; ++ i) {
             if(exp.hasMatch(voiceInput.dataPage.refText![i])) {
               less ++;
-              DataOneWordCard tmp = DataOneWordCard(isWrong: true);
+              DataOneWordCard tmp = DataOneWordCard(isWrong: true, wrongShengDiao: false, wrongShengMu: false, wrongYunMu: false);
               listDataOneWord.add(tmp);
             }
           }
