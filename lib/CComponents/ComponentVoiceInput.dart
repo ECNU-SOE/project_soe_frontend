@@ -27,13 +27,30 @@ class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   bool wrongsShow;
   bool subButShow;
   bool recordShow;
+  int questionNum;
+  int nowIdx;
+  String typeIdx;
+  String typeScore;
+  String description;
+  // bool nextBut;
+  // int idx;
+  // bool goNext;
   ComponentVoiceInput(
       {super.key,
       required this.dataPage,
       this.wrongsShow = false,
       this.add2Mis = false,
       this.subButShow = false,
-      this.recordShow = true});
+      this.recordShow = true,
+      this.questionNum = -1,
+      this.nowIdx = -1,
+      this.typeIdx = "",
+      this.typeScore = "",
+      this.description = ""
+      // this.nextBut = false,
+      // this.idx = 0,
+      // this.goNext = false
+      });
   @override
   State<ComponentVoiceInput> createState() => _ComponentVoiceInputState();
 }
@@ -86,15 +103,53 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     }
   }
 
-  Future<void> _cbkRecordStop() async {
-    if (widget.dataPage.isUploading() || widget.dataPage.hasRecordFile()) {
+  Future<void> _cbkRecordStop(bool subButShow) async {
+    if (widget.dataPage.isUploading()) {
       return;
+    }
+
+    if (widget.dataPage.hasRecordFile()) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            TextButton(
+              child: Text(
+                "确定",
+                style: gInfoTextStyle,
+              ),
+              onPressed: () {
+                _retryRecording();
+
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                return;
+              },
+              child: Text(
+                '取消',
+                style: gInfoTextStyle,
+              ),
+            ),
+          ],
+          content: Container(
+            height: 52.0,
+            child: Text(
+              "确定重置并重新录制测评本题吗？",
+              style: gInfoTextStyle,
+            ),
+          ),
+        ),
+      );
     }
     // if (widget.dataPage.hasRecordFile()) {
     // _playRecord();
     // }
     else if (widget.dataPage.isRecording()) {
-      _stopRecording();
+      _stopRecording(subButShow);
     } else {
       await _startRecording();
     }
@@ -121,7 +176,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     }
   }
 
-  Future<void> _stopRecording() async {
+  Future<void> _stopRecording(bool subButShow) async {
     if (!widget.dataPage.isRecording()) return;
     final recordRet = await _audioRecorder.stop();
     widget.dataPage.setFilePath(recordRet!);
@@ -135,7 +190,14 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     print(widget.dataPage.dataOneResultCard!.cpsrcdId);
     setState(() {
       widget.dataPage.setUploading(false);
-      widget.wrongsShow = false;
+      if (subButShow)
+        widget.wrongsShow = true;
+      else
+        widget.wrongsShow = false;
+      print("------------");
+      print(widget.dataPage.dataOneResultCard!.cpsrcdId);
+      widget.dataPage.setStartPlaying(false);
+      widget.dataPage.setRecording(false);
     });
   }
 
@@ -269,12 +331,6 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     children.addAll(
       [
         Container(
-          child: ComponentSubtitle(
-            label: widget.dataPage.type != "" ? widget.dataPage.type! : "暂无类型",
-            style: gInfoTextStyle,
-          ),
-        ),
-        Container(
             padding: EdgeInsets.only(left: 15, right: 15),
             child: !widget.wrongsShow
                 ? Text(
@@ -327,24 +383,30 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
     List<Widget> tags = List.empty(growable: true);
     tags.addAll(
       <Widget>[
+        Center(
+            child: Text(widget.typeIdx +
+                widget.dataPage.description! +
+                widget.typeScore)),
         // 错题出处
-        widget.dataPage.description != ""
-            ? Padding(
-                padding: EdgeInsets.only(top: 0),
-                child: Row(
-                  children: [
-                    ComponentSubtitle(
-                      label: '出处：',
-                      style: gInfoTextStyle,
-                    ),
-                    ComponentSubtitle(
-                      label: widget.dataPage.description!,
-                      style: gInfoTextStyle1,
-                    )
-                  ],
-                ),
+        Padding(
+          padding: EdgeInsets.only(top: 0),
+          child: Row(
+            children: [
+              ComponentSubtitle(
+                label: widget.nowIdx != -1 ? '题目进度：' : "",
+                style: gInfoTextStyle,
+              ),
+              ComponentSubtitle(
+                label: widget.nowIdx != -1
+                    ? widget.nowIdx.toString() +
+                        "/" +
+                        widget.questionNum.toString()
+                    : "",
+                style: gInfoTextStyle2,
               )
-            : Container(),
+            ],
+          ),
+        ),
         Padding(
           padding: EdgeInsets.only(top: 0),
           child: Row(
@@ -365,232 +427,158 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             ],
           ),
         ),
-        widget.subButShow
-            ? Padding(
-                padding: EdgeInsets.only(top: 0),
-                child: Row(
-                  children: [
-                    _buildExampleAudioPlayer(context),
-                    TextButton(
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.resolveWith(
-                            (states) {
-                              if (states.contains(MaterialState.focused) &&
-                                  !states.contains(MaterialState.pressed)) {
-                                //获取焦点时的颜色
-                                return Colors.blue;
-                              } else if (states
-                                  .contains(MaterialState.pressed)) {
-                                //按下时的颜色
-                                return Colors.deepPurple;
-                              }
-                              //默认状态使用灰色
-                              return Colors.grey;
-                            },
-                          ),
-                        ),
-                        onPressed: () => {
-                              setState(() {
-                                widget.dataPage.enablePinyin = true;
-                              })
-                            },
-                        child: ComponentSubtitle(
-                          label: "开启拼音",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 97, 97, 97),
-                            fontFamily: 'SourceSans',
-                            fontSize: 12.0,
-                          ),
-                        )),
-                    TextButton(
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.resolveWith(
-                            (states) {
-                              if (states.contains(MaterialState.focused) &&
-                                  !states.contains(MaterialState.pressed)) {
-                                //获取焦点时的颜色
-                                return Colors.blue;
-                              } else if (states
-                                  .contains(MaterialState.pressed)) {
-                                //按下时的颜色
-                                return Colors.deepPurple;
-                              }
-                              //默认状态使用灰色
-                              return Colors.grey;
-                            },
-                          ),
-                        ),
-                        onPressed: () => {
-                              setState(() {
-                                widget.dataPage.enablePinyin = false;
-                              })
-                            },
-                        child: ComponentSubtitle(
-                          label: "关闭拼音",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 97, 97, 97),
-                            fontFamily: 'SourceSans',
-                            fontSize: 12.0,
-                          ),
-                        )),
-                  ],
-                ),
-              )
-            : Container()
       ],
     );
     // tags -------
 
     return Scaffold(
-      backgroundColor: gColorE1EBF5RGBA,
-      appBar: AppBar(
-        shadowColor: Color.fromARGB(0, 0, 0, 0),
-        automaticallyImplyLeading: false,
         backgroundColor: gColorE1EBF5RGBA,
-        toolbarHeight: 100.0,
-        title: Container(
-          child: Column(children: tags),
-        ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(top: 10),
-        child: SizedBox(
-          // width: screenSize.width,
-          child: ComponentShadowedContainer(
-            color: gColorFFFFFFRGBA,
-            shadowColor: gColorE1EBF5RGBA,
-            edgesHorizon: 26.5,
-            edgesVertical: 10,
-            child: ListView(
-              children: children,
-            ),
+        appBar: AppBar(
+          shadowColor: Color.fromARGB(0, 0, 0, 0),
+          automaticallyImplyLeading: false,
+          backgroundColor: gColorE1EBF5RGBA,
+          toolbarHeight: 100.0,
+          title: Container(
+            child: Column(children: tags),
           ),
         ),
-      ),
-      bottomNavigationBar: Container(
-        height: 60.0,
-        color: gColorE1EBF5RGBA,
-        child: 
-        !widget.recordShow
-        ? Container()
-        :
-        widget.dataPage.isUploading()
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    strokeWidth: 4.0,
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: (Text(
-                        '评测进行中, 请稍等...',
-                        style: gSubtitleStyle,
-                      )),
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        (!widget.dataPage.hasRecordFile())
-                            ? (widget.dataPage.isRecording()
-                                ? '正在录音'
-                                : '点击开始录音')
-                            : '此题已有评测结果',
-                        style: gSubtitleStyle,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 6.0),
-                        child: ComponentCircleButton(
-                          func: _cbkRecordStop,
-                          child: _recordIcon(),
-                          size: 56,
-                          color: gColorE3EDF7RGBA,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 0.0),
-                    child: ComponentCircleButton(
-                      func: _cbkRetry,
-                      child: _retryIcon(),
-                      size: 32,
-                      color: gColorE3EDF7RGBA,
-                    ),
-                  ),
-                  widget.subButShow
-                      ? Padding(
-                          padding: EdgeInsets.only(left: 0),
-                          child: TextButton(
-                            child: Text('提交'),
-                            onPressed: (() {
-                              // ........
-                              if (widget.dataPage.dataOneResultCard == null) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    actions: [
-                                      TextButton(
-                                        child: Text(
-                                          "确定",
-                                          style: gInfoTextStyle,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          '取消',
-                                          style: gInfoTextStyle,
-                                        ),
-                                      ),
-                                    ],
-                                    content: Container(
-                                      height: 52.0,
-                                      child: Text(
-                                        "你没有做题, 确定要退出吗?",
-                                        style: gInfoTextStyle,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              } else {
+        body: ComponentShadowedContainer(
+          color: gColorFFFFFFRGBA,
+          shadowColor: gColorE1EBF5RGBA,
+          edgesHorizon: 26.5,
+          edgesVertical: 1,
+          child: ListView(
+            children: children,
+          ),
+        ),
+        bottomNavigationBar: Container(
+            height: 100.0,
+            color: gColorE1EBF5RGBA,
+            child: ListView(
+              children: [
+                widget.subButShow
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildExampleAudioPlayer(context),
+                          Container(
+                              child: Row(children: [
+                            ComponentSubtitle(
+                              label: '拼音',
+                              style: gSubtitleStyle,
+                            ),
+                            Switch(
+                              value: widget.dataPage.enablePinyin!, //当前状态
+                              hoverColor: Colors.white,
+                              activeColor: Colors.green,
+                              onChanged: (value) {
+                                //重新构建页面
                                 setState(() {
-                                  widget.wrongsShow = true;
-                                  print("------------");
-                                  print(widget
-                                      .dataPage.dataOneResultCard!.cpsrcdId);
-                                  widget.wrongsShow = true;
-                                  widget.dataPage.setStartPlaying(false);
-                                  widget.dataPage.setRecording(false);
-                                  // widget.dataPage.setFilePath('');
-                                  // widget.dataPage.setUploading(false);
-                                  // widget.dataPage.dataOneResultCard = null;
-                                  widget.wrongsShow = true;
+                                  widget.dataPage.enablePinyin = value;
                                 });
-                              }
-                            }),
-                          ),
-                        )
-                      : Container()
-                  // color: gColorE3EDF7RGBA,
-                ],
-              ),
-      ),
-    );
+                              },
+                            )
+                          ]))
+                        ],
+                      )
+                    : _buildExampleAudioPlayer(context),
+                !widget.recordShow
+                    ? Container()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                              onPressed: () =>
+                                  _cbkRecordStop(widget.subButShow),
+                              child: Container(
+                                width: screenSize.width * 0.6,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(27),
+                                  color: Colors.green[300],
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: gColorE1EBF5RGBA,
+                                      spreadRadius: 1,
+                                      blurRadius: 1,
+                                      offset: Offset(
+                                          1, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: widget.dataPage.isUploading()
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          CircularProgressIndicator(
+                                            strokeWidth: 4.0,
+                                          ),
+                                          Center(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(0.0),
+                                              child: (Text(
+                                                '评测进行中, 请稍等...',
+                                                style: gSubtitleStyle,
+                                              )),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              _recordIcon(),
+                                              Text(
+                                                (!widget.dataPage
+                                                        .hasRecordFile())
+                                                    ? (widget.dataPage
+                                                            .isRecording()
+                                                        ? '正在录音'
+                                                        : '按住录音')
+                                                    : '评测完成',
+                                                style: gSubtitleStyle,
+                                              ),
+                                            ],
+                                          ),
+                                          // color: gColorE3EDF7RGBA,
+                                        ],
+                                      ),
+                              )),
+                          // TextButton(onPressed: () {
+                          //     // Navigator.of(context)
+                          //     //     .pushReplacementNamed(ViewPracticeRandom.routeName);
+                          //     // Navigator.pop(context);
+                          //     setState(() {
+                          //       widget.goNext = true;
+                          //     });
+                          //   },
+                          //   child:
+                          //   Container(
+                          //     width: screenSize.width * 0.3,
+                          //     decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(27),
+                          //     color: Colors.blue[200],
+                          //     boxShadow: [
+                          //       BoxShadow(
+                          //         color: gColorE1EBF5RGBA,
+                          //         spreadRadius: 1,
+                          //         blurRadius: 1,
+                          //         offset: Offset(1, 2), // changes position of shadow
+                          //       ),
+                          //     ],
+                          //   ), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          //   Text("下一题", style: gSubtitleStyle,)]),)
+                          //   ),
+                        ],
+                      ),
+              ],
+            )));
   }
 }

@@ -28,7 +28,14 @@ class ArgsViewExamResult {
   final String endingRoute;
   final List<DataOneResultCard> dataList;
   double sumScore = 0;
-  ArgsViewExamResult(this.id, this.dataList, this.endingRoute, this.sumScore);
+  final Map<dynamic, String> idx2Name;
+  final Map<dynamic, double> idx2Score;
+  final Map<dynamic, int> type2Idx;
+  final Map<dynamic, dynamic> index2Name;
+  final Map<dynamic, dynamic> index2Score;
+
+  ArgsViewExamResult(this.id, this.dataList, this.endingRoute, this.sumScore,
+  this.idx2Name, this.idx2Score, this.type2Idx, this.index2Name, this.index2Score);
 }
 
 class ArgsViewExam {

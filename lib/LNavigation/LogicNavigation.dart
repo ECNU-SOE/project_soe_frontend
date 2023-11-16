@@ -19,7 +19,9 @@ import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeFollow.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeRandom.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeResults.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeSpecial.dart';
 import 'package:project_soe/VShowAllQuestion/ViewAllQuestion.dart';
+import 'package:project_soe/VShowAllQuestion/ViewAllQuestionHome.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
 
 
@@ -43,8 +45,9 @@ Map<String, WidgetBuilder> sNavigationRoutes = {
   ViewMistakeBook.routeName: (context) => ViewMistakeBook(),
   ViewMistakeDetail.routeName: (context) => ViewMistakeDetail(),
   ViewPracticeRandom.routeName: (context) => ViewPracticeRandom(),
+  ViewPracticeSpecial.routeName: (context) => ViewPracticeSpecial(),
   ViewPracticeResults.routeName: (context) => ViewPracticeResults(),
-  ViewAllQuestion.routeName: (context) => ViewAllQuestion()
+  ViewAllQuestionHome.routeName: (context) => ViewAllQuestionHome()
   // ViewPracticeResultsCard.routeName: (context) => ViewPracticeResultsCard()
 };
 

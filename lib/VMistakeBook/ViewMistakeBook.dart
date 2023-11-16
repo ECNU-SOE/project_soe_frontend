@@ -60,7 +60,8 @@ class _ViewMistakeBookBody extends StatelessWidget {
                               ViewMistakeDetail.routeName,
                               arguments: <int>[
                                 oneWeekKey,
-                                mistakeItem.mistakeTypeCode
+                                mistakeItem.mistakeTypeCode,
+                                // mistakeItem.mistakeTypeName
                               ]),
                           // Navigator.pop(context),
                           // Navigator.of(context).pushReplacementNamed(

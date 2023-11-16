@@ -107,6 +107,7 @@ class DataOneResultCard {
   int? repl;
   List<DataOneWordCard>? dataOneWordCard;
   List<Tags>? tags;
+  String? description;
 
   DataOneResultCard(
       {this.cpsrcdId,
@@ -120,7 +121,8 @@ class DataOneResultCard {
       this.retro,
       this.repl,
       this.dataOneWordCard,
-      this.tags});
+      this.tags,
+      this.description});
 
   DataOneResultCard.fromJson(Map<String, dynamic> json) {
     cpsrcdId = json['cpsrcdId'];
@@ -136,6 +138,7 @@ class DataOneResultCard {
     less = json['less'];
     retro = json['retro'];
     repl = json['repl'];
+    description = json['description'];
     if (json['OneWordCard'] != null) {
       dataOneWordCard = <DataOneWordCard>[];
       json['OneWordCard'].forEach((v) {
@@ -165,6 +168,7 @@ class DataOneResultCard {
     data['less'] = this.less;
     data['retro'] = this.retro;
     data['repl'] = this.repl;
+    data['description'] = this.description;
     if (this.dataOneWordCard != null) {
       data['OneWordCard'] = this.dataOneWordCard!.map((v) => v.toJson()).toList();
     }

@@ -13,7 +13,9 @@ import 'package:project_soe/VClassPage/ViewMyClass.dart';
 import 'package:project_soe/VMistakeBook/ViewMistakeBook.dart';
 import 'package:project_soe/VPracticePage/ViewPractice.dart';
 import 'package:project_soe/VPracticePage/ViewPracticeRandom.dart';
+import 'package:project_soe/VPracticePage/ViewPracticeSpecial.dart';
 import 'package:project_soe/VShowAllQuestion/ViewAllQuestion.dart';
+import 'package:project_soe/VShowAllQuestion/ViewAllQuestionHome.dart';
 import 'package:project_soe/VUnImplemented/ViewUnimplemented.dart';
 import 'package:project_soe/s_o_e_icons_icons.dart';
 
@@ -30,7 +32,8 @@ List<ClassRecData> ListClassRecData = [
   ClassRecData('个人题库', SOEIcons.personal_lib, ViewUnimplemented.routeName),
   ClassRecData('错题本', SOEIcons.practice_history, ViewMistakeBook.routeName),
   ClassRecData('随机一题', SOEIcons.practice_history, ViewPracticeRandom.routeName),
-  ClassRecData('预览题目', SOEIcons.practice_history, ViewAllQuestion.routeName),
+  ClassRecData('专项训练', SOEIcons.practice_history, ViewPracticeSpecial.routeName),
+  ClassRecData('预览题目', SOEIcons.practice_history, ViewAllQuestionHome.routeName),
 ];
 
 class ViewClass extends StatelessWidget {
@@ -74,7 +77,7 @@ class ViewClass extends StatelessWidget {
           style: gTitleStyle,
         ),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           Padding(padding: EdgeInsets.only(top: 30)),
           Row(
@@ -114,6 +117,16 @@ class ViewClass extends StatelessWidget {
               ),
               _buildRectWidget(
                 5,
+                context,
+              ),
+            ],
+          ),
+          Padding(padding: EdgeInsets.only(top: 30)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRectWidget(
+                6,
                 context,
               ),
             ],

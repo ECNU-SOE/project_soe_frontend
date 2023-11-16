@@ -19,12 +19,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:element_ui/animations.dart';
 import 'package:element_ui/widgets.dart';
 
-dynamic test, aList, tagList;
-List<String> tagNames = [];
-List<int> selectedTagIds = [];
-Map vis = {};
-Map tagMap = {};
-List<String> showTagList = List.empty(growable: true);
+List<int> selectedTagIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 class ViewPracticeRandomCard extends StatefulWidget {
   List<int> tagIds;
@@ -53,9 +48,13 @@ class _ViewPracticeRandomCardState extends State<ViewPracticeRandomCard> {
       body: _inputPage,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.of(context)
-          //     .pushReplacementNamed(ViewPracticeRandom.routeName);
-          Navigator.pop(context);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ViewPracticeRandomCard(
+                        tagIds: selectedTagIds,
+                      )
+                  ));
         },
         child: Text("下一题"),
         foregroundColor: Colors.black,
@@ -77,21 +76,29 @@ class _ViewPracticeRandomCardState extends State<ViewPracticeRandomCard> {
           } else {
             print("getGetRandomDataMistakeDetail failed !!!");
             return Scaffold(
-              backgroundColor: gColorE3EDF7RGBA,
+                      backgroundColor: gColorE3EDF7RGBA,
+              appBar: ComponentAppBar(
+                title: ComponentTitle(label: "随机练习", style: gTitleStyle),
+                hasBackButton: true,
+              ),
               body: Container(
-                child: Column(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Center(
-                          child: Text(
-                            "无该标签的题目或未添加标签",
-                            style: TextStyle(fontSize: 20),
-                            softWrap: true,
-                          ),
-                        ))
-                  ],
-                ),
+                child: const Center(
+              child: CircularProgressIndicator(),
+            )
+                
+                // Column(
+                //   children: [
+                //     Padding(
+                //         padding: EdgeInsets.only(top: 20),
+                //         child: Center(
+                //           child: Text(
+                //             "无该标签的题目或未添加标签",
+                //             style: TextStyle(fontSize: 20),
+                //             softWrap: true,
+                //           ),
+                //         ))
+                //   ],
+                // ),
               ),
             );
           }
@@ -109,156 +116,11 @@ class ViewPracticeRandom extends StatefulWidget {
 
 class _ViewPracticeRandomState extends State<ViewPracticeRandom> {
   Widget _buildBodyImpl(BuildContext context, TagList tagList) {
-    tagNames.clear();
-    List<Tags> tagslist = tagList.records;
-    // tagNames.clear(); vis.clear(); tagMap.clear();
-    for (var tag in tagslist) {
-      tagMap[tag.id] = tag.name;
-      tagMap[tag.name] = tag.id;
-      if ((tag.name ?? "") != "") {
-        tagNames.add(tag.name!);
-      }
-    }
-    double screenWidth = 500;
-    return Scaffold(
-        backgroundColor: gColorE3EDF7RGBA,
-        appBar: ComponentAppBar(
-          title: ComponentTitle(label: "随机练习", style: gTitleStyle),
-          hasBackButton: true,
-        ),
-        body: Padding(
-            padding: EdgeInsets.only(top: 0, bottom: 0),
-            child: Column(children: [
-              LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                screenWidth = constraints.maxWidth;
-                return Container();
-              }),
-              Padding(
-                  padding: EdgeInsets.only(top: 0),
-                  child: AutoSizeText("已选中 " + showTagList.length.toString() + " 个标签：",
-                      style: gSubtitleStyle, maxLines: 2)),
-              Container(
-                height: 100,
-                width: screenWidth - 50,
-                child: GridView.builder(
-                    itemCount: showTagList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        //横轴元素个数
-                        crossAxisCount: 5, //纵轴间距
-                        mainAxisSpacing: 20.0, //横轴间距
-                        crossAxisSpacing: 10, //子组件宽高长度比例
-                        childAspectRatio: 1.0),
-                    itemBuilder: (BuildContext context, int index) {
-                      return TextButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  Color.fromARGB(255, 161, 193, 219))),
-                          onPressed: () {
-                            setState(() {
-                              vis[tagMap[showTagList[index]]] = 0;
-                              showTagList.clear();
-                              selectedTagIds.clear();
-                              for (var id in vis.keys) {
-                                if (vis[id] == 1) {
-                                  showTagList.add(tagMap[id]);
-                                  selectedTagIds.add(id);
-                                }
-                              }
-                            });
-                          },
-                          child: AutoSizeText(showTagList[index],
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'SourceSans',
-                                fontSize: 12.0,
-                              ),
-                              maxLines: 2));
-                    }),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        vis.clear();
-                        showTagList.clear();
-                        selectedTagIds.clear();
-                      });
-                    },
-                    child: Text(
-                      "清除标签",
-                      style: TextStyle(fontSize: 18),
-                    )),
-              ),
-              Container(
-                  color: Colors.white,
-                  width: screenWidth,
-                  height: 300,
-                  child: GridView.builder(
-                      itemCount: tagNames.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          //横轴元素个数
-                          crossAxisCount: 5, //纵轴间距
-                          mainAxisSpacing: 20.0, //横轴间距
-                          crossAxisSpacing: 10.0, //子组件宽高长度比例
-                          childAspectRatio: 1.0),
-                      itemBuilder: (BuildContext context, int index) {
-                        return TextButton(
-                            onPressed: () {
-                              setState(() {
-                                if (vis[tagMap[tagNames[index]]] == 1)
-                                  vis[tagMap[tagNames[index]]] = 0;
-                                else
-                                  vis[tagMap[tagNames[index]]] = 1;
-                                print(tagMap[tagNames[index]]);
-                                print(tagNames[index]);
-                                showTagList.clear();
-                                selectedTagIds.clear();
-                                for (var id in vis.keys) {
-                                  if (vis[id] == 1) {
-                                    showTagList.add(tagMap[id]);
-
-                                    selectedTagIds.add(id);
-                                  }
-                                }
-                              });
-                            },
-                            child: vis[tagMap[tagNames[index]]] != 1
-                                ? AutoSizeText(tagNames[index],
-                                    style: gSubtitleStyle,
-                                    maxLines: 2,
-                                    softWrap: true)
-                                : AutoSizeText(
-                                    tagNames[index] + "(已选择)",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontFamily: 'SourceSerif',
-                                      fontSize: 18.0,
-                                    ),
-                                    maxLines: 2,
-                                    softWrap: true,
-                                  ));
-                      })),
-              TextButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ViewPracticeRandomCard(
-                          tagIds: selectedTagIds,
-                        );
-                      },
-                      isScrollControlled: true);
-                },
-                child: Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      "开始随机一题",
-                      style: TextStyle(fontSize: 18),
-                    )),
-              )
-            ])));
+      List<int> tagIds = [2, 5];
+      // for (var tag in tagList.records) {
+      //   tagIds.add(tag.id ?? 0);
+      // }
+      return ViewPracticeRandomCard(tagIds: tagIds);
   }
 
   @override

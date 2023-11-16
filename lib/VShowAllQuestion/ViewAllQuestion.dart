@@ -20,48 +20,20 @@ import 'package:project_soe/VShowAllQuestion/DataAllQuestion.dart';
 List<SubCpsrcds> dataQuestionPageList = [];
 
 class ViewAllQuestion extends StatefulWidget {
-  const ViewAllQuestion({super.key});
-  static String routeName = 'allQuestion';
+  String type = "";
+  String refText = "";
+  List<int> tagIds = [];
+  ViewAllQuestion({required this.type, required this.refText, required this.tagIds});
   @override
-  State<ViewAllQuestion> createState() => _MyWidgetState();
+  State<ViewAllQuestion> createState() => _ViewAllQuestionState();
 }
 
-class _MyWidgetState extends State<ViewAllQuestion> {
+class _ViewAllQuestionState extends State<ViewAllQuestion> {
   @override
   void initState() {
     super.initState();
   }
-/*
-  getGetCpsrcdDetail(String cpsrcdId, int index) async {
-    var url = Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsrcd/v1/getCpsrcdDetail?cpsrcdId=' + cpsrcdId);
-    final token = await AuthritionState.instance.getToken();
-    var response = await http.get(
-      url,
-      headers: {"token": token},
-    );
-    var data = jsonDecode(Utf8Codec().decode(response.bodyBytes))['data']; 
 
-    List<Tags> tags = List.empty(growable: true);
-    data['tags'].forEach((v) {
-      tags!.add(new Tags.fromJson(v));
-    });
-    SubCpsrcds subCpsrcd = new SubCpsrcds(
-      id: data['id'] ?? "",
-      type: data['type'] ?? "",
-      evalMode: data['evalMode'] ?? -1,
-      difficulty: data['difficulty'] ?? -1,
-      pinyin: data['pinyin'] ?? "",
-      refText: data['refText'] ?? "",
-      audioUrl: data['audioUrl'] ?? "",
-      tags: tags ?? [],
-      gmtCreate: data['gmtCreate'] ?? "",
-      gmtModified: data['gmtModified'] ?? "",
-      enablePinyin: data['enablePinyin'] ?? false,
-    );
-
-    dataQuestionPageList.add(subCpsrcd);
-  }
-*/
   Widget _buildImpl(BuildContext context, List<SubCpsrcds> listSubCpsrcds) {
     final itemBuilder = (context, index) {
       print(index);
@@ -82,9 +54,10 @@ class _MyWidgetState extends State<ViewAllQuestion> {
 
   Widget build(BuildContext context) {
     return FutureBuilder<List<SubCpsrcds>>(
-      future: getAllQuestions(),
+      future: getAllQuestions(widget.type, widget.refText, widget.tagIds),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          dataQuestionPageList.clear();
           for(var index = 0; index < snapshot.data!.length; ++ index) {
             dataQuestionPageList.add(snapshot.data![index]);
           }

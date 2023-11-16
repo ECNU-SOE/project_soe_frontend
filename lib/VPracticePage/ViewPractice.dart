@@ -60,7 +60,7 @@ class ViewPractice extends StatelessWidget {
       ),
       Container(
         child: Text(
-          data.desc,
+          data.description,
           style: gSubtitleStyle,
         ),
       ),
@@ -70,7 +70,7 @@ class ViewPractice extends StatelessWidget {
                     context,
                     ViewExam.routeName,
                     arguments:
-                        ArgsViewExam(data.id, '作业', ViewAppHome.routeName, 0.0),
+                        ArgsViewExam(data.id, data.description, ViewAppHome.routeName, 0.0),
                   )
               : () => showDialog(
                     context: context,
@@ -164,8 +164,10 @@ class ViewPractice extends StatelessWidget {
         future: postGetDataPracticePage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            print("postGetDataPracticePage succeeded!!!");
             return _buildViewPracticeImpl(context, snapshot.data!);
           } else {
+            print("postGetDataPracticePage failed!!!");
             return const Center(
               child: CircularProgressIndicator(),
             );

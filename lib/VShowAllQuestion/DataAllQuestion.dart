@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
 
-Future<List<SubCpsrcds>> getAllQuestions() async {
+Future<List<SubCpsrcds>> getAllQuestions(String type, String refText, List<int> tagIds) async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
       'http://47.101.58.72:8888/corpus-server/api/cpsrcd/v1/list?cur=1&size=10');
@@ -14,15 +14,15 @@ Future<List<SubCpsrcds>> getAllQuestions() async {
     headers: {"token": token, "Content-Type": "application/json"},
     body: jsonEncode({
       //语料类型
-      "type": "",
+      "type": type,
       //语料起始难度
       "difficultyBegin": 0,
       //语料截止难度
       "difficultyEnd": 10,
       //语料文本内容
-      "refText": "",
+      "refText": refText,
       //语料标签，查询逻辑是输入多个标签时，显示的结果中会包含其中至少一个标签
-      "tagIds": []
+      "tagIds": tagIds
     }),
   );
   final u8decoded = utf8.decode(response.bodyBytes);

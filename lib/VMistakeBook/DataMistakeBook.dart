@@ -79,6 +79,7 @@ Future<DataMistakeBook> getGetDataMistakeBook() async {
   final _mistakeBookListItem = _data['eachMistakeTypeNumber'];
   List<DataMistakeBookListItem> listMistakeBookAll = List.empty(growable: true);
   for (final mistake in _mistakeBookListItem) {
+    // print(mistake);
     listMistakeBookAll.add(DataMistakeBookListItem.fromJson(mistake));
   }
 

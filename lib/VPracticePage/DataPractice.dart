@@ -11,15 +11,15 @@ import 'package:project_soe/VExam/DataQuestion.dart';
 class DataPractice {
   String id;
   String title;
-  String desc;
+  String description;
   DataPractice({
     required this.id,
     required this.title,
-    required this.desc,
+    required this.description,
   });
   factory DataPractice.fromJson(Map<String, dynamic> json) {
     return DataPractice(
-        id: json['id'], title: json['title'], desc: json['description']);
+        id: json['id'], title: json['title'], description: json['description']);
   }
 }
 
@@ -40,18 +40,28 @@ class DataPracticePage {
 }
 
 Future<DataPracticePage> postGetDataPracticePage() async {
+  final token = AuthritionState.instance.getToken();
   final client = http.Client();
   final uri =
-      Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/list');
+      Uri.parse('http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/list?cur=1&size=10');
   final response = await client.post(
     uri,
     body: jsonEncode({
-      'isPrivate': 0,
+        "classId": "class_1645342954912616448",
+        "title": null,
+        "description": null,
+        "isPrivate": 0,
+        "modStatus": null,
+        "difficulty": null,
+        "startTime": null,
+        "endTime": null,
+        "status":null  //null:全部，1：未开始，2：进行中，3：已结束
     }),
-    headers: {"Content-Type": "application/json"},
+    headers: {"token": token, "Content-Type": "application/json"},
     encoding: Encoding.getByName('utf-8'),
   );
   var jsonDecoded = await jsonDecode(utf8.decode(response.bodyBytes));
+  // print(token);
   DataPracticePage pageData = DataPracticePage();
   pageData.parseJson(jsonDecoded['data']);
   return pageData;

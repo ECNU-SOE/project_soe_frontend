@@ -29,6 +29,7 @@ class MsgMgrQuestion {
       for (var subCpsrcd in topic.subCpsrcds!) {
         totScore += subCpsrcd.score ?? 0.0;
         subCpsrcd.title = topic.title;
+        subCpsrcd.description = topic.description;
         subCpsrcd.tNum = nowTNum;
         subCpsrcds.add(subCpsrcd);
       }
@@ -37,14 +38,14 @@ class MsgMgrQuestion {
     return ExamResult(totScore: totScore, listSubCpsrcd: subCpsrcds);
   }
 
-/*
+
   // 客户端解析后的数据上传至服务器
-  Future<void> postResultToServer(ParsedResultsXf parsedResultsXf) async {
+  Future<void> postResultToServer(String resJson, String id, double score) async {
     final client = http.Client();
     final bodyMap = {
-      'resJson': parsedResultsXf.toJson(),
-      'cpsgrpId': parsedResultsXf.cpsgrpId,
-      'suggestedScore': parsedResultsXf.weightedScore
+      'resJson': resJson,
+      'cpsgrpId': id,
+      'suggestedScore': score
     };
     final token = await AuthritionState.instance.getToken();
     final response = client.post(
@@ -60,7 +61,7 @@ class MsgMgrQuestion {
     // TODO 上传结果并评测    
     final responseBytes = utf8.decode((await response).bodyBytes);
   }
-*/
+
 
   bool _isJsonList(var json) {
     final ret = json[1];
@@ -86,6 +87,8 @@ class MsgMgrQuestion {
       'category': getXfCategoryStringByInt(data.evalMode ?? -1),
       'pinyin': data.pinyin ?? "",
       "cpsrcdId": add2Mis ? (data.id ?? "") : "",
+      "cpsgrpId": add2Mis ? (data.cpsgrpId ?? ""): "",
+      // "algoType": 0
     });
     request.files.add(await data.getMultiPartFileAudio());
     request.headers.addAll(headers);
@@ -96,8 +99,9 @@ class MsgMgrQuestion {
     dataOneResultCard.evalMode = data.evalMode;
     dataOneResultCard.weight = data.getWeight();
     int less = 0, more = 0, retro = 0, repl = 0;
-    Map<String, dynamic> resultJson = decoded['data']['rec_paper']
-        [getXfCategoryStringByInt(data.evalMode ?? -1)];
+    
+    Map<String, dynamic> resultJson = decoded['data']['rec_paper'][getXfCategoryStringByInt(data.evalMode ?? -1)];
+    print(decoded['data']['version']);
     List<DataOneWordCard> oneWordList = List.empty(growable: true);
     print(getXfCategoryStringByInt(data.evalMode ?? -1));
     RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
