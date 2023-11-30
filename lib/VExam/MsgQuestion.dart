@@ -6,6 +6,7 @@ import 'package:project_soe/VCommon/DataAllResultsCard.dart';
 
 import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VPracticePage/DataPractice.dart';
 
 class MsgMgrQuestion {
   Future<ExamResult> getExamByCpsgrpId(String cpsgrpId) async {
@@ -19,10 +20,10 @@ class MsgMgrQuestion {
     final data = decoded['data'];
     final msg = decoded['msg'];
     if (code != 0) throw ('wrong return code');
-
+    
     DataExamPage dataExamPage = DataExamPage.fromJson(data);
     double totScore = 0;
-
+    
     List<SubCpsrcds> subCpsrcds = List.empty(growable: true);
     int nowTNum = 1;
     for (var topic in dataExamPage.topics!) {
@@ -41,25 +42,28 @@ class MsgMgrQuestion {
 
   // 客户端解析后的数据上传至服务器
   Future<void> postResultToServer(String resJson, String id, double score) async {
-    final client = http.Client();
-    final bodyMap = {
-      'resJson': resJson,
-      'cpsgrpId': id,
-      'suggestedScore': score
-    };
     final token = await AuthritionState.instance.getToken();
-    final response = client.post(
-      Uri.parse(
-          'http://47.101.58.72:8888/corpus-server/api/cpsgrp/v1/save_transcript'),
-      body: jsonEncode(bodyMap),
-      headers: {
-        "Content-Type": "application/json",
-        'token': token,
-      },
-      encoding: Encoding.getByName('utf-8'),
-    );
-    // TODO 上传结果并评测    
-    final responseBytes = utf8.decode((await response).bodyBytes);
+
+    var headers = {
+      'token': token,
+      'Content-Type': 'application/json'
+    };
+    var request = http.Request('POST', Uri.parse('http://47.101.58.72:8888/corpus-server/api/transcript/v1/save'));
+    request.body = json.encode({
+      "cpsgrpId": id,
+      "suggestedScore": score,
+      "resJson": resJson
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    }
+    else {
+      print(response.reasonPhrase);
+    }
   }
 
 
@@ -75,20 +79,21 @@ class MsgMgrQuestion {
   // 将语音数据发往服务器并评测
   // 此函数只应被Data调用
   Future<DataOneResultCard> postAndGetResultXf(
-      SubCpsrcds data, bool add2Mis) async {
+      SubCpsrcds data, bool add2Mis, bool valueIdx) async {
     final token = AuthritionState.instance.getToken();
     var headers = {'token': token};
     var request = http.MultipartRequest(
         'POST',
         Uri.parse(
             'http://47.101.58.72:8888/corpus-server/api/evaluate/v1/eval_xf'));
+
     request.fields.addAll({
       'refText': data.refText ?? "",
       'category': getXfCategoryStringByInt(data.evalMode ?? -1),
       'pinyin': data.pinyin ?? "",
       "cpsrcdId": add2Mis ? (data.id ?? "") : "",
       "cpsgrpId": add2Mis ? (data.cpsgrpId ?? ""): "",
-      // "algoType": 0
+      "evaluateType": valueIdx? "1": "0"
     });
     request.files.add(await data.getMultiPartFileAudio());
     request.headers.addAll(headers);
@@ -99,7 +104,7 @@ class MsgMgrQuestion {
     dataOneResultCard.evalMode = data.evalMode;
     dataOneResultCard.weight = data.getWeight();
     int less = 0, more = 0, retro = 0, repl = 0;
-    
+    // print(decoded['data']);
     Map<String, dynamic> resultJson = decoded['data']['rec_paper'][getXfCategoryStringByInt(data.evalMode ?? -1)];
     print(decoded['data']['version']);
     List<DataOneWordCard> oneWordList = List.empty(growable: true);
@@ -960,7 +965,7 @@ class MsgMgrQuestion {
           }
         }
     }
-    
+
     dataOneResultCard.totalScore = resultJson['total_score'];
     dataOneResultCard.phoneScore = resultJson['phone_score'];
     dataOneResultCard.toneScore = resultJson['tone_score'];

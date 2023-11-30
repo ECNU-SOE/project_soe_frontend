@@ -9,6 +9,7 @@ import 'package:project_soe/CComponents/ComponentTitle.dart';
 import 'package:project_soe/GGlobalParams/Styles.dart';
 import 'package:project_soe/VAppHome/ViewAppHome.dart';
 import 'package:project_soe/VAuthorition/ViewLogin.dart';
+import 'package:project_soe/VExam/DataExamResult.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
 import 'package:project_soe/VPracticePage/DataPractice.dart';
 import 'package:project_soe/VExam/ViewExam.dart';
@@ -41,7 +42,7 @@ class ViewPracticeResults extends StatelessWidget {
 }
 
 class _ViewPracticeResults extends StatelessWidget {
-  Widget _buildItem(BuildContext context, ResJson dataTranscript) {
+  Widget _buildItem(BuildContext context, DataExamResult dataTranscript) {
     // getGetCpsrcdDetail(dataTranscript.cpsgrpId.toString());
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10, top: 5),
@@ -61,7 +62,7 @@ class _ViewPracticeResults extends StatelessWidget {
                         width: 75,
                         child: Text("名称："),
                       ),
-                      ComponentSubtitle(label: dataTranscript.title.toString(), style: gSubtitleStyle0)
+                      ComponentSubtitle(label: dataTranscript.name.toString(), style: gSubtitleStyle0)
                     ],
                   ),
                   Row(
@@ -71,7 +72,7 @@ class _ViewPracticeResults extends StatelessWidget {
                         child: Text("得分："),
                       ),
                       ComponentSubtitle(
-                          label: dataTranscript.suggestedScore.toString(),
+                          label: dataTranscript.allTotalScore!.toStringAsFixed(2),
                           style: gInfoTextStyle1)
                     ],
                   ),
@@ -103,11 +104,11 @@ class _ViewPracticeResults extends StatelessWidget {
   }
 
   Widget _buildViewPracticeResultsImpl(
-      BuildContext context, List<ResJson> resultsXf) {
+      BuildContext context, List<DataExamResult> resultsXf) {
     List<Widget> listDataResultXf = List.empty(growable: true);
-    for (ResJson dataTranscript in resultsXf) {
+    for (DataExamResult dataTranscript in resultsXf) {
       listDataResultXf.add(_buildItem(context, dataTranscript));
-      print(dataTranscript.itemResult);
+      // print(dataTranscript.itemResult);
     }
 
     final listViewAll = ListView(
@@ -119,7 +120,7 @@ class _ViewPracticeResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ResJson>>(
+    return FutureBuilder<List<DataExamResult>>(
       future: postGetDataTranscriptPage(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {

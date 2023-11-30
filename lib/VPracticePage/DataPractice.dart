@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_soe/VAuthorition/LogicAuthorition.dart';
+import 'package:project_soe/VExam/DataExamResult.dart';
 import 'package:project_soe/VExam/DataQuestion.dart';
 
 class DataPractice {
@@ -298,7 +299,7 @@ class WrongSheng {
   }
 }
 
-Future<List<ResJson>> postGetDataTranscriptPage() async {
+Future<List<DataExamResult>> postGetDataTranscriptPage() async {
   final token = AuthritionState.instance.getToken();
   final uri = Uri.parse(
       "http://47.101.58.72:8888/corpus-server/api/transcript/v1/list");
@@ -314,15 +315,91 @@ Future<List<ResJson>> postGetDataTranscriptPage() async {
   final decoded = jsonDecode(u8decoded);
   final code = decoded['code'];
   final data = decoded['data'];
+    // print(token);
   if (code != 0) throw ("wrong return code");
-
-  List<ResJson> listDataTranscript = List.empty(growable: true);
-
+  List<DataExamResult> listDataTranscript = List.empty(growable: true);
   for(var _data in data) {
-    listDataTranscript.add(
-      ResJson.fromJson(_data)
-    );
-  }
 
+    DataExamResult tmp = new DataExamResult();
+    tmp.tid = _data['id'];
+    tmp.gid = _data['cpsgrpId'];
+    tmp.name = _data['cpsgrpName'];
+    tmp.uid = _data['respondent'];
+    tmp.gmtCreate = _data['gmtCreate'];
+    tmp.gmtModified = _data['gmtModified'];
+    
+    var json = jsonDecode(_data['resJson']);
+    tmp.suggestedScore = json['suggestedScore'] ?? 0.0;
+    tmp.allTotalScore = json['allTotalScore'] ?? 0.0;
+    tmp.allPhoneScore = json['allPhoneScore'] ?? 0.0;
+    tmp.allToneScore = json['allToneScore'] ?? 0.0;
+    tmp.allFluencyScore = json['allFluencyScore'] ?? 0.0;
+    tmp.allLess = json['allLess'] ?? 0;
+    tmp.allMore = json['allMore'] ?? 0;
+    tmp.allRepl = json['allRepl'] ?? 0;
+    tmp.allRetro = json['allRetro'] ?? 0;
+    
+    if (json['totPhoneScore'] != null) {
+      tmp.totPhoneScore = <NameScore>[];
+      json['totPhoneScore'].forEach((v) {
+        tmp.totPhoneScore!.add(new NameScore.fromJson(v));
+      });
+    }
+    if (json['totToneScore'] != null) {
+      tmp.totToneScore = <NameScore>[];
+      json['totToneScore'].forEach((v) {
+        tmp.totToneScore!.add(new NameScore.fromJson(v));
+      });
+    }
+    if (json['totFluencyScore'] != null) {
+      tmp.totFluencyScore = <NameScore>[];
+      json['totFluencyScore'].forEach((v) {
+        tmp.totFluencyScore!.add(new NameScore.fromJson(v));
+      });
+    }
+    if (json['totTotalScore'] != null) {
+      tmp.totTotalScore = <NameScore>[];
+      json['totTotalScore'].forEach((v) {
+        tmp.totTotalScore!.add(new NameScore.fromJson(v));
+      });
+    }
+    if (json['totLess'] != null) {
+      tmp.totLess = <NameNum>[];
+      json['totLess'].forEach((v) {
+        tmp.totLess!.add(new NameNum.fromJson(v));
+      });
+    }
+    if (json['totMore'] != null) {
+      tmp.totMore = <NameNum>[];
+      json['totMore'].forEach((v) {
+        tmp.totMore!.add(new NameNum.fromJson(v));
+      });
+    }
+    if (json['totRepl'] != null) {
+      tmp.totRepl = <NameNum>[];
+      json['totRepl'].forEach((v) {
+        tmp.totRepl!.add(new NameNum.fromJson(v));
+      });
+    }
+    if (json['totRetro'] != null) {
+      tmp.totRetro = <NameNum>[];
+      json['totRetro'].forEach((v) {
+        tmp.totRetro!.add(new NameNum.fromJson(v));
+      });
+    }
+    if (json['wrongShengMu'] != null) {
+      tmp.wrongShengMu = <NameNum>[];
+      json['wrongShengMu'].forEach((v) {
+        tmp.wrongShengMu!.add(new NameNum.fromJson(v));
+      });
+    }
+    if (json['wrongYunMu'] != null) {
+      tmp.wrongYunMu = <NameNum>[];
+      json['wrongYunMu'].forEach((v) {
+        tmp.wrongYunMu!.add(new NameNum.fromJson(v));
+      });
+    }
+    listDataTranscript.add(tmp);
+  }
   return listDataTranscript;
 }

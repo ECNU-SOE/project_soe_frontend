@@ -14,15 +14,15 @@ Future<List<SubCpsrcds>> getAllQuestions(String type, String refText, List<int> 
     headers: {"token": token, "Content-Type": "application/json"},
     body: jsonEncode({
       //语料类型
-      "type": type,
-      //语料起始难度
-      "difficultyBegin": 0,
+      "type": null,
+      //语料起始难度 
+      "difficultyBegin": null,
       //语料截止难度
-      "difficultyEnd": 10,
+      "difficultyEnd": null,
       //语料文本内容
       "refText": refText,
       //语料标签，查询逻辑是输入多个标签时，显示的结果中会包含其中至少一个标签
-      "tagIds": tagIds
+      "tagIds": null
     }),
   );
   final u8decoded = utf8.decode(response.bodyBytes);

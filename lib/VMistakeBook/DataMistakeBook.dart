@@ -117,6 +117,7 @@ Future<List<SubCpsrcds>> postGetDataMistakeDetail(
   List<SubCpsrcds> listSubCpsrcds = List.empty(growable: true);
   for (final item in data) {
     SubCpsrcds tmp = SubCpsrcds.fromJson(item);
+    tmp.type = item['topicTitle'];
     tmp.id = item['cpsrcdId'];
     tmp.evalMode = item['evalMode'];
     listSubCpsrcds.add(tmp);
@@ -157,7 +158,7 @@ Future<SubCpsrcds> getGetRandomDataMistakeDetail(List<int> tagIds) async {
     cpsgrpId: "",
     type: data['type'] ?? "",
     evalMode: data['evalMode'] ?? -1,
-    difficulty: data['difficulty'] ?? -1,
+    difficulty: data['difficulty'].toString() ?? "-1",
     score: 0.0,
     enablePinyin: false,
     pinyin: data['pinyin'] ?? "",

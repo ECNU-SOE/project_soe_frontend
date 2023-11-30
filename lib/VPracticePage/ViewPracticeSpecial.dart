@@ -66,8 +66,6 @@ class _ViewPracticeSpecialCardState extends State<ViewPracticeSpecialCard> {
         backgroundColor: gColorE8F3FBRGBA,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
-      bottomNavigationBar:
-          ComponentBottomNavigator(curRouteName: ViewPracticeSpecial.routeName),
     );
   }
 

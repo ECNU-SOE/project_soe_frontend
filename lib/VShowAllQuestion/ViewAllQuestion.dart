@@ -23,7 +23,8 @@ class ViewAllQuestion extends StatefulWidget {
   String type = "";
   String refText = "";
   List<int> tagIds = [];
-  ViewAllQuestion({required this.type, required this.refText, required this.tagIds});
+  int idx = 1;
+  ViewAllQuestion({required this.type, required this.refText, required this.tagIds, required this.idx});
   @override
   State<ViewAllQuestion> createState() => _ViewAllQuestionState();
 }
@@ -34,7 +35,7 @@ class _ViewAllQuestionState extends State<ViewAllQuestion> {
     super.initState();
   }
 
-  Widget _buildImpl(BuildContext context, List<SubCpsrcds> listSubCpsrcds) {
+  Widget _buildImpl(BuildContext context, List<SubCpsrcds> listSubCpsrcds, int idx) {
     final itemBuilder = (context, index) {
       print(index);
       if(dataQuestionPageList.length == 0) return Container();
@@ -43,13 +44,14 @@ class _ViewAllQuestionState extends State<ViewAllQuestion> {
 
 
     return EPageView(
+      initialPage: idx,
       itemBuilder: itemBuilder,
       itemCount: listSubCpsrcds.length,
     );
   }
 
   Widget _buildItem(SubCpsrcds dataQuestionPageMain) {
-    return ComponentVoiceInput(dataPage: dataQuestionPageMain, recordShow: false);
+    return ComponentVoiceInput(dataPage: dataQuestionPageMain, recordShow: false, subButShow: true);
   }
 
   Widget build(BuildContext context) {
@@ -62,13 +64,16 @@ class _ViewAllQuestionState extends State<ViewAllQuestion> {
             dataQuestionPageList.add(snapshot.data![index]);
           }
           print("getAllQuestions succeeded");
+          print(widget.idx);
+          print("---------");
+          // todo
           return Scaffold(
             backgroundColor: gColorE3EDF7RGBA,
             appBar: ComponentAppBar(
               title: ComponentTitle(label: "预览题目", style: gTitleStyle),
               hasBackButton: true,
             ),
-            body: _buildImpl(context, snapshot.data!),
+            body: _buildImpl(context, snapshot.data!, widget.idx),
           );
         } else {
           print("getAllQuestions failed");

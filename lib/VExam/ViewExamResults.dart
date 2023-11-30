@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
@@ -44,6 +45,8 @@ List<String> totPhoneScoreName = [],
 int allMore = 0, allLess = 0, allRepl = 0, allRetro = 0;
 List<int> totLess = [], totMore = [], totRepl = [], totRetro = [];
 List<String> keyValueName = [];
+
+var ID, YUNMUNAME, YUNMUNUM, SHENGMUNAME, SHENGMUNUM;
 
 Future<void> parseAndPostResultsXf(
     String id,
@@ -105,9 +108,7 @@ Future<void> parseAndPostResultsXf(
   }
   resJson += "],";
 
-
-
-    resJson += '"totLess":[';
+  resJson += '"totLess":[';
   for (int i = 1; i < keyValueName.length; ++i) {
     resJson += "{";
     resJson += '"name":"' + keyValueName[i] + '",';
@@ -117,7 +118,7 @@ Future<void> parseAndPostResultsXf(
   }
   resJson += "],";
 
-    resJson += '"totMore":[';
+  resJson += '"totMore":[';
   for (int i = 1; i < keyValueName.length; ++i) {
     resJson += "{";
     resJson += '"name":"' + keyValueName[i] + '",';
@@ -127,7 +128,7 @@ Future<void> parseAndPostResultsXf(
   }
   resJson += "],";
 
-    resJson += '"totRepl":[';
+  resJson += '"totRepl":[';
   for (int i = 1; i < keyValueName.length; ++i) {
     resJson += "{";
     resJson += '"name":"' + keyValueName[i] + '",';
@@ -137,7 +138,7 @@ Future<void> parseAndPostResultsXf(
   }
   resJson += "],";
 
-    resJson += '"totRetro":[';
+  resJson += '"totRetro":[';
   for (int i = 1; i < keyValueName.length; ++i) {
     resJson += "{";
     resJson += '"name":"' + keyValueName[i] + '",';
@@ -146,7 +147,6 @@ Future<void> parseAndPostResultsXf(
     if (i != keyValueName.length - 1) resJson += ",";
   }
   resJson += "],";
-
 
   resJson += '"wrongShengMu":[';
   for (int i = 0; i < shengMuName.length; ++i) {
@@ -169,14 +169,8 @@ Future<void> parseAndPostResultsXf(
   resJson += "]";
 
   resJson += "}";
-  print(resJson);
 
-  // await MsgMgrQuestion().postResultToServer(resJson, id, suggestedScore);
-  // final parsedResultsXf =
-  //     ParsedResultsXf.fromQuestionPageDataList(dataList, id);
-
-  // await MsgMgrQuestion().postResultToServer(parsedResultsXf);
-
+  await MsgMgrQuestion().postResultToServer(resJson, id, suggestedScore);
   // return parsedResultsXf;
 }
 
@@ -187,9 +181,12 @@ class _generateBody extends StatelessWidget {
   final String endingRoute;
   final Map<dynamic, String> idx2Name;
   final Map<dynamic, double> idx2Score;
+  final Map<dynamic, int> idx2Num;
   final Map<dynamic, int> type2Idx;
   final Map<dynamic, dynamic> index2Name;
   final Map<dynamic, dynamic> index2Score;
+  final Map<dynamic, dynamic> index2num;
+  bool isUpload = false;
 
   _generateBody(
       {required this.id,
@@ -198,9 +195,11 @@ class _generateBody extends StatelessWidget {
       required this.endingRoute,
       required this.idx2Name,
       required this.idx2Score,
+      required this.idx2Num,
       required this.type2Idx,
       required this.index2Name,
-      required this.index2Score});
+      required this.index2Score,
+      required this.index2num});
 
   Map<String, int> wrongShengMuCount = {}, wrongYunMuCount = {};
 
@@ -232,16 +231,27 @@ class _generateBody extends StatelessWidget {
       totTotalScoreName.add("");
       keyValueName.add("");
     }
+    int i = 0;
     for (var dataOneResultCard in dataList) {
+      print("-----");
       String tmpDescription = dataOneResultCard.description ?? "";
       totPhoneScore[type2Idx[tmpDescription] ?? 0] +=
-          dataOneResultCard.phoneScore ?? 0;
+          (dataOneResultCard.phoneScore ?? 0) *
+              index2Score[i] /
+              (100 * index2num[i]);
       totToneScore[type2Idx[tmpDescription] ?? 0] +=
-          dataOneResultCard.toneScore ?? 0;
+          (dataOneResultCard.toneScore ?? 0) *
+              index2Score[i] /
+              (100 * index2num[i]);
       totFluencyScore[type2Idx[tmpDescription] ?? 0] +=
-          dataOneResultCard.fluencyScore ?? 0;
+          (dataOneResultCard.fluencyScore ?? 0) *
+              index2Score[i] /
+              (100 * index2num[i]);
       totTotalScore[type2Idx[tmpDescription] ?? 0] +=
-          dataOneResultCard.totalScore ?? 0;
+          (dataOneResultCard.totalScore ?? 0) *
+              index2Score[i] /
+              (100 * index2num[i]);
+
       totMore[type2Idx[tmpDescription] ?? 0] += dataOneResultCard.more ?? 0;
       totLess[type2Idx[tmpDescription] ?? 0] += dataOneResultCard.less ?? 0;
       totRepl[type2Idx[tmpDescription] ?? 0] += dataOneResultCard.repl ?? 0;
@@ -271,6 +281,7 @@ class _generateBody extends StatelessWidget {
           }
         }
       }
+      i += 1;
     }
 
     List<DataRow> shengMuList = List.empty(growable: true);
@@ -313,12 +324,19 @@ class _generateBody extends StatelessWidget {
 
     List<DataRow> scores = List.empty(growable: true);
     List<DataRow> mlpp = List.empty(growable: true);
+    print("allTotalScore -------");
+    print(allTotalScore);
     scores.add(DataRow(cells: [
-      DataCell(Text("总成绩")),
-       DataCell(Text("${allTotalScore}/${totScore}")),
-      DataCell(Text("${allToneScore}")),
-      DataCell(Text("${allPhoneScore}")),
-      DataCell(Text("${allFluencyScore}")),
+      DataCell(Center(
+        child: Text(
+            style: TextStyle(fontSize: 12),
+            maxLines: 5,
+            "总成绩(${totScore.toStringAsFixed(2)})"),
+      )),
+      DataCell(Text("${allTotalScore.toStringAsFixed(2)}")),
+      DataCell(Text("${allToneScore.toStringAsFixed(2)}")),
+      DataCell(Text("${allPhoneScore.toStringAsFixed(2)}")),
+      DataCell(Text("${allFluencyScore.toStringAsFixed(2)}")),
     ]));
     mlpp.add(DataRow(cells: [
       DataCell(Text("总")),
@@ -330,11 +348,19 @@ class _generateBody extends StatelessWidget {
     type2Idx.forEach((key, value) {
       if (key != "") {
         scores.add(DataRow(cells: [
-          DataCell(Text(value.toString() + "." + key)),
-          DataCell(Text("${totTotalScore[value]}/${idx2Score[key]}")),
-          DataCell(Text("${totToneScore[value]}")),
-          DataCell(Text("${totPhoneScore[value]}")),
-          DataCell(Text("${totFluencyScore[value]}")),
+          DataCell(Center(
+            child: Text(
+                style: TextStyle(fontSize: 12),
+                maxLines: 5,
+                value.toString() +
+                    "." +
+                    key +
+                    "(${idx2Score[key]!.toStringAsFixed(2)})"),
+          )),
+          DataCell(Text("${totTotalScore[value].toStringAsFixed(2)}")),
+          DataCell(Text("${totToneScore[value].toStringAsFixed(2)}")),
+          DataCell(Text("${totPhoneScore[value].toStringAsFixed(2)}")),
+          DataCell(Text("${totFluencyScore[value].toStringAsFixed(2)}")),
         ]));
         mlpp.add(DataRow(cells: [
           DataCell(Text(value.toString() + "." + key)),
@@ -345,105 +371,105 @@ class _generateBody extends StatelessWidget {
         ]));
       }
     });
+    ID = id;
+    YUNMUNAME = yunMuName;
+    YUNMUNUM = yunMuNum;
+    SHENGMUNAME = shengMuName;
+    SHENGMUNUM = shengMuNum;
 
-    parseAndPostResultsXf(
-                id, 0, yunMuName, yunMuNum, shengMuName, shengMuNum);
-
-    return 
-    Padding(padding: EdgeInsets.only(top: 10), child: 
-    ListView(children: [
-      ComponentSubtitle(label: '全面测试结果', style: gTitleStyle),
-      Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          child: DataTable(
-              headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.grey.shade300),
-              border: TableBorder.all(),
-              columns: [
-                DataColumn(label: Text("题型", style: gInfoTextStyle2)),
-                DataColumn(label: Text("总分", style: gInfoTextStyle2)),
-                DataColumn(label: Text("声调得分", style: gInfoTextStyle2)),
-                DataColumn(label: Text("发音得分", style: gInfoTextStyle2)),
-                DataColumn(label: Text("流畅得分", style: gInfoTextStyle2)),
-                // DataColumn(label: Text("增读", style: gInfoTextStyle2)),
-                // DataColumn(label: Text("漏读", style: gInfoTextStyle2)),
-                // DataColumn(label: Text("回读", style: gInfoTextStyle2)),
-                // DataColumn(label: Text("替换", style: gInfoTextStyle2)),
-              ],
-              rows: scores)),
-            Padding(
-          padding: EdgeInsets.only(top:10, left: 20, right: 20),
-          child: DataTable(
-              headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.grey.shade300),
-              border: TableBorder.all(),
-              columns: [
-                DataColumn(label: Text("题型", style: gInfoTextStyle2)),
-                DataColumn(label: Text("增读", style: gInfoTextStyle2)),
-                DataColumn(label: Text("漏读", style: gInfoTextStyle2)),
-                DataColumn(label: Text("回读", style: gInfoTextStyle2)),
-                DataColumn(label: Text("替换", style: gInfoTextStyle2)),
-              ],
-              rows: mlpp)),
-      Padding(
-         padding: EdgeInsets.only(top:10, left: 20, right: 20),
-          child: Container(
-            height: 300,
-            child: ListView(
-              children: [
-                DataTable(
-                    headingRowColor: MaterialStateColor.resolveWith(
-                        (states) => Colors.grey.shade300),
-                    border: TableBorder.all(),
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          "声母错误",
-                          style: gInfoTextStyle2,
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text("次数"),
-                      )
-                    ],
-                    rows: shengMuList)
-              ],
-            ),
-          )),
-      Padding(
-          padding: EdgeInsets.all(5.0),
-          child: Container(
-            height: 300,
-            child: ListView(
-              children: [
-                DataTable(
-                    headingRowColor: MaterialStateColor.resolveWith(
-                        (states) => Colors.grey.shade300),
-                    border: TableBorder.all(),
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          "韵母错误",
-                          style: gInfoTextStyle2,
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text("次数"),
-                      )
-                    ],
-                    rows: yunMuList)
-              ],
-            ),
-          )),
-    ],),)
-    ;
+    return Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: ListView(
+        children: [
+          ComponentSubtitle(label: '全面测试结果', style: gTitleStyle),
+          Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 5),
+              child: Center(
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                        headingRowColor: MaterialStateColor.resolveWith(
+                            (states) => Colors.grey.shade300),
+                        border: TableBorder.all(),
+                        columns: [
+                          DataColumn(label: Text("题型", style: gInfoTextStyle2)),
+                          DataColumn(label: Text("总分", style: gInfoTextStyle2)),
+                          DataColumn(
+                              label: Text("声调得分", style: gInfoTextStyle2)),
+                          DataColumn(
+                              label: Text("发音得分", style: gInfoTextStyle2)),
+                          DataColumn(
+                              label: Text("流畅得分", style: gInfoTextStyle2)),
+                        ],
+                        rows: scores)),
+              )),
+          Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 5),
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                      headingRowColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.grey.shade300),
+                      border: TableBorder.all(),
+                      columns: [
+                        DataColumn(label: Text("题型", style: gInfoTextStyle2)),
+                        DataColumn(label: Text("增读", style: gInfoTextStyle2)),
+                        DataColumn(label: Text("漏读", style: gInfoTextStyle2)),
+                        DataColumn(label: Text("回读", style: gInfoTextStyle2)),
+                        DataColumn(label: Text("替换", style: gInfoTextStyle2)),
+                      ],
+                      rows: mlpp),
+                ),
+              )),
+          Padding(
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              child: Container(
+                height: 150,
+                child: ListView(
+                  children: [
+                    DataTable(
+                        headingRowColor: MaterialStateColor.resolveWith(
+                            (states) => Colors.grey.shade300),
+                        border: TableBorder.all(),
+                        columns: [
+                          DataColumn(
+                              label: Text("声母错误", style: gInfoTextStyle2)),
+                          DataColumn(label: Text("次数", style: gInfoTextStyle2))
+                        ],
+                        rows: shengMuList)
+                  ],
+                ),
+              )),
+          Padding(
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              child: Container(
+                height: 150,
+                child: ListView(
+                  children: [
+                    DataTable(
+                        headingRowColor: MaterialStateColor.resolveWith(
+                            (states) => Colors.grey.shade300),
+                        border: TableBorder.all(),
+                        columns: [
+                          DataColumn(
+                              label: Text("韵母错误", style: gInfoTextStyle2)),
+                          DataColumn(label: Text("次数", style: gInfoTextStyle2))
+                        ],
+                        rows: yunMuList)
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
   }
 }
 
 class ViewExamResult extends StatelessWidget {
   static const String routeName = 'fullExamResult';
   const ViewExamResult({super.key});
-
+  
   // FIXME 23.3.5 此处用的是临时界面
   @override
   Widget build(BuildContext context) {
@@ -457,15 +483,16 @@ class ViewExamResult extends StatelessWidget {
           endingRoute: args.endingRoute,
           idx2Name: args.idx2Name,
           idx2Score: args.idx2Score,
+          idx2Num: args.idx2Num,
           type2Idx: args.type2Idx,
           index2Name: args.index2Name,
-          index2Score: args.index2Score),
-          bottomNavigationBar:       Padding(
+          index2Score: args.index2Score,
+          index2num: args.index2num),
+      bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(vertical: 20),
         child: ComponentRoundButton(
           func: () {
-            // parseAndPostResultsXf(
-            //     args.id, 0, yunMuName, yunMuNum, shengMuName, shengMuNum);
+            parseAndPostResultsXf(ID, 0, YUNMUNAME, YUNMUNUM, SHENGMUNAME, SHENGMUNUM);
             Navigator.pushNamed(context, args.endingRoute);
           },
           color: gColorE3EDF7RGBA,

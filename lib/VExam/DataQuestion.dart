@@ -30,12 +30,14 @@ class ArgsViewExamResult {
   double sumScore = 0;
   final Map<dynamic, String> idx2Name;
   final Map<dynamic, double> idx2Score;
+  final Map<dynamic, int> idx2Num;
   final Map<dynamic, int> type2Idx;
   final Map<dynamic, dynamic> index2Name;
   final Map<dynamic, dynamic> index2Score;
+  final Map<dynamic, dynamic> index2num;
 
   ArgsViewExamResult(this.id, this.dataList, this.endingRoute, this.sumScore,
-  this.idx2Name, this.idx2Score, this.type2Idx, this.index2Name, this.index2Score);
+  this.idx2Name, this.idx2Score, this.idx2Num, this.type2Idx, this.index2Name, this.index2Score, this.index2num);
 }
 
 class ArgsViewExam {
@@ -161,7 +163,7 @@ class DataExamPage {
     title = json['title'] ?? "";
     description = json['description'] ?? "";
     type = json['type'] ?? "";
-    difficulty = json['difficulty'] ?? "";
+    difficulty = json['difficulty'].toString() ?? "-1";
     releaseStatus = json['releaseStatus'] ?? "";
     isPrivate = json['isPrivate'] ?? -1;
     modStatus = json['modStatus'] ?? -1;
@@ -191,7 +193,7 @@ class DataExamPage {
     data['title'] = this.title;
     data['description'] = this.description;
     data['type'] = this.type;
-    data['difficulty'] = this.difficulty;
+    data['difficulty'] = this.difficulty.toString();
     data['releaseStatus'] = this.releaseStatus;
     data['isPrivate'] = this.isPrivate;
     data['modStatus'] = this.modStatus;
@@ -215,7 +217,7 @@ class Topics {
   String? cpsgrpId;
   String? title;
   double? score;
-  int? difficulty;
+  String? difficulty;
   String? description;
   List<SubCpsrcds>? subCpsrcds;
   int? tNum;
@@ -234,8 +236,8 @@ class Topics {
     id = json['id'] ?? "";
     cpsgrpId = json['cpsgrpId'] ?? "";
     title = json['title'] ?? "";
-    score = json['score'] ?? -1;
-    difficulty = json['difficulty'] ?? -1;
+    score = json['score'] ?? 0.0;
+    difficulty = json['difficulty'].toString() ?? "-1";
     description = json['description'] ?? "";
     tNum = json['tNum'] ?? -1;
     if (json['subCpsrcds'] != null) {
@@ -252,7 +254,7 @@ class Topics {
     data['cpsgrpId'] = this.cpsgrpId;
     data['title'] = this.title;
     data['score'] = this.score;
-    data['difficulty'] = this.difficulty;
+    data['difficulty'] = this.difficulty.toString();
     data['description'] = this.description;
     if (this.subCpsrcds != null) {
       data['subCpsrcds'] = this.subCpsrcds!.map((v) => v.toJson()).toList();
@@ -269,7 +271,7 @@ class SubCpsrcds {
   String? type;
   String? title;
   int? evalMode;
-  int? difficulty;
+  String? difficulty;
   double? score;
   bool? enablePinyin = false;
   String? pinyin;
@@ -323,7 +325,7 @@ class SubCpsrcds {
     cpsgrpId = json['cpsgrpId'] ?? "";
     type = json['type'] ?? "";
     evalMode = json['evalMode'] ?? -1;
-    difficulty = json['difficulty'] ?? -1;
+    difficulty = json['difficulty'].toString() ?? "-1";
     score = json['score'] ?? 0.0;
     enablePinyin = json['enablePinyin'] ?? false;
     pinyin = json['pinyin'] ?? "";
@@ -349,7 +351,7 @@ class SubCpsrcds {
     data['cpsgrpId'] = this.cpsgrpId;
     data['type'] = this.type;
     data['evalMode'] = this.evalMode;
-    data['difficulty'] = this.difficulty;
+    data['difficulty'] = this.difficulty.toString();
     data['score'] = this.score;
     data['enablePinyin'] = this.enablePinyin;
     data['pinyin'] = this.pinyin;
@@ -539,7 +541,9 @@ class SubCpsrcds {
     py += "   ";
     List<String> pyList = List.empty(growable: true);
     String pyTmp = "";
-    RegExp pyExp = RegExp(r"[A-Za-z0-9]");
+    RegExp pyExp = RegExp(r"[A-Za-z0-9]+");
+    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
+
     for (int i = 0; i < pyLen; ++i) {
       if (pyExp.hasMatch(py[i])) {
         pyTmp += py[i];
@@ -552,7 +556,6 @@ class SubCpsrcds {
     }
     if (pyTmp != "") pyList.add(pyTmp);
     str += "\n";
-    RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
     List<Container> row = List.empty(growable: true);
     List<Widget> rows = List.empty(growable: true);
     List<bool> str_isWrong = List.filled(str.length, false);
@@ -565,11 +568,11 @@ class SubCpsrcds {
         // 是中文字
         if (cnt < c_str_len) {
           str_isWrong[i] = dataOneResultCard!.dataOneWordCard![cnt].isWrong!;
-          print(str[i] +
-              " 对比 " +
-              dataOneResultCard!.dataOneWordCard![cnt].word! +
-              " : " +
-              str_isWrong[i].toString());
+          // print(str[i] +
+          //     " 对比 " +
+          //     dataOneResultCard!.dataOneWordCard![cnt].word! +
+          //     " : " +
+          //     str_isWrong[i].toString());
           cnt++;
         }
       }
@@ -623,13 +626,13 @@ class SubCpsrcds {
     return rows;
   }
 
-  Future<void> postAndGetResultXf(bool add2Mis) async {
+  Future<void> postAndGetResultXf(bool add2Mis, bool valueIdx) async {
     if (_filePath == '') {
       return;
     }
     _isUploading = true;
     dataOneResultCard =
-        await MsgMgrQuestion().postAndGetResultXf(this, add2Mis);
+        await MsgMgrQuestion().postAndGetResultXf(this, add2Mis, valueIdx);
     // 标定状态
     _isUploading = false;
   }

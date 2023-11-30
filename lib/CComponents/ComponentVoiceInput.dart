@@ -32,6 +32,7 @@ class ComponentVoiceInput extends StatefulWidget with ChangeNotifier {
   String typeIdx;
   String typeScore;
   String description;
+  bool valueIdx = false;
   // bool nextBut;
   // int idx;
   // bool goNext;
@@ -186,7 +187,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       widget.wrongsShow = false;
     });
     // ---------------- test !!!
-    await widget.dataPage.postAndGetResultXf(widget.add2Mis);
+    await widget.dataPage.postAndGetResultXf(widget.add2Mis, widget.valueIdx);
     print(widget.dataPage.dataOneResultCard!.cpsrcdId);
     setState(() {
       widget.dataPage.setUploading(false);
@@ -327,6 +328,93 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    // tags -------
+    List<Widget> listTags = List.empty(growable: true);
+    if (widget.dataPage.tags == [] || widget.dataPage.tags == null) {
+      listTags.add(ComponentSubtitle(
+        label: '无',
+        style: gSubtitleStyle,
+      ));
+    } else {
+      for (var tag in widget.dataPage.tags!) {
+        if (listTags.length != 0) listTags.add(SizedBox(width: 5));
+        listTags.add(Padding(
+          padding: EdgeInsets.all(2),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              color: gColorFFFFFFRGBA,
+            ),
+            child: Text(
+              tag.name.toString(),
+              style: gInfoTextStyle,
+            ),
+          ),
+        ));
+      }
+    }
+    // todo edit tags name
+    List<Widget> tags = List.empty(growable: true);
+    tags.addAll(
+      <Widget>[
+        Center(
+            child: Text(widget.typeIdx +
+                widget.dataPage.description! +
+                widget.typeScore)),
+        // 错题出处
+        Padding(
+          padding: EdgeInsets.only(top: 0),
+          child: Row(
+            children: [
+              ComponentSubtitle(
+                label: widget.nowIdx != -1 ? '题目进度：' : "",
+                style: gInfoTextStyle,
+              ),
+              ComponentSubtitle(
+                label: widget.nowIdx != -1
+                    ? widget.nowIdx.toString() +
+                        "/" +
+                        widget.questionNum.toString()
+                    : "",
+                style: gInfoTextStyle2,
+              )
+            ],
+          ),
+        ),
+        widget.subButShow
+            ? ComponentSubtitle(
+                label: ("类型：" + widget.dataPage.type.toString() ?? "") +
+                    "   难度：" +
+                    (widget.dataPage.difficulty.toString() ?? ""),
+                style: gInfoTextStyle)
+            : Container(),
+        widget.subButShow
+            ? Padding(
+                padding: EdgeInsets.only(top: 0),
+                child: Row(
+                  children: [
+                    ComponentSubtitle(
+                      label: '标签：',
+                      style: gInfoTextStyle,
+                    ),
+                    SizedBox(
+                        width: screenSize.width * 0.8,
+                        height: 30,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: listTags.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return listTags[index];
+                            }))
+                  ],
+                ),
+              )
+            : Container(),
+      ],
+    );
+    // tags -------
+
+    // content head todo
     List<Widget> children = List.empty(growable: true);
     children.addAll(
       [
@@ -355,81 +443,7 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
       ],
     );
 
-    // tags -------
-    List<Widget> listTags = List.empty(growable: true);
-    if (widget.dataPage.tags == [] || widget.dataPage.tags == null) {
-      listTags.add(ComponentSubtitle(
-        label: '无',
-        style: gSubtitleStyle,
-      ));
-    } else {
-      for (var tag in widget.dataPage.tags!) {
-        if (listTags.length != 0) listTags.add(SizedBox(width: 5));
-        listTags.add(Padding(
-          padding: EdgeInsets.all(2),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              color: gColorFFFFFFRGBA,
-            ),
-            child: Text(
-              tag.name.toString(),
-              style: gInfoTextStyle,
-            ),
-          ),
-        ));
-      }
-    }
-    List<Widget> tags = List.empty(growable: true);
-    tags.addAll(
-      <Widget>[
-        Center(
-            child: Text(widget.typeIdx +
-                widget.dataPage.description! +
-                widget.typeScore)),
-        // 错题出处
-        Padding(
-          padding: EdgeInsets.only(top: 0),
-          child: Row(
-            children: [
-              ComponentSubtitle(
-                label: widget.nowIdx != -1 ? '题目进度：' : "",
-                style: gInfoTextStyle,
-              ),
-              ComponentSubtitle(
-                label: widget.nowIdx != -1
-                    ? widget.nowIdx.toString() +
-                        "/" +
-                        widget.questionNum.toString()
-                    : "",
-                style: gInfoTextStyle2,
-              )
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 0),
-          child: Row(
-            children: [
-              ComponentSubtitle(
-                label: '标签：',
-                style: gInfoTextStyle,
-              ),
-              SizedBox(
-                  width: screenSize.width * 0.8,
-                  height: 30,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: listTags.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return listTags[index];
-                      }))
-            ],
-          ),
-        ),
-      ],
-    );
-    // tags -------
+
 
     return Scaffold(
         backgroundColor: gColorE1EBF5RGBA,
@@ -457,31 +471,84 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
             child: ListView(
               children: [
                 widget.subButShow
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildExampleAudioPlayer(context),
-                          Container(
-                              child: Row(children: [
-                            ComponentSubtitle(
-                              label: '拼音',
-                              style: gSubtitleStyle,
-                            ),
-                            Switch(
-                              value: widget.dataPage.enablePinyin!, //当前状态
-                              hoverColor: Colors.white,
-                              activeColor: Colors.green,
-                              onChanged: (value) {
-                                //重新构建页面
-                                setState(() {
-                                  widget.dataPage.enablePinyin = value;
-                                });
-                              },
-                            )
-                          ]))
-                        ],
-                      )
-                    : _buildExampleAudioPlayer(context),
+                    ? Column(children: [
+                        _buildExampleAudioPlayer(context),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(children: [
+                                ComponentSubtitle(
+                                  label: '拼音',
+                                  style: gSubtitleStyle,
+                                ),
+                                Switch(
+                                  value: widget.dataPage.enablePinyin!, //当前状态
+                                  hoverColor: Colors.white,
+                                  activeColor: Colors.green,
+                                  onChanged: (value) {
+                                    //重新构建页面
+                                    setState(() {
+                                      print(widget.dataPage.pinyin);
+                                      widget.dataPage.enablePinyin = value;
+                                    });
+                                  },
+                                )
+                              ]),
+                              Row(children: [
+                                ComponentSubtitle(
+                                  label: '科大讯飞',
+                                  style: gSubtitleStyle,
+                                ),
+                                Switch(
+                                  value: widget.valueIdx, //当前状态
+                                  inactiveTrackColor: Colors.green,
+                                  // hoverColor: Colors.white,
+                                  activeColor: Colors.green,
+                                  onChanged: (value) {
+                                    //重新构建页面
+                                    setState(() {
+                                      print(widget.valueIdx ? "1" : "0");
+                                      widget.valueIdx = value;
+                                    });
+                                  },
+                                ),
+                                ComponentSubtitle(
+                                  label: '自研算法',
+                                  style: gSubtitleStyle,
+                                )
+                              ])
+                            ])
+                      ])
+                    : Column(children: [
+                        _buildExampleAudioPlayer(context),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(children: [
+                                ComponentSubtitle(
+                                  label: '科大讯飞',
+                                  style: gSubtitleStyle,
+                                ),
+                                Switch(
+                                  value: widget.valueIdx, //当前状态
+                                  inactiveTrackColor: Colors.green,
+                                  // hoverColor: Colors.white,
+                                  activeColor: Colors.green,
+                                  onChanged: (value) {
+                                    //重新构建页面
+                                    setState(() {
+                                      print(widget.valueIdx ? "1" : "0");
+                                      widget.valueIdx = value;
+                                    });
+                                  },
+                                ),
+                                ComponentSubtitle(
+                                  label: '自研算法',
+                                  style: gSubtitleStyle,
+                                ),
+                              ])
+                            ]),
+                      ]),
                 !widget.recordShow
                     ? Container()
                     : Row(
@@ -541,8 +608,8 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                                                     ? (widget.dataPage
                                                             .isRecording()
                                                         ? '正在录音'
-                                                        : '按住录音')
-                                                    : '评测完成',
+                                                        : '点击开始录音')
+                                                    : '评测完成（再次点击可重新评测）',
                                                 style: gSubtitleStyle,
                                               ),
                                             ],
@@ -551,31 +618,6 @@ class _ComponentVoiceInputState extends State<ComponentVoiceInput> {
                                         ],
                                       ),
                               )),
-                          // TextButton(onPressed: () {
-                          //     // Navigator.of(context)
-                          //     //     .pushReplacementNamed(ViewPracticeRandom.routeName);
-                          //     // Navigator.pop(context);
-                          //     setState(() {
-                          //       widget.goNext = true;
-                          //     });
-                          //   },
-                          //   child:
-                          //   Container(
-                          //     width: screenSize.width * 0.3,
-                          //     decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(27),
-                          //     color: Colors.blue[200],
-                          //     boxShadow: [
-                          //       BoxShadow(
-                          //         color: gColorE1EBF5RGBA,
-                          //         spreadRadius: 1,
-                          //         blurRadius: 1,
-                          //         offset: Offset(1, 2), // changes position of shadow
-                          //       ),
-                          //     ],
-                          //   ), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          //   Text("下一题", style: gSubtitleStyle,)]),)
-                          //   ),
                         ],
                       ),
               ],

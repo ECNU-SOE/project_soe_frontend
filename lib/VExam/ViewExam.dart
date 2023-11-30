@@ -46,8 +46,9 @@ Map<dynamic, String> idx2Name = {
   "": ""
 };
 Map<dynamic, double> idx2Score = {"": 0};
+Map<dynamic, int> idx2Num = {"": 0};
 Map<dynamic, int> type2Idx = {};
-Map<dynamic, dynamic> index2Name = {}, index2Score = {};
+Map<dynamic, dynamic> index2Name = {}, index2Score = {}, index2num = {};
 int typeNum = 0;
 
 class _ViewExamBodyState extends State<_ViewExamBody> {
@@ -212,6 +213,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
     } else {
       int cnt = 0;
       List<DataOneResultCard> lst = List.empty(growable: true);
+      int i = 0;
       for (final voiceInput in _voiceInputs!) {
         if (voiceInput.dataPage.dataOneResultCard == null) {
           RegExp exp = RegExp(r"[\u4e00-\u9fa5]");
@@ -243,9 +245,12 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
               tags: voiceInput.dataPage.tags,
               description: voiceInput.dataPage.title);
           voiceInput.dataPage.dataOneResultCard = tmp;
-        } else
-          cnt++;
+        } else cnt++;
+        // print("viewexam ---");
+        // print(voiceInput.dataPage.dataOneResultCard?.totalScore);
+        voiceInput.dataPage.dataOneResultCard?.description = voiceInput.dataPage.title;
         lst.add(voiceInput.dataPage.dataOneResultCard!);
+        i = i + 1;
       }
       if (cnt == 0) {
         showDialog(
@@ -290,9 +295,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                 widget._args.sumScore,
                 idx2Name,
                 idx2Score,
+                idx2Num,
                 type2Idx,
                 index2Name,
-                index2Score)));
+                index2Score,
+                index2num)));
       }
     }
   }
@@ -339,6 +346,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
     type2Idx.clear();
     index2Name.clear();
     index2Score.clear();
+    index2num.clear();
 
     typeNum = 0;
     for (var x in widget._dataList) {
@@ -350,6 +358,7 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
       }
       type2Idx[x.title] = typeNum + 1;
       idx2Score[x.title] = 0;
+      idx2Num[x.title] = 0;
       typeNum += 1;
     }
     for (int i = 0; i < widget._dataList.length; ++i) {
@@ -357,9 +366,11 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
       idx2Score[widget._dataList[i].title] =
           idx2Score[widget._dataList[i].title]! +
               (widget._dataList[i].score ?? 0);
+      idx2Num[widget._dataList[i].title] = idx2Num[widget._dataList[i].title]! + 1;
     }
     for (int i = 0; i < widget._dataList.length; ++i) {
       index2Score[i] = idx2Score[widget._dataList[i].title];
+      index2num[i] = idx2Num[widget._dataList[i].title];
       print(index2Score[i]);
     }
     _listSize = widget._dataList.length;
@@ -549,10 +560,12 @@ class _ViewExamBodyState extends State<_ViewExamBody> {
                 color: gColorCAE4F1RGBA,
               ),
             ),
+            Container(width: 150, child: 
             Text(
               widget._args.title,
               style: gTitleStyle,
-            ),
+              maxLines: 2,
+            ),),
             Padding(
               padding: EdgeInsets.all(4.0),
               child: ComponentRoundButton(
@@ -612,9 +625,11 @@ class ViewExam extends StatelessWidget {
       future: MsgMgrQuestion().getExamByCpsgrpId(_argsViewExam!.cprsgrpId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          print("getExamByCpsgrpId succeeded!");
           _argsViewExam!.sumScore = snapshot.data!.totScore ?? 0.0;
           return _ViewExamBody(_argsViewExam!, snapshot.data!.listSubCpsrcd!);
         } else {
+          print("getExamByCpsgrpId failed!");
           return const Center(
             child: CircularProgressIndicator(),
           );

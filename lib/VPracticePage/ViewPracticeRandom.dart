@@ -19,7 +19,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:element_ui/animations.dart';
 import 'package:element_ui/widgets.dart';
 
-List<int> selectedTagIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 class ViewPracticeRandomCard extends StatefulWidget {
   List<int> tagIds;
@@ -52,7 +51,7 @@ class _ViewPracticeRandomCardState extends State<ViewPracticeRandomCard> {
               context,
               MaterialPageRoute(
                   builder: (context) => ViewPracticeRandomCard(
-                        tagIds: selectedTagIds,
+                        tagIds: [],
                       )
                   ));
         },
@@ -68,7 +67,7 @@ class _ViewPracticeRandomCardState extends State<ViewPracticeRandomCard> {
 
   @override
   Widget build(BuildContext buildContext) => FutureBuilder<SubCpsrcds>(
-        future: getGetRandomDataMistakeDetail(widget.tagIds), // 获取随机一题接口,
+        future: getGetRandomDataMistakeDetail([]), // 获取随机一题接口,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             print("getGetRandomDataMistakeDetail succeeded !!!");
